@@ -29,7 +29,7 @@ export const authOptions: NextAuthOptions = {
   },
   
   callbacks: {
-    async signIn({ user, account, profile }) {
+    async signIn({ user, account, profile }: any) {
       if (account?.provider === 'google') {
         try {
           // Check if user exists
@@ -58,7 +58,7 @@ export const authOptions: NextAuthOptions = {
             await supabaseAdmin
               .from('user_subscriptions')
               .insert({
-                user_id: newUser.id,
+                userId: newUser.id,
                 type: 'FREE',
                 status: 'ACTIVE',
                 start_date: new Date().toISOString(),
@@ -70,7 +70,7 @@ export const authOptions: NextAuthOptions = {
             await supabaseAdmin
               .from('user_profiles')
               .insert({
-                user_id: newUser.id,
+                userId: newUser.id,
                 display_name: user.name || '',
                 bio: '',
                 is_public: false,
@@ -80,10 +80,10 @@ export const authOptions: NextAuthOptions = {
             await supabaseAdmin
               .from('user_preferences')
               .insert({
-                user_id: newUser.id,
+                userId: newUser.id,
                 theme: 'DARK',
                 language: 'PT',
-                currency: 'BRL',
+                currency: 'USD',
                 notifications: {
                   email: true,
                   push: true,
@@ -111,7 +111,7 @@ export const authOptions: NextAuthOptions = {
             await supabaseAdmin
               .from('user_stats')
               .insert({
-                user_id: newUser.id,
+                userId: newUser.id,
                 total_logins: 1,
                 last_login: new Date().toISOString(),
                 total_searches: 0,
@@ -136,7 +136,7 @@ export const authOptions: NextAuthOptions = {
             await supabaseAdmin
               .from('user_stats')
               .update({
-                total_logins: existingUser.total_logins + 1,
+                total_logins: (existingUser as any).total_logins + 1,
                 last_login: new Date().toISOString(),
               })
               .eq('user_id', existingUser.id);
@@ -152,7 +152,7 @@ export const authOptions: NextAuthOptions = {
       return true;
     },
     
-    async session({ session, token }) {
+    async session({ session, token }: any) {
       if (session.user?.email) {
         try {
           const { data: user } = await supabaseAdmin
@@ -183,7 +183,7 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
     
-    async jwt({ token, user, account }) {
+    async jwt({ token, user, account }: any) {
       if (user) {
         token.sub = user.id;
       }
@@ -192,7 +192,7 @@ export const authOptions: NextAuthOptions = {
   },
   
   events: {
-    async signOut({ session, token }) {
+    async signOut({ session, token }: any) {
       if (session?.user?.id) {
         try {
           // Update last sign out time
@@ -240,10 +240,10 @@ export async function isUserPlus(userId: string): Promise<boolean> {
       .from('user_subscriptions')
       .select('type, status')
       .eq('user_id', userId)
-      .eq('status', 'active')
+      .eq('status', 'ACTIVE')
       .single();
     
-    return subscription?.type === 'plus';
+    return subscription?.type === 'PLUS';
   } catch (error) {
     console.error('Error checking user subscription:', error);
     return false;
