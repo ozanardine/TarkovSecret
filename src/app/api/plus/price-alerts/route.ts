@@ -1,0 +1,487 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
+import { supabaseAdmin } from '@/lib/supabase';
+import { tarkovApi } from '@/lib/tarkov-api';
+
+// Advanced price alerts management for PLUS users
+export async function GET(request: NextRequest) {
+  try {
+    const session = await getServerSession(authOptions);
+    
+    if (!session?.user?.email) {
+      return NextResponse.json(
+        { error: 'Usuário não autenticado' },
+        { status: 401 }
+      );
+    }
+
+    // Check if user has PLUS subscription
+    const { data: user } = await supabaseAdmin
+      .from('users')
+      .select(`
+        id,
+        email,
+        user_subscriptions!inner(
+          type,
+          status
+        )
+      `)
+      .eq('email', session.user.email)
+      .eq('user_subscriptions.type', 'PLUS')
+      .eq('user_subscriptions.status', 'ACTIVE')
+      .single();
+
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Acesso negado. Assinatura PLUS necessária.' },
+        { status: 403 }
+      );
+    }
+
+    const { searchParams } = new URL(request.url);
+    const status = searchParams.get('status');
+    const itemId = searchParams.get('itemId');
+    const limit = parseInt(searchParams.get('limit') || '50');
+
+    let query = supabaseAdmin
+      .from('price_alerts')
+      .select(`
+        *,
+        item_id,
+        target_price,
+        current_price,
+        alert_type,
+        conditions,
+        is_active,
+        created_at,
+        updated_at,
+        last_triggered,
+        trigger_count
+      `)
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(limit);
+
+    if (status) {
+      query = query.eq('is_active', status === 'active');
+    }
+
+    if (itemId) {
+      query = query.eq('item_id', itemId);
+    }
+
+    const { data: alerts, error } = await query;
+
+    if (error) {
+      throw error;
+    }
+
+    // Enrich alerts with current item data
+    const enrichedAlerts = await Promise.all(
+      (alerts || []).map(async (alert) => {
+        try {
+          const itemData = await tarkovApi.getItemById(alert.item_id);
+          return {
+            ...alert,
+            item: itemData,
+            priceChange: alert.current_price ? 
+              ((itemData?.avg_24h_price || 0) - alert.current_price) / alert.current_price * 100 : 0
+          };
+        } catch {
+          return alert;
+        }
+      })
+    );
+
+    // Log API usage
+    await supabaseAdmin
+      .from('api_usage')
+      .insert({
+        user_id: user.id,
+        endpoint: '/api/plus/price-alerts',
+        method: 'GET',
+        query_params: JSON.stringify({ status, itemId, limit }),
+        response_size: JSON.stringify(enrichedAlerts).length,
+        created_at: new Date().toISOString()
+      });
+
+    return NextResponse.json({
+      success: true,
+      data: enrichedAlerts,
+      meta: {
+        total: enrichedAlerts.length,
+        active: enrichedAlerts.filter(a => a.is_active).length,
+        triggered: enrichedAlerts.filter(a => a.last_triggered).length
+      }
+    });
+    
+  } catch (error) {
+    console.error('Erro na API PLUS de alertas de preço:', error);
+    
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'Erro interno do servidor'
+      },
+      { status: 500 }
+    );
+  }
+}
+
+// Create advanced price alert
+export async function POST(request: NextRequest) {
+  try {
+    const session = await getServerSession(authOptions);
+    
+    if (!session?.user?.email) {
+      return NextResponse.json(
+        { error: 'Usuário não autenticado' },
+        { status: 401 }
+      );
+    }
+
+    // Check if user has PLUS subscription
+    const { data: user } = await supabaseAdmin
+      .from('users')
+      .select(`
+        id,
+        email,
+        user_subscriptions!inner(
+          type,
+          status
+        )
+      `)
+      .eq('email', session.user.email)
+      .eq('user_subscriptions.type', 'PLUS')
+      .eq('user_subscriptions.status', 'ACTIVE')
+      .single();
+
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Acesso negado. Assinatura PLUS necessária.' },
+        { status: 403 }
+      );
+    }
+
+    const {
+      itemId,
+      alertType,
+      targetPrice,
+      conditions,
+      notificationMethods,
+      expiresAt
+    } = await request.json();
+
+    if (!itemId || !alertType || !targetPrice) {
+      return NextResponse.json(
+        { error: 'Item ID, tipo de alerta e preço alvo são obrigatórios' },
+        { status: 400 }
+      );
+    }
+
+    // Validate alert type
+    const validAlertTypes = ['price_drop', 'price_rise', 'price_range', 'percentage_change'];
+    if (!validAlertTypes.includes(alertType)) {
+      return NextResponse.json(
+        { error: 'Tipo de alerta inválido' },
+        { status: 400 }
+      );
+    }
+
+    // Get current item price
+    const itemData = await tarkovApi.getItemById(itemId);
+    if (!itemData) {
+      return NextResponse.json(
+        { error: 'Item não encontrado' },
+        { status: 404 }
+      );
+    }
+
+    // Check user's alert limit (PLUS users get more alerts)
+    const { count: existingAlerts } = await supabaseAdmin
+      .from('price_alerts')
+      .select('*', { count: 'exact' })
+      .eq('user_id', user.id)
+      .eq('is_active', true);
+
+    const maxAlerts = 100; // PLUS users get 100 active alerts
+    if ((existingAlerts || 0) >= maxAlerts) {
+      return NextResponse.json(
+        { error: `Limite de ${maxAlerts} alertas ativos atingido` },
+        { status: 400 }
+      );
+    }
+
+    // Create the alert
+    const { data: newAlert, error } = await supabaseAdmin
+      .from('price_alerts')
+      .insert({
+        user_id: user.id,
+        item_id: itemId,
+        alert_type: alertType,
+        target_price: targetPrice,
+        current_price: itemData.avg_24h_price || 0,
+        conditions: conditions || {},
+        notification_methods: notificationMethods || ['email'],
+        is_active: true,
+        expires_at: expiresAt,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      })
+      .select()
+      .single();
+
+    if (error) {
+      throw error;
+    }
+
+    // Log API usage
+    await supabaseAdmin
+      .from('api_usage')
+      .insert({
+        user_id: user.id,
+        endpoint: '/api/plus/price-alerts',
+        method: 'POST',
+        query_params: JSON.stringify({ itemId, alertType, targetPrice }),
+        response_size: JSON.stringify(newAlert).length,
+        created_at: new Date().toISOString()
+      });
+
+    return NextResponse.json({
+      success: true,
+      data: {
+        ...newAlert,
+        item: itemData
+      },
+      message: 'Alerta de preço criado com sucesso'
+    });
+    
+  } catch (error) {
+    console.error('Erro ao criar alerta de preço:', error);
+    
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'Erro interno do servidor'
+      },
+      { status: 500 }
+    );
+  }
+}
+
+// Update price alert
+export async function PUT(request: NextRequest) {
+  try {
+    const session = await getServerSession(authOptions);
+    
+    if (!session?.user?.email) {
+      return NextResponse.json(
+        { error: 'Usuário não autenticado' },
+        { status: 401 }
+      );
+    }
+
+    // Check if user has PLUS subscription
+    const { data: user } = await supabaseAdmin
+      .from('users')
+      .select(`
+        id,
+        email,
+        user_subscriptions!inner(
+          type,
+          status
+        )
+      `)
+      .eq('email', session.user.email)
+      .eq('user_subscriptions.type', 'PLUS')
+      .eq('user_subscriptions.status', 'ACTIVE')
+      .single();
+
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Acesso negado. Assinatura PLUS necessária.' },
+        { status: 403 }
+      );
+    }
+
+    const {
+      alertId,
+      targetPrice,
+      conditions,
+      notificationMethods,
+      isActive,
+      expiresAt
+    } = await request.json();
+
+    if (!alertId) {
+      return NextResponse.json(
+        { error: 'ID do alerta é obrigatório' },
+        { status: 400 }
+      );
+    }
+
+    // Verify alert ownership
+    const { data: existingAlert } = await supabaseAdmin
+      .from('price_alerts')
+      .select('*')
+      .eq('id', alertId)
+      .eq('user_id', user.id)
+      .single();
+
+    if (!existingAlert) {
+      return NextResponse.json(
+        { error: 'Alerta não encontrado' },
+        { status: 404 }
+      );
+    }
+
+    // Update the alert
+    const updateData: any = {
+      updated_at: new Date().toISOString()
+    };
+
+    if (targetPrice !== undefined) updateData.target_price = targetPrice;
+    if (conditions !== undefined) updateData.conditions = conditions;
+    if (notificationMethods !== undefined) updateData.notification_methods = notificationMethods;
+    if (isActive !== undefined) updateData.is_active = isActive;
+    if (expiresAt !== undefined) updateData.expires_at = expiresAt;
+
+    const { data: updatedAlert, error } = await supabaseAdmin
+      .from('price_alerts')
+      .update(updateData)
+      .eq('id', alertId)
+      .eq('user_id', user.id)
+      .select()
+      .single();
+
+    if (error) {
+      throw error;
+    }
+
+    // Log API usage
+    await supabaseAdmin
+      .from('api_usage')
+      .insert({
+        user_id: user.id,
+        endpoint: '/api/plus/price-alerts',
+        method: 'PUT',
+        query_params: JSON.stringify({ alertId, targetPrice, isActive }),
+        response_size: JSON.stringify(updatedAlert).length,
+        created_at: new Date().toISOString()
+      });
+
+    return NextResponse.json({
+      success: true,
+      data: updatedAlert,
+      message: 'Alerta de preço atualizado com sucesso'
+    });
+    
+  } catch (error) {
+    console.error('Erro ao atualizar alerta de preço:', error);
+    
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'Erro interno do servidor'
+      },
+      { status: 500 }
+    );
+  }
+}
+
+// Delete price alert
+export async function DELETE(request: NextRequest) {
+  try {
+    const session = await getServerSession(authOptions);
+    
+    if (!session?.user?.email) {
+      return NextResponse.json(
+        { error: 'Usuário não autenticado' },
+        { status: 401 }
+      );
+    }
+
+    // Check if user has PLUS subscription
+    const { data: user } = await supabaseAdmin
+      .from('users')
+      .select(`
+        id,
+        email,
+        user_subscriptions!inner(
+          type,
+          status
+        )
+      `)
+      .eq('email', session.user.email)
+      .eq('user_subscriptions.type', 'PLUS')
+      .eq('user_subscriptions.status', 'ACTIVE')
+      .single();
+
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Acesso negado. Assinatura PLUS necessária.' },
+        { status: 403 }
+      );
+    }
+
+    const { searchParams } = new URL(request.url);
+    const alertId = searchParams.get('alertId');
+
+    if (!alertId) {
+      return NextResponse.json(
+        { error: 'ID do alerta é obrigatório' },
+        { status: 400 }
+      );
+    }
+
+    // Verify alert ownership and delete
+    const { data: deletedAlert, error } = await supabaseAdmin
+      .from('price_alerts')
+      .delete()
+      .eq('id', alertId)
+      .eq('user_id', user.id)
+      .select()
+      .single();
+
+    if (error) {
+      throw error;
+    }
+
+    if (!deletedAlert) {
+      return NextResponse.json(
+        { error: 'Alerta não encontrado' },
+        { status: 404 }
+      );
+    }
+
+    // Log API usage
+    await supabaseAdmin
+      .from('api_usage')
+      .insert({
+        user_id: user.id,
+        endpoint: '/api/plus/price-alerts',
+        method: 'DELETE',
+        query_params: JSON.stringify({ alertId }),
+        response_size: JSON.stringify(deletedAlert).length,
+        created_at: new Date().toISOString()
+      });
+
+    return NextResponse.json({
+      success: true,
+      data: deletedAlert,
+      message: 'Alerta de preço removido com sucesso'
+    });
+    
+  } catch (error) {
+    console.error('Erro ao remover alerta de preço:', error);
+    
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'Erro interno do servidor'
+      },
+      { status: 500 }
+    );
+  }
+}

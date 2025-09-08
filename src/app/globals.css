@@ -1,0 +1,485 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&display=swap');
+
+/* Base styles */
+@layer base {
+  * {
+    @apply border-tarkov-border;
+  }
+  
+  html {
+    @apply scroll-smooth;
+  }
+  
+  body {
+    @apply bg-tarkov-dark text-tarkov-light font-sans antialiased;
+    @apply scrollbar-thin;
+    background: linear-gradient(135deg, #1a1f2e 0%, #2a3441 100%);
+    min-height: 100vh;
+  }
+  
+  /* Headings */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold text-tarkov-light;
+  }
+  
+  h1 {
+    @apply text-4xl md:text-5xl;
+  }
+  
+  h2 {
+    @apply text-3xl md:text-4xl;
+  }
+  
+  h3 {
+    @apply text-2xl md:text-3xl;
+  }
+  
+  h4 {
+    @apply text-xl md:text-2xl;
+  }
+  
+  h5 {
+    @apply text-lg md:text-xl;
+  }
+  
+  h6 {
+    @apply text-base md:text-lg;
+  }
+  
+  /* Links */
+  a {
+    @apply text-tarkov-accent hover:text-tarkov-accent/80;
+    transition: color 0.15s ease-out;
+    will-change: color;
+  }
+  
+  /* Form elements */
+  input, textarea, select {
+    @apply bg-tarkov-secondary border-tarkov-border text-tarkov-light;
+    @apply focus:border-tarkov-accent focus:ring-1 focus:ring-tarkov-accent;
+    transition: border-color 0.15s ease-out, box-shadow 0.15s ease-out;
+    will-change: border-color, box-shadow;
+  }
+  
+  input::placeholder, textarea::placeholder {
+    @apply text-tarkov-muted;
+  }
+  
+  /* Selection */
+  ::selection {
+    @apply bg-tarkov-accent/30 text-tarkov-light;
+  }
+  
+  /* Focus outline */
+  :focus-visible {
+    @apply outline-none ring-2 ring-tarkov-accent ring-offset-2 ring-offset-tarkov-dark;
+  }
+}
+
+/* Component styles */
+@layer components {
+  /* Container */
+  .container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+  
+  /* Button base - Optimized */
+  .btn {
+    @apply inline-flex items-center justify-center rounded-lg font-medium;
+    @apply focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-tarkov-dark;
+    @apply disabled:opacity-50 disabled:cursor-not-allowed;
+    transition: background-color 0.15s ease-out, color 0.15s ease-out, transform 0.15s ease-out;
+    will-change: background-color, color, transform;
+  }
+  
+  /* Button variants - Optimized */
+  .btn-primary {
+    @apply bg-tarkov-accent text-white hover:bg-tarkov-accent/90;
+    @apply focus:ring-tarkov-accent shadow-lg hover:shadow-xl;
+  }
+  
+  .btn-secondary {
+    @apply bg-tarkov-secondary text-tarkov-light hover:bg-tarkov-hover;
+    @apply border border-tarkov-border focus:ring-tarkov-accent;
+  }
+  
+  .btn-outline {
+    @apply bg-transparent text-tarkov-light border border-tarkov-border;
+    @apply hover:bg-tarkov-secondary focus:ring-tarkov-accent;
+  }
+  
+  .btn-ghost {
+    @apply bg-transparent text-tarkov-light hover:bg-tarkov-secondary;
+    @apply focus:ring-tarkov-accent;
+  }
+  
+  .btn-danger {
+    @apply bg-tarkov-error text-white hover:bg-red-600;
+    @apply focus:ring-tarkov-error shadow-lg hover:shadow-xl;
+  }
+  
+  /* Button sizes */
+  .btn-sm {
+    @apply px-3 py-1.5 text-sm;
+  }
+  
+  .btn-md {
+    @apply px-4 py-2 text-base;
+  }
+  
+  .btn-lg {
+    @apply px-6 py-3 text-lg;
+  }
+  
+  /* Card - Optimized */
+  .card {
+    @apply bg-card border border-card-border rounded-lg;
+    @apply shadow-dark;
+    backdrop-filter: blur(10px);
+    background: rgba(42, 52, 65, 0.8);
+    transition: box-shadow 0.15s ease-out, transform 0.15s ease-out, background-color 0.15s ease-out;
+    will-change: box-shadow, transform, background-color;
+  }
+  
+  .card-hover {
+    @apply hover:shadow-dark-lg hover:-translate-y-1;
+    @apply hover:bg-card-hover;
+  }
+  
+  .card-elevated {
+    @apply shadow-dark-lg;
+  }
+  
+  .card-outlined {
+    @apply border-2;
+  }
+  
+  .card-glass {
+    @apply glass;
+    background: rgba(55, 65, 81, 0.6);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(71, 85, 105, 0.3);
+  }
+  
+  /* Input */
+  .input {
+    @apply w-full px-3 py-2 bg-input-background border border-input-border rounded-lg;
+    @apply text-tarkov-light placeholder-tarkov-muted;
+    @apply focus:border-input-focus focus:ring-1 focus:ring-input-focus;
+    @apply transition-colors duration-200;
+    backdrop-filter: blur(8px);
+  }
+  
+  .input-error {
+    @apply border-tarkov-error focus:border-tarkov-error focus:ring-tarkov-error;
+  }
+  
+  /* Badge */
+  .badge {
+    @apply inline-flex items-center px-2 py-1 rounded-full text-xs font-medium;
+  }
+  
+  .badge-primary {
+    @apply bg-tarkov-accent/20 text-tarkov-accent;
+  }
+  
+  .badge-secondary {
+    @apply bg-tarkov-muted/20 text-tarkov-muted;
+  }
+  
+  .badge-success {
+    @apply bg-tarkov-success/20 text-tarkov-success;
+  }
+  
+  .badge-warning {
+    @apply bg-tarkov-warning/20 text-tarkov-warning;
+  }
+  
+  .badge-error {
+    @apply bg-tarkov-error/20 text-tarkov-error;
+  }
+  
+  /* Modal */
+  .modal-overlay {
+    @apply fixed inset-0 backdrop-blur-sm z-50;
+    background: rgba(26, 31, 46, 0.8);
+  }
+  
+  .modal-content {
+    @apply bg-card border border-card-border rounded-lg shadow-dark-lg;
+    @apply max-h-[90vh] overflow-y-auto scrollbar-thin;
+    backdrop-filter: blur(12px);
+  }
+  
+  /* Loading - Optimized for GPU acceleration */
+  .loading-spinner {
+    @apply animate-spin rounded-full border-2 border-tarkov-muted border-t-tarkov-accent;
+    will-change: transform;
+    transform: translateZ(0);
+  }
+  
+  .loading-dots {
+    @apply flex space-x-1;
+  }
+  
+  .loading-dot {
+    @apply w-2 h-2 bg-tarkov-accent rounded-full animate-bounce;
+    will-change: transform;
+    transform: translateZ(0);
+  }
+  
+  .loading-pulse {
+    @apply animate-pulse bg-tarkov-secondary rounded;
+    will-change: opacity;
+    transform: translateZ(0);
+  }
+  
+  /* Skeleton - Optimized */
+  .skeleton {
+    @apply bg-tarkov-secondary animate-pulse rounded;
+    will-change: opacity;
+    transform: translateZ(0);
+  }
+  
+  /* Rarity colors */
+  .rarity-common {
+    @apply text-tarkov-common;
+  }
+  
+  .rarity-uncommon {
+    @apply text-tarkov-uncommon;
+  }
+  
+  .rarity-rare {
+    @apply text-tarkov-rare;
+  }
+  
+  .rarity-epic {
+    @apply text-tarkov-epic;
+  }
+  
+  .rarity-legendary {
+    @apply text-tarkov-legendary;
+  }
+  
+  .rarity-mythic {
+    @apply text-tarkov-mythic;
+  }
+  
+  /* Price change colors */
+  .price-up {
+    @apply text-tarkov-price-up;
+  }
+  
+  .price-down {
+    @apply text-tarkov-price-down;
+  }
+  
+  .price-neutral {
+    @apply text-tarkov-price-neutral;
+  }
+  
+  /* Utility classes */
+  .text-gradient {
+    @apply bg-gradient-to-r from-tarkov-accent to-tarkov-warning bg-clip-text text-transparent;
+  }
+  
+  .border-gradient {
+    @apply border border-transparent bg-gradient-to-r from-tarkov-accent to-tarkov-warning bg-clip-border;
+  }
+  
+  .glow {
+    @apply shadow-glow;
+  }
+  
+  .glow-lg {
+    @apply shadow-glow-lg;
+  }
+  
+  /* Animations - GPU Optimized */
+  .fade-in {
+    @apply animate-fade-in;
+    will-change: opacity;
+    transform: translateZ(0);
+  }
+  
+  .fade-out {
+    @apply animate-fade-out;
+    will-change: opacity;
+    transform: translateZ(0);
+  }
+  
+  .slide-in {
+    @apply animate-slide-in;
+    will-change: transform;
+    transform: translateZ(0);
+  }
+  
+  .slide-out {
+    @apply animate-slide-out;
+    will-change: transform;
+    transform: translateZ(0);
+  }
+}
+
+/* Utility styles */
+@layer utilities {
+  /* Hide scrollbar */
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* Custom scrollbar */
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: theme('colors.tarkov.border') theme('colors.tarkov.secondary');
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: theme('colors.tarkov.secondary');
+    border-radius: 4px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: theme('colors.tarkov.border');
+    border-radius: 4px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: theme('colors.tarkov.hover');
+  }
+  
+  /* Minimal scrollbar for specific sections */
+  .minimal-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+  }
+  
+  .minimal-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    margin-left: 4px;
+  }
+  
+  .minimal-scrollbar::-webkit-scrollbar-track {
+    background: transparent !important;
+    border-radius: 50px !important;
+    margin-left: 4px;
+  }
+  
+  .minimal-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3) !important;
+    border-radius: 50px !important;
+    -webkit-border-radius: 50px !important;
+    border: none !important;
+    min-height: 20px;
+    margin-left: 4px;
+  }
+  
+  .minimal-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+  
+  .minimal-scrollbar::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+  
+  /* Text selection */
+  .select-none {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+  
+  /* Backdrop blur */
+  .backdrop-blur-xs {
+    backdrop-filter: blur(2px);
+  }
+  
+  /* Safe area */
+  .safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+  
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  .safe-left {
+    padding-left: env(safe-area-inset-left);
+  }
+  
+  .safe-right {
+    padding-right: env(safe-area-inset-right);
+  }
+}
+
+/* Dark mode specific styles */
+@media (prefers-color-scheme: dark) {
+  /* Additional dark mode styles if needed */
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  body {
+    @apply bg-white text-black;
+  }
+}
+
+/* Reduced motion - DESABILITADO TEMPORARIAMENTE PARA DEBUG */
+@media (prefers-reduced-motion: reduce) {
+  /* 
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  */
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .card {
+    @apply border-2;
+  }
+  
+  .btn {
+    @apply border-2;
+  }
+}
+
+/* Custom properties for dynamic theming */
+:root {
+  --color-primary: theme('colors.tarkov.accent');
+  --color-secondary: theme('colors.tarkov.secondary');
+  --color-background: theme('colors.tarkov.dark');
+  --color-foreground: theme('colors.tarkov.light');
+  --color-muted: theme('colors.tarkov.muted');
+  --color-border: theme('colors.tarkov.border');
+  --color-success: theme('colors.tarkov.success');
+  --color-warning: theme('colors.tarkov.warning');
+  --color-error: theme('colors.tarkov.error');
+  --color-info: theme('colors.tarkov.info');
+}
