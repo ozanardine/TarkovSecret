@@ -93,7 +93,7 @@ export default function AnalyticsPage() {
   const { data: session } = useSession();
   const router = useRouter();
   const { user } = useAuth();
-  const { subscription, isLoading: subscriptionLoading } = useSubscription();
+  const { subscription } = useSubscription();
   const [activeTab, setActiveTab] = useState<'overview' | 'searches' | 'items' | 'performance'>('overview');
   const [period, setPeriod] = useState('30d');
   const [loading, setLoading] = useState(true);
@@ -103,7 +103,7 @@ export default function AnalyticsPage() {
   const [performanceData, setPerformanceData] = useState<PerformanceAnalytics | null>(null);
 
   useEffect(() => {
-    if (!subscriptionLoading && (!subscription || subscription.type !== 'PLUS' || subscription.status !== 'ACTIVE')) {
+    if (!subscription || subscription.type !== 'PLUS' || subscription.status !== 'ACTIVE') {
       router.push('/subscription');
       return;
     }
@@ -111,7 +111,7 @@ export default function AnalyticsPage() {
     if (subscription?.type === 'PLUS' && subscription?.status === 'ACTIVE') {
       fetchAnalytics();
     }
-  }, [subscription, subscriptionLoading, activeTab, period, router]);
+  }, [subscription, activeTab, period, router]);
 
   const fetchAnalytics = async () => {
     try {
@@ -171,7 +171,7 @@ export default function AnalyticsPage() {
     }
   };
 
-  if (subscriptionLoading) {
+  if (loading) {
     return (
       <PageLayout>
         <div className="flex items-center justify-center min-h-[400px]">

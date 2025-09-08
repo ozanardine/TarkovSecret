@@ -70,7 +70,7 @@ async function getItemImages(ids?: string[], names?: string[], limit?: number): 
   try {
     const response = await request(TARKOV_API_URL, query, variables);
     
-    const imageData: ImageData[] = response.items.map((item: any) => ({
+    const imageData: ImageData[] = (response as any).items.map((item: any) => ({
       id: item.id,
       name: item.name,
       type: 'item' as const,
@@ -108,7 +108,7 @@ async function getTraderImages(ids?: string[], names?: string[]): Promise<ImageD
   try {
     const response = await request(TARKOV_API_URL, query);
     
-    let traders = response.traders;
+    let traders = (response as any).traders;
     
     // Filter client-side if IDs or names are specified
     if (ids && ids.length > 0) {
@@ -210,7 +210,7 @@ async function getQuestImages(ids?: string[], names?: string[], limit?: number):
   try {
     const response = await request(TARKOV_API_URL, query, variables);
     
-    let quests = response.tasks;
+    let quests = (response as any).tasks;
     
     // Filter client-side if IDs or names are specified
     if (ids && ids.length > 0) {
@@ -262,7 +262,7 @@ async function getSkillImages(ids?: string[], names?: string[], limit?: number):
   try {
     const response = await request(TARKOV_API_URL, query, variables);
     
-    let skills = response.skills;
+    let skills = (response as any).skills;
     
     // Filter client-side if IDs or names are specified
     if (ids && ids.length > 0) {
@@ -307,7 +307,7 @@ async function getMapImages(ids?: string[], names?: string[]): Promise<ImageData
   try {
     const response = await request(TARKOV_API_URL, query);
     
-    let maps = response.maps;
+    let maps = (response as any).maps;
     
     // Filter client-side if IDs or names are specified
     if (ids && ids.length > 0) {

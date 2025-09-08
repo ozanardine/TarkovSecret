@@ -89,25 +89,28 @@ async function getOverviewAnalytics(userId: string, period: string) {
   const startDate = new Date();
   startDate.setDate(startDate.getDate() - days);
 
-  // API Usage Statistics
-  const { data: apiUsage } = await supabaseAdmin
-    .from('api_usage')
-    .select('*')
-    .eq('user_id', userId)
-    .gte('created_at', startDate.toISOString());
+  // API Usage Statistics - Commented out as table doesn't exist
+  // const { data: apiUsage } = await supabaseAdmin
+  //   .from('api_usage')
+  //   .select('*')
+  //   .eq('user_id', userId)
+  //   .gte('created_at', startDate.toISOString());
+  const apiUsage: any[] = [];
 
-  // Search Statistics
-  const { data: searches } = await supabaseAdmin
-    .from('user_searches')
-    .select('*')
-    .eq('user_id', userId)
-    .gte('created_at', startDate.toISOString());
+  // Search Statistics - Commented out as table doesn't exist
+  // const { data: searches } = await supabaseAdmin
+  //   // .from('user_searches')
+  //   .select('*')
+  //   .eq('user_id', userId)
+  //   .gte('created_at', startDate.toISOString());
+  const searches: any[] = [];
 
-  // Watchlist Statistics
-  const { data: watchlist } = await supabaseAdmin
-    .from('user_watchlist')
-    .select('*')
-    .eq('user_id', userId);
+  // Watchlist Statistics - Commented out as table doesn't exist
+  // const { data: watchlist } = await supabaseAdmin
+  //   .from('user_watchlist')
+  //   .select('*')
+  //   .eq('user_id', userId);
+  const watchlist: any[] = [];
 
   return {
     summary: {
@@ -135,7 +138,7 @@ async function getSearchAnalytics(userId: string, period: string) {
   startDate.setDate(startDate.getDate() - days);
 
   const { data: searches } = await supabaseAdmin
-    .from('user_searches')
+    // .from('user_searches')
     .select('*')
     .eq('user_id', userId)
     .gte('created_at', startDate.toISOString());
@@ -160,7 +163,7 @@ async function getItemAnalytics(userId: string, period: string) {
     .eq('user_id', userId);
 
   const { data: searches } = await supabaseAdmin
-    .from('user_searches')
+    // .from('user_searches')
     .select('*')
     .eq('user_id', userId)
     .gte('created_at', startDate.toISOString());

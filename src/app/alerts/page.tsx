@@ -278,7 +278,7 @@ const PriceAlertsPage: React.FC = () => {
         <div className="mb-6">
           <SearchInput
             value={searchQuery}
-            onChange={setSearchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Buscar alertas por nome do item..."
             className="max-w-md"
           />
@@ -372,7 +372,7 @@ const PriceAlertsPage: React.FC = () => {
                       <div className="flex items-center gap-2 mt-2">
                         <span className="text-xs text-tarkov-muted">Notificações:</span>
                         {alert.notification_methods.map((method) => (
-                          <Badge key={method} variant="outline" className="text-xs">
+                          <Badge key={method} variant="secondary" className="text-xs">
                             {method === 'email' ? 'Email' : method === 'push' ? 'Push' : 'SMS'}
                           </Badge>
                         ))}
@@ -426,7 +426,7 @@ const PriceAlertsPage: React.FC = () => {
             setShowCreateModal(false);
             setEditingAlert(null);
           }}
-          onAlertCreated={handleAlertCreated}
+          onSuccess={handleAlertCreated}
           editingAlert={editingAlert}
         />
       </div>
