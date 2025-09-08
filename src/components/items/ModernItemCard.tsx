@@ -12,8 +12,8 @@ import {
   CubeIcon,
   ScaleIcon,
   StarIcon,
-  TrendingUpIcon,
-  TrendingDownIcon,
+  ArrowArrowTrendingUpIcon,
+  ArrowArrowTrendingDownIcon,
   MinusIcon,
 } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartSolid } from '@heroicons/react/24/solid';
@@ -62,9 +62,9 @@ export const ModernItemCard: React.FC<ModernItemCardProps> = ({
     if (!item.changeLast48hPercent) return null;
     
     if (item.changeLast48hPercent > 0) {
-      return <TrendingUpIcon className="w-3 h-3" />;
+      return <ArrowTrendingUpIcon className="w-3 h-3" />;
     } else if (item.changeLast48hPercent < 0) {
-      return <TrendingDownIcon className="w-3 h-3" />;
+      return <ArrowTrendingDownIcon className="w-3 h-3" />;
     } else {
       return <MinusIcon className="w-3 h-3" />;
     }

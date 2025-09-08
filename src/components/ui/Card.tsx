@@ -127,6 +127,28 @@ const CardContent = React.forwardRef<HTMLDivElement, CardContentProps>(
 
 CardContent.displayName = 'CardContent';
 
+// Card Title Component
+interface CardTitleProps extends React.HTMLAttributes<HTMLHeadingElement> {
+  as?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
+}
+
+const CardTitle = React.forwardRef<HTMLHeadingElement, CardTitleProps>(
+  ({ className, as: Component = 'h3', ...props }, ref) => {
+    return (
+      <Component
+        className={cn(
+          'text-lg font-semibold text-tarkov-light',
+          className
+        )}
+        ref={ref}
+        {...props}
+      />
+    );
+  }
+);
+
+CardTitle.displayName = 'CardTitle';
+
 // Card Footer Component
 interface CardFooterProps extends React.HTMLAttributes<HTMLDivElement> {
   align?: 'left' | 'center' | 'right' | 'between';
@@ -319,5 +341,5 @@ const ItemCard = React.forwardRef<HTMLDivElement, ItemCardProps>(
 
 ItemCard.displayName = 'ItemCard';
 
-export { Card, CardHeader, CardContent, CardFooter, ItemCard };
-export type { CardProps, CardHeaderProps, CardContentProps, CardFooterProps, ItemCardProps };
+export { Card, CardHeader, CardContent, CardTitle, CardFooter, ItemCard };
+export type { CardProps, CardHeaderProps, CardContentProps, CardTitleProps, CardFooterProps, ItemCardProps };

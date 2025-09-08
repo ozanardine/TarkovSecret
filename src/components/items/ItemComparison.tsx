@@ -12,8 +12,8 @@ import {
   CubeIcon,
   CurrencyDollarIcon,
   ChartBarIcon,
-  TrendingUpIcon,
-  TrendingDownIcon,
+  ArrowArrowTrendingUpIcon,
+  ArrowArrowTrendingDownIcon,
   MinusIcon,
   TagIcon,
   StarIcon,
@@ -62,9 +62,9 @@ export const ItemComparison: React.FC<ItemComparisonProps> = ({
     if (!change) return null;
     
     if (change > 0) {
-      return <TrendingUpIcon className="w-3 h-3" />;
+      return <ArrowTrendingUpIcon className="w-3 h-3" />;
     } else if (change < 0) {
-      return <TrendingDownIcon className="w-3 h-3" />;
+      return <ArrowTrendingDownIcon className="w-3 h-3" />;
     } else {
       return <MinusIcon className="w-3 h-3" />;
     }

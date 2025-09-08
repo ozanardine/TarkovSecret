@@ -15,8 +15,8 @@ import {
   CubeIcon,
   ScaleIcon,
   StarIcon,
-  TrendingUpIcon,
-  TrendingDownIcon,
+  ArrowArrowTrendingUpIcon,
+  ArrowArrowTrendingDownIcon,
   MinusIcon,
   CurrencyDollarIcon,
   ClockIcon,
@@ -75,9 +75,9 @@ export const ItemQuickPreview: React.FC<ItemQuickPreviewProps> = ({
     if (!item.changeLast48hPercent) return null;
     
     if (item.changeLast48hPercent > 0) {
-      return <TrendingUpIcon className="w-4 h-4" />;
+      return <ArrowTrendingUpIcon className="w-4 h-4" />;
     } else if (item.changeLast48hPercent < 0) {
-      return <TrendingDownIcon className="w-4 h-4" />;
+      return <ArrowTrendingDownIcon className="w-4 h-4" />;
     } else {
       return <MinusIcon className="w-4 h-4" />;
     }

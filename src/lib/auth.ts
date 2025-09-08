@@ -251,3 +251,6 @@ export async function isUserPlus(userId: string): Promise<boolean> {
 }
 
 export default authOptions;
+
+// Export auth function for NextAuth v5
+export { auth } from 'next-auth';

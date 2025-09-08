@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { PageLayout } from '@/components/layout/Layout';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
-import { AlertCircleIcon, ArrowLeftIcon } from '@heroicons/react/24/outline';
+import { ExclamationTriangleIcon, ArrowLeftIcon } from '@heroicons/react/24/outline';
 
 export default function AuthErrorPage() {
   const searchParams = useSearchParams();
@@ -45,7 +45,7 @@ export default function AuthErrorPage() {
         <div className="max-w-md w-full space-y-8">
           <div className="text-center">
             <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-500/10 mb-4">
-              <AlertCircleIcon className="h-6 w-6 text-red-500" />
+              <ExclamationTriangleIcon className="h-6 w-6 text-red-500" />
             </div>
             <h2 className="text-3xl font-bold text-tarkov-light">
               Erro de Autenticação

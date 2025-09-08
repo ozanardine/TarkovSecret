@@ -10,8 +10,6 @@ import {
   ArrowTrendingUpIcon,
   ArrowTrendingDownIcon,
   CalendarIcon,
-  TrendingUpIcon,
-  TrendingDownIcon,
   MinusIcon
 } from '@heroicons/react/24/outline';
 
@@ -95,8 +93,8 @@ export function PriceHistory({ item }: PriceHistoryProps) {
   };
 
   const getChangeIcon = (change: number) => {
-    if (change > 0) return <TrendingUpIcon className="w-4 h-4 text-green-400" />;
-    if (change < 0) return <TrendingDownIcon className="w-4 h-4 text-red-400" />;
+    if (change > 0) return <ArrowTrendingUpIcon className="w-4 h-4 text-green-400" />;
+    if (change < 0) return <ArrowTrendingDownIcon className="w-4 h-4 text-red-400" />;
     return <MinusIcon className="w-4 h-4 text-gray-400" />;
   };
 
@@ -226,7 +224,7 @@ export function PriceHistory({ item }: PriceHistoryProps) {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="p-4 bg-gray-800/40 rounded-lg border border-gray-700/50">
                 <div className="flex items-center gap-2 mb-2">
-                  <TrendingUpIcon className="w-4 h-4 text-green-400" />
+                  <ArrowTrendingUpIcon className="w-4 h-4 text-green-400" />
                   <span className="text-sm text-gray-400">Preço Máximo</span>
                 </div>
                 <div className="text-xl font-bold text-green-400">
@@ -236,7 +234,7 @@ export function PriceHistory({ item }: PriceHistoryProps) {
 
               <div className="p-4 bg-gray-800/40 rounded-lg border border-gray-700/50">
                 <div className="flex items-center gap-2 mb-2">
-                  <TrendingDownIcon className="w-4 h-4 text-red-400" />
+                  <ArrowTrendingDownIcon className="w-4 h-4 text-red-400" />
                   <span className="text-sm text-gray-400">Preço Mínimo</span>
                 </div>
                 <div className="text-xl font-bold text-red-400">
