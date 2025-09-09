@@ -304,9 +304,9 @@ const ItemCard = React.forwardRef<HTMLDivElement, ItemCardProps>(
               </p>
             )}
             
-            {item.types?.[0] && (
+            {item.category && (
               <span className="inline-block px-2 py-0.5 mt-1 text-xs bg-tarkov-accent/20 text-tarkov-accent rounded">
-                {item.types[0]}
+                {item.category}
               </span>
             )}
             
