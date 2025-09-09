@@ -674,7 +674,7 @@ export class AdvancedImageProcessor {
           itemId,
           name: itemData.name,
           confidence: similarity,
-          category: itemData.category,
+          category: itemData.types?.[0] || 'Unknown',
           rarity: itemData.rarity
         };
       }

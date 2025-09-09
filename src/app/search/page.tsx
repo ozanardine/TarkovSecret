@@ -116,12 +116,12 @@ export default function SearchPage() {
       slots: 1,
       width: 1,
       height: 1,
-      types: [result.item.category],
-      rarity: result.item.rarity,
+      types: result.item.types || [],
+      rarity: result.item.rarity || 'common',
       sellFor: [],
       buyFor: [],
-      iconLink: result.item.iconUrl,
-      imageLink: result.item.iconUrl
+      iconLink: result.item.image || result.item.iconLink,
+      imageLink: result.item.image || result.item.iconLink
     };
     
     const searchResult: ImageSearchResult = {
@@ -462,7 +462,7 @@ export default function SearchPage() {
                         <div className="space-y-2">
                           <div className="flex justify-between items-center">
                             <Badge variant="secondary" className="text-xs">
-                              {item.category}
+                              {item.types?.[0] || 'Unknown'}
                             </Badge>
                             <span className="text-tarkov-accent font-semibold">
                               ₽{item.basePrice?.toLocaleString()}

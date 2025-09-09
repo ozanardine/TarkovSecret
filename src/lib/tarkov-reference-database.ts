@@ -222,7 +222,7 @@ export class TarkovReferenceDatabase {
    */
   private updateIndexes(item: TarkovItemReference): void {
     // Índice por categoria
-    const category = item.category.toLowerCase();
+    const category = item.types?.[0]?.toLowerCase() || 'unknown';
     if (!this.categoryIndex.has(category)) {
       this.categoryIndex.set(category, []);
     }
