@@ -55,11 +55,7 @@ export async function GET(request: NextRequest) {
         types: searchParams.get('types')?.split(',') || undefined,
         fleaMarketOnly: searchParams.get('fleaMarketOnly') === 'true',
         traderOnly: searchParams.get('traderOnly') === 'true',
-        inStock: searchParams.get('inStock') === 'true',
-        // PLUS exclusive filters
-        includeBarterOffers: searchParams.get('includeBarterOffers') === 'true',
-        includeCraftingRecipes: searchParams.get('includeCraftingRecipes') === 'true',
-        includeQuestRewards: searchParams.get('includeQuestRewards') === 'true'
+        inStock: searchParams.get('inStock') === 'true'
       }
     };
 
@@ -76,7 +72,6 @@ export async function GET(request: NextRequest) {
         profitCalculator: true
       },
       metadata: {
-        ...results.metadata,
         plan: 'PLUS',
         enhancedData: true,
         processingTime: Date.now() - Date.now() // Will be calculated properly
@@ -85,14 +80,17 @@ export async function GET(request: NextRequest) {
 
     // Log API usage for analytics
     await supabaseAdmin
-      .from('api_usage')
+      .from('user_activities')
       .insert({
         user_id: user.id,
-        endpoint: '/api/plus/search',
-        method: 'GET',
-        query_params: JSON.stringify(params),
-        response_size: JSON.stringify(enhancedResults).length,
-        created_at: new Date().toISOString()
+        type: 'SEARCH',
+        data: {
+          action: 'PLUS_SEARCH',
+          query: params.query,
+          filters: params.filters,
+          response_size: JSON.stringify(enhancedResults).length
+        },
+        timestamp: new Date().toISOString()
       });
     
     return NextResponse.json({
@@ -169,14 +167,17 @@ export async function POST(request: NextRequest) {
 
     // Log API usage
     await supabaseAdmin
-      .from('api_usage')
+      .from('user_activities')
       .insert({
         user_id: user.id,
-        endpoint: '/api/plus/search',
-        method: 'POST',
-        query_params: JSON.stringify(params),
-        response_size: JSON.stringify(enhancedResults).length,
-        created_at: new Date().toISOString()
+        type: 'SEARCH',
+        data: {
+          action: 'PLUS_SEARCH_POST',
+          query: params.query,
+          filters: params.filters,
+          response_size: JSON.stringify(enhancedResults).length
+        },
+        timestamp: new Date().toISOString()
       });
     
     return NextResponse.json({

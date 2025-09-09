@@ -210,6 +210,13 @@ export async function POST(request: NextRequest) {
     if (action === 'apply') {
       // Apply coupon to create Stripe coupon and return checkout session
       try {
+        if (!stripe) {
+          return NextResponse.json(
+            { error: 'Sistema de pagamento não configurado' },
+            { status: 500 }
+          );
+        }
+
         let stripeCoupon;
         
         // Check if Stripe coupon already exists

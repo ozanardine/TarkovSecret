@@ -583,6 +583,101 @@ export interface Database {
           }
         ]
       }
+      coupons: {
+        Row: {
+          id: string
+          code: string
+          name: string
+          description: string | null
+          discount_type: 'percentage' | 'fixed'
+          discount_value: number
+          user_id: string | null
+          is_active: boolean
+          max_uses: number | null
+          max_uses_per_user: number | null
+          expires_at: string | null
+          stripe_coupon_id: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          code: string
+          name: string
+          description?: string | null
+          discount_type: 'percentage' | 'fixed'
+          discount_value: number
+          user_id?: string | null
+          is_active?: boolean
+          max_uses?: number | null
+          max_uses_per_user?: number | null
+          expires_at?: string | null
+          stripe_coupon_id?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          code?: string
+          name?: string
+          description?: string | null
+          discount_type?: 'percentage' | 'fixed'
+          discount_value?: number
+          user_id?: string | null
+          is_active?: boolean
+          max_uses?: number | null
+          max_uses_per_user?: number | null
+          expires_at?: string | null
+          stripe_coupon_id?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coupons_user_id_fkey"
+            columns: ["user_id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      coupon_usage: {
+        Row: {
+          id: string
+          coupon_id: string
+          user_id: string
+          subscription_id: string | null
+          used_at: string
+        }
+        Insert: {
+          id?: string
+          coupon_id: string
+          user_id: string
+          subscription_id?: string | null
+          used_at?: string
+        }
+        Update: {
+          id?: string
+          coupon_id?: string
+          user_id?: string
+          subscription_id?: string | null
+          used_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coupon_usage_coupon_id_fkey"
+            columns: ["coupon_id"]
+            referencedRelation: "coupons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "coupon_usage_user_id_fkey"
+            columns: ["user_id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
     }
     Views: {
       [_ in never]: never

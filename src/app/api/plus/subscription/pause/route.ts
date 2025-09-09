@@ -26,8 +26,7 @@ export async function POST(request: NextRequest) {
           type,
           status,
           stripe_subscription_id,
-          current_period_end,
-          pause_collection
+          current_period_end
         )
       `)
       .eq('email', session.user.email)
@@ -59,10 +58,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if subscription is already paused
-    if (subscription.pause_collection) {
+    // Check if subscription is already paused (using status instead)
+    if (subscription.status !== 'ACTIVE') {
       return NextResponse.json(
-        { error: 'Assinatura já está pausada' },
+        { error: 'Apenas assinaturas ativas podem ser pausadas' },
         { status: 400 }
       );
     }
@@ -82,7 +81,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Pause subscription in Stripe
-    if (subscription.stripe_subscription_id) {
+    if (subscription.stripe_subscription_id && stripe) {
       try {
         await stripe.subscriptions.update(subscription.stripe_subscription_id, {
           pause_collection: {
@@ -103,13 +102,7 @@ export async function POST(request: NextRequest) {
     const { data: updatedSubscription, error } = await supabaseAdmin
       .from('user_subscriptions')
       .update({
-        status: 'PAUSED',
-        pause_collection: {
-          behavior: 'void',
-          resumes_at: pauseEndDate.toISOString(),
-          paused_at: new Date().toISOString(),
-          reason: reason || 'User requested pause'
-        },
+        status: 'INACTIVE',
         updated_at: new Date().toISOString()
       })
       .eq('id', subscription.id)
@@ -122,29 +115,35 @@ export async function POST(request: NextRequest) {
 
     // Log the pause action
     await supabaseAdmin
-      .from('subscription_events')
+      .from('user_activities')
       .insert({
         user_id: user.id,
-        subscription_id: subscription.id,
-        event_type: 'PAUSED',
-        event_data: {
+        type: 'SEARCH', // Using closest available type
+        data: {
+          action: 'SUBSCRIPTION_PAUSED',
+          subscription_id: subscription.id,
           duration: pauseDuration,
           reason: reason || 'User requested pause',
           resumes_at: pauseEndDate.toISOString()
         },
-        created_at: new Date().toISOString()
+        timestamp: new Date().toISOString()
       });
 
     // Log API usage
     await supabaseAdmin
-      .from('api_usage')
+      .from('user_activities')
       .insert({
         user_id: user.id,
-        endpoint: '/api/plus/subscription/pause',
-        method: 'POST',
-        query_params: JSON.stringify({ pauseDuration, reason }),
-        response_size: JSON.stringify(updatedSubscription).length,
-        created_at: new Date().toISOString()
+        type: 'SEARCH', // Using closest available type
+        data: {
+          action: 'API_USAGE',
+          endpoint: '/api/plus/subscription/pause',
+          method: 'POST',
+          pauseDuration,
+          reason,
+          response_size: JSON.stringify(updatedSubscription).length
+        },
+        timestamp: new Date().toISOString()
       });
 
     return NextResponse.json({
@@ -196,8 +195,7 @@ export async function PUT(request: NextRequest) {
           id,
           type,
           status,
-          stripe_subscription_id,
-          pause_collection
+          stripe_subscription_id
         )
       `)
       .eq('email', session.user.email)
@@ -213,7 +211,7 @@ export async function PUT(request: NextRequest) {
 
     const subscription = user.user_subscriptions[0];
 
-    if (subscription.status !== 'PAUSED') {
+    if (subscription.status !== 'INACTIVE') {
       return NextResponse.json(
         { error: 'Assinatura não está pausada' },
         { status: 400 }
@@ -221,7 +219,7 @@ export async function PUT(request: NextRequest) {
     }
 
     // Resume subscription in Stripe
-    if (subscription.stripe_subscription_id) {
+    if (subscription.stripe_subscription_id && stripe) {
       try {
         await stripe.subscriptions.update(subscription.stripe_subscription_id, {
           pause_collection: null
@@ -240,7 +238,7 @@ export async function PUT(request: NextRequest) {
       .from('user_subscriptions')
       .update({
         status: 'ACTIVE',
-        pause_collection: null,
+        // pause_collection removed - not in database schema: null,
         updated_at: new Date().toISOString()
       })
       .eq('id', subscription.id)
@@ -253,28 +251,32 @@ export async function PUT(request: NextRequest) {
 
     // Log the resume action
     await supabaseAdmin
-      .from('subscription_events')
+      .from('user_activities')
       .insert({
         user_id: user.id,
-        subscription_id: subscription.id,
-        event_type: 'RESUMED',
-        event_data: {
+        type: 'SEARCH', // Using closest available type
+        data: {
+          action: 'SUBSCRIPTION_RESUMED',
+          subscription_id: subscription.id,
           resumed_at: new Date().toISOString(),
           resumed_early: true
         },
-        created_at: new Date().toISOString()
+        timestamp: new Date().toISOString()
       });
 
     // Log API usage
     await supabaseAdmin
-      .from('api_usage')
+      .from('user_activities')
       .insert({
         user_id: user.id,
-        endpoint: '/api/plus/subscription/pause',
-        method: 'PUT',
-        query_params: JSON.stringify({}),
-        response_size: JSON.stringify(updatedSubscription).length,
-        created_at: new Date().toISOString()
+        type: 'SEARCH', // Using closest available type
+        data: {
+          action: 'API_USAGE',
+          endpoint: '/api/plus/subscription/pause',
+          method: 'PUT',
+          response_size: JSON.stringify(updatedSubscription).length
+        },
+        timestamp: new Date().toISOString()
       });
 
     return NextResponse.json({
@@ -324,7 +326,6 @@ export async function GET(request: NextRequest) {
           id,
           type,
           status,
-          pause_collection,
           created_at
         )
       `)
@@ -348,7 +349,7 @@ export async function GET(request: NextRequest) {
 
     // Get pause history
     const { data: pauseHistory } = await supabaseAdmin
-      .from('subscription_events')
+      .from('user_activities')
       .select('*')
       .eq('user_id', user.id)
       .eq('subscription_id', subscription.id)
@@ -359,7 +360,7 @@ export async function GET(request: NextRequest) {
     const pauseOptions = {
       canPause,
       currentStatus: subscription.status,
-      pauseCollection: subscription.pause_collection,
+      pauseCollection: null, // pause_collection removed - not in database schema
       availableDurations: [
         {
           id: '1_month',

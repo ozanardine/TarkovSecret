@@ -50,7 +50,7 @@ interface ExportOptions {
 export default function ExportPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const { hasPlus, loading: subscriptionLoading } = useSubscription();
+  const { isPlus: hasPlus, loading: subscriptionLoading } = useSubscription();
   const [loading, setLoading] = useState(true);
   const [exporting, setExporting] = useState(false);
   const [exportOptions, setExportOptions] = useState<ExportOptions | null>(null);

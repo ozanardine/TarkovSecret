@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { supabaseAdmin } from '@/lib/supabase';
-import { tarkovApi } from '@/lib/tarkov-api';
+import { tarkovApi, tarkovDevApi } from '@/lib/tarkov-api';
 
 // Advanced price alerts management for PLUS users
 export async function GET(request: NextRequest) {
@@ -46,17 +46,16 @@ export async function GET(request: NextRequest) {
     let query = supabaseAdmin
       .from('price_alerts')
       .select(`
-        *,
+        id,
+        user_id,
         item_id,
         target_price,
-        current_price,
-        alert_type,
-        conditions,
+        condition,
         is_active,
+        triggered,
+        triggered_at,
         created_at,
-        updated_at,
-        last_triggered,
-        trigger_count
+        updated_at
       `)
       .eq('user_id', user.id)
       .order('created_at', { ascending: false })
@@ -80,12 +79,12 @@ export async function GET(request: NextRequest) {
     const enrichedAlerts = await Promise.all(
       (alerts || []).map(async (alert) => {
         try {
-          const itemData = await tarkovApi.getItemById(alert.item_id);
+          const itemData = await tarkovDevApi.getItemById(alert.item_id);
           return {
             ...alert,
             item: itemData,
-            priceChange: alert.current_price ? 
-              ((itemData?.avg_24h_price || 0) - alert.current_price) / alert.current_price * 100 : 0
+            priceChange: itemData?.avg24hPrice ? 
+              ((itemData.avg24hPrice - alert.target_price) / alert.target_price * 100) : 0
           };
         } catch {
           return alert;
@@ -95,14 +94,18 @@ export async function GET(request: NextRequest) {
 
     // Log API usage
     await supabaseAdmin
-      .from('api_usage')
+      .from('user_activities')
       .insert({
         user_id: user.id,
-        endpoint: '/api/plus/price-alerts',
-        method: 'GET',
-        query_params: JSON.stringify({ status, itemId, limit }),
-        response_size: JSON.stringify(enrichedAlerts).length,
-        created_at: new Date().toISOString()
+        type: 'SEARCH',
+        data: {
+          action: 'PRICE_ALERTS_GET',
+          status,
+          itemId,
+          limit,
+          response_size: JSON.stringify(enrichedAlerts).length
+        },
+        timestamp: new Date().toISOString()
       });
 
     return NextResponse.json({
@@ -111,7 +114,7 @@ export async function GET(request: NextRequest) {
       meta: {
         total: enrichedAlerts.length,
         active: enrichedAlerts.filter(a => a.is_active).length,
-        triggered: enrichedAlerts.filter(a => a.last_triggered).length
+        triggered: enrichedAlerts.filter(a => a.triggered).length
       }
     });
     
@@ -189,7 +192,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get current item price
-    const itemData = await tarkovApi.getItemById(itemId);
+    const itemData = await tarkovDevApi.getItemById(itemId);
     if (!itemData) {
       return NextResponse.json(
         { error: 'Item não encontrado' },
@@ -218,15 +221,9 @@ export async function POST(request: NextRequest) {
       .insert({
         user_id: user.id,
         item_id: itemId,
-        alert_type: alertType,
         target_price: targetPrice,
-        current_price: itemData.avg_24h_price || 0,
-        conditions: conditions || {},
-        notification_methods: notificationMethods || ['email'],
-        is_active: true,
-        expires_at: expiresAt,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        condition: alertType,
+        is_active: true
       })
       .select()
       .single();
@@ -237,14 +234,18 @@ export async function POST(request: NextRequest) {
 
     // Log API usage
     await supabaseAdmin
-      .from('api_usage')
+      .from('user_activities')
       .insert({
         user_id: user.id,
-        endpoint: '/api/plus/price-alerts',
-        method: 'POST',
-        query_params: JSON.stringify({ itemId, alertType, targetPrice }),
-        response_size: JSON.stringify(newAlert).length,
-        created_at: new Date().toISOString()
+        type: 'PRICE_ALERT',
+        data: {
+          action: 'CREATE_ALERT',
+          itemId,
+          alertType,
+          targetPrice,
+          response_size: JSON.stringify(newAlert).length
+        },
+        timestamp: new Date().toISOString()
       });
 
     return NextResponse.json({
@@ -360,14 +361,18 @@ export async function PUT(request: NextRequest) {
 
     // Log API usage
     await supabaseAdmin
-      .from('api_usage')
+      .from('user_activities')
       .insert({
         user_id: user.id,
-        endpoint: '/api/plus/price-alerts',
-        method: 'PUT',
-        query_params: JSON.stringify({ alertId, targetPrice, isActive }),
-        response_size: JSON.stringify(updatedAlert).length,
-        created_at: new Date().toISOString()
+        type: 'PRICE_ALERT',
+        data: {
+          action: 'UPDATE_ALERT',
+          alertId,
+          targetPrice,
+          isActive,
+          response_size: JSON.stringify(updatedAlert).length
+        },
+        timestamp: new Date().toISOString()
       });
 
     return NextResponse.json({
@@ -456,14 +461,16 @@ export async function DELETE(request: NextRequest) {
 
     // Log API usage
     await supabaseAdmin
-      .from('api_usage')
+      .from('user_activities')
       .insert({
         user_id: user.id,
-        endpoint: '/api/plus/price-alerts',
-        method: 'DELETE',
-        query_params: JSON.stringify({ alertId }),
-        response_size: JSON.stringify(deletedAlert).length,
-        created_at: new Date().toISOString()
+        type: 'PRICE_ALERT',
+        data: {
+          action: 'DELETE_ALERT',
+          alertId,
+          response_size: JSON.stringify(deletedAlert).length
+        },
+        timestamp: new Date().toISOString()
       });
 
     return NextResponse.json({

@@ -16,6 +16,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (!stripe) {
+      return NextResponse.json(
+        { error: 'Stripe not configured' },
+        { status: 500 }
+      );
+    }
+
     let event;
 
     try {
@@ -85,6 +92,11 @@ async function handleCheckoutCompleted(session: any) {
       return;
     }
 
+    if (!stripe) {
+      console.error('Stripe not configured');
+      return;
+    }
+
     // Get customer from Stripe
     const customer = await stripe.customers.retrieve(customerId);
     const subscription = await stripe.subscriptions.retrieve(subscriptionId);
@@ -98,7 +110,7 @@ async function handleCheckoutCompleted(session: any) {
     const { data: user } = await supabaseAdmin
       .from('users')
       .select('*')
-      .eq('email', customer.email)
+      .eq('email', customer.email!)
       .single();
 
     if (!user) {
@@ -111,14 +123,14 @@ async function handleCheckoutCompleted(session: any) {
       user_id: user.id,
       type: stripeHelpers.getSubscriptionType(subscription.items.data[0].price.id),
       status: stripeHelpers.getSubscriptionStatus(subscription.status),
-      start_date: new Date(subscription.current_period_start * 1000).toISOString(),
-      end_date: subscription.current_period_end ? new Date(subscription.current_period_end * 1000).toISOString() : null,
+      start_date: new Date(subscription.created * 1000).toISOString(),
+      end_date: null, // Stripe subscription doesn't have end_date
       auto_renew: !subscription.cancel_at_period_end,
       stripe_customer_id: customerId,
       stripe_subscription_id: subscriptionId,
       stripe_price_id: subscription.items.data[0].price.id,
-      current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
-      current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+      current_period_start: new Date(subscription.created * 1000).toISOString(),
+      current_period_end: null, // Will be set when subscription is active
       trial_start: subscription.trial_start ? new Date(subscription.trial_start * 1000).toISOString() : null,
       trial_end: subscription.trial_end ? new Date(subscription.trial_end * 1000).toISOString() : null,
       cancel_at_period_end: subscription.cancel_at_period_end,
@@ -155,6 +167,11 @@ async function handleCheckoutCompleted(session: any) {
 // Handle subscription created
 async function handleSubscriptionCreated(subscription: any) {
   try {
+    if (!stripe) {
+      console.error('Stripe not configured');
+      return;
+    }
+
     const customerId = subscription.customer;
     
     // Get customer from Stripe
@@ -169,7 +186,7 @@ async function handleSubscriptionCreated(subscription: any) {
     const { data: user } = await supabaseAdmin
       .from('users')
       .select('*')
-      .eq('email', customer.email)
+      .eq('email', customer.email!)
       .single();
 
     if (!user) {

@@ -290,6 +290,77 @@ export const db = {
     if (error) throw error;
     return data;
   },
+
+  // Coupons
+  async getCoupons(userId?: string, includeExpired = false) {
+    let query = supabase
+      .from('coupons')
+      .select(`
+        *,
+        coupon_usage(
+          id,
+          used_at,
+          subscription_id
+        )
+      `)
+      .eq('is_active', true)
+      .order('created_at', { ascending: false });
+
+    if (userId) {
+      query = query.or(`user_id.eq.${userId},user_id.is.null`);
+    }
+
+    if (!includeExpired) {
+      query = query.or('expires_at.is.null,expires_at.gt.' + new Date().toISOString());
+    }
+
+    const { data, error } = await query;
+    
+    if (error) throw error;
+    return data;
+  },
+
+  async getCouponByCode(code: string) {
+    const { data, error } = await supabase
+      .from('coupons')
+      .select(`
+        *,
+        coupon_usage(
+          id,
+          user_id,
+          used_at
+        )
+      `)
+      .eq('code', code.toUpperCase())
+      .eq('is_active', true)
+      .single();
+    
+    if (error && error.code !== 'PGRST116') throw error;
+    return data;
+  },
+
+  async createCouponUsage(usageData: Database['public']['Tables']['coupon_usage']['Insert']) {
+    const { data, error } = await supabase
+      .from('coupon_usage')
+      .insert(usageData)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
+  },
+
+  async updateCoupon(id: string, updates: Database['public']['Tables']['coupons']['Update']) {
+    const { data, error } = await supabase
+      .from('coupons')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
+  },
 };
 
 // Real-time subscriptions

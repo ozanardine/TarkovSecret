@@ -57,7 +57,7 @@ interface CouponsData {
 export default function CouponsPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const { hasPlus, loading: subscriptionLoading } = useSubscription();
+  const { isPlus: hasPlus, loading: subscriptionLoading } = useSubscription();
   const [loading, setLoading] = useState(true);
   const [couponsData, setCouponsData] = useState<CouponsData | null>(null);
   const [activeTab, setActiveTab] = useState<'available' | 'used' | 'all'>('available');

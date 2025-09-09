@@ -108,14 +108,18 @@ export async function POST(request: NextRequest) {
 
     // Log export activity
     await supabaseAdmin
-      .from('api_usage')
+      .from('user_activities')
       .insert({
         user_id: user.id,
-        endpoint: '/api/plus/export',
-        method: 'POST',
-        query_params: JSON.stringify({ exportType, format, filters }),
-        response_size: responseData.length,
-        created_at: new Date().toISOString()
+        type: 'SEARCH', // Using SEARCH as closest available type
+        data: {
+          action: 'EXPORT',
+          exportType,
+          format,
+          filters,
+          response_size: responseData.length
+        },
+        timestamp: new Date().toISOString()
       });
 
     return new NextResponse(responseData, {
@@ -249,51 +253,52 @@ export async function GET(request: NextRequest) {
 
 // Export functions
 async function exportWatchlist(userId: string, filters: any) {
-  const { data: watchlist } = await supabaseAdmin
-    .from('user_watchlist')
+  const { data: watchlists } = await supabaseAdmin
+    .from('watchlists')
     .select(`
       *,
-      item_id,
-      added_at,
-      price_alert_enabled,
-      target_price
+      items:watchlist_items(
+        *,
+        item_data
+      )
     `)
     .eq('user_id', userId)
-    .order('added_at', { ascending: false });
+    .order('created_at', { ascending: false });
 
-  return watchlist || [];
+  return watchlists || [];
 }
 
 async function exportSearchHistory(userId: string, filters: any) {
   const startDate = filters?.startDate || new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString();
   const endDate = filters?.endDate || new Date().toISOString();
 
-  const { data: searches } = await supabaseAdmin
-    .from('user_searches')
+  const { data: activities } = await supabaseAdmin
+    .from('user_activities')
     .select('*')
     .eq('user_id', userId)
-    .gte('created_at', startDate)
-    .lte('created_at', endDate)
-    .order('created_at', { ascending: false })
+    .eq('type', 'SEARCH')
+    .gte('timestamp', startDate)
+    .lte('timestamp', endDate)
+    .order('timestamp', { ascending: false })
     .limit(filters?.limit || 1000);
 
-  return searches || [];
+  return activities || [];
 }
 
 async function exportApiUsage(userId: string, filters: any) {
   const startDate = filters?.startDate || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
   const endDate = filters?.endDate || new Date().toISOString();
 
-  const { data: apiUsage } = await supabaseAdmin
-    .from('api_usage')
+  const { data: activities } = await supabaseAdmin
+    .from('user_activities')
     .select('*')
     .eq('user_id', userId)
-    .gte('created_at', startDate)
-    .lte('created_at', endDate)
-    .order('created_at', { ascending: false })
+    .gte('timestamp', startDate)
+    .lte('timestamp', endDate)
+    .order('timestamp', { ascending: false })
     .limit(filters?.limit || 1000);
 
-  return apiUsage || [];
+  return activities || [];
 }
 
 async function exportPriceAlerts(userId: string, filters: any) {
@@ -310,12 +315,12 @@ async function exportAnalytics(userId: string, filters: any) {
   const period = filters?.period || '30d';
   
   // This would call the analytics functions from the analytics API
-  // For now, return a summary
-  return {
+  // For now, return a summary as an array
+  return [{
     exportedAt: new Date().toISOString(),
     period,
     note: 'Analytics export functionality - detailed implementation would include all analytics data'
-  };
+  }];
 }
 
 // Helper function to convert data to CSV
