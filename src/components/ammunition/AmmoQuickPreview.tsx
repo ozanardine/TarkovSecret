@@ -76,7 +76,7 @@ export function AmmoQuickPreview({
           <div className="flex items-start justify-between">
             <div className="flex items-start gap-4">
               <ClickableItemImage
-                src={ammo.item.image || ammo.item.icon}
+                src={ammo.item.image || ammo.item.icon || ''}
                 alt={ammo.item.name}
                 size={64}
                 className="rounded-lg border border-tarkov-secondary/30"

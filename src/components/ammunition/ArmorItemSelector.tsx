@@ -136,7 +136,7 @@ export function ArmorItemSelector({ selectedItems, onItemSelect, onItemRemove, c
                 className="flex items-center gap-1 bg-tarkov-dark/50 rounded px-2 py-1"
               >
                 <ClickableItemImage
-                  src={item.item.image || item.item.iconLink}
+                  src={item.item.image || item.item.iconLink || ''}
                   alt={item.item.name}
                   size={16}
                 />
@@ -216,7 +216,7 @@ export function ArmorItemSelector({ selectedItems, onItemSelect, onItemRemove, c
                 >
                   <div className="flex items-start gap-2">
                     <ClickableItemImage
-                      src={item.item.image || item.item.iconLink}
+                      src={item.item.image || item.item.iconLink || ''}
                       alt={item.item.name}
                       size={32}
                       className="flex-shrink-0"

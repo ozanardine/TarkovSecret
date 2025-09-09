@@ -209,7 +209,7 @@ export function AmmoTable({
                   <td className="px-3 py-3">
                     <div className="flex items-center gap-3">
                       <ClickableItemImage
-                        src={ammo.item.image || ammo.item.icon}
+                        src={ammo.item.image || ammo.item.icon || ''}
                         alt={ammo.item.name}
                         size={32}
                         className="flex-shrink-0"

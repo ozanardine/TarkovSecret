@@ -161,7 +161,7 @@ export function ItemSpecs({ item }: ItemSpecsProps) {
                 <div>
                   <p className="text-sm text-gray-400">Raridade</p>
                   <Badge 
-                    variant="outline" 
+                    variant="secondary" 
                     className={`${
                       item.rarity === 'legendary' ? 'bg-yellow-500/20 border-yellow-500/50 text-yellow-400' :
                       item.rarity === 'epic' ? 'bg-purple-500/20 border-purple-500/50 text-purple-400' :

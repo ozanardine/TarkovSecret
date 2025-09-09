@@ -291,7 +291,7 @@ export default function ItemQuests({ itemId }: ItemQuestsProps) {
                                                             <div className="flex items-center gap-4 text-sm text-gray-400">
                                <span className="font-medium text-white">{quest.trader.name}</span>
                                <span>•</span>
-                               <span>Nível {toRomanNumeral(quest.minPlayerLevel)}</span>
+                                <span>Nível {toRomanNumeral(quest.minPlayerLevel || 1)}</span>
                                {quest.map && (
                                  <>
                                    <span>•</span>
@@ -308,7 +308,7 @@ export default function ItemQuests({ itemId }: ItemQuestsProps) {
                           {usageTypes.map((type) => (
                             <Badge 
                               key={type} 
-                              variant="outline" 
+                              variant="secondary" 
                               className={`${
                                 type === 'objetivo obrigatório' ? 'bg-red-500/20 border-red-500/50 text-red-400' :
                                 type === 'recompensa inicial' ? 'bg-green-500/20 border-green-500/50 text-green-400' :

@@ -76,23 +76,7 @@ export default function SubscriptionNotifications({ className = '' }: Notificati
     });
   }
 
-  // Subscription paused notification
-  if (subscription?.status === 'PAUSED' && !dismissed.includes('subscription-paused')) {
-    const pauseData = subscription.pause_collection;
-    const resumeDate = pauseData?.resumes_at ? new Date(pauseData.resumes_at).toLocaleDateString('pt-BR') : '';
-    
-    notifications.push({
-      id: 'subscription-paused',
-      type: 'warning' as const,
-      icon: ClockIcon,
-      title: 'Assinatura Pausada',
-      message: `Sua assinatura PLUS está pausada${resumeDate ? ` e será reativada em ${resumeDate}` : ''}. Você pode reativá-la a qualquer momento.`,
-      action: {
-        label: 'Gerenciar Pausa',
-        onClick: () => window.location.href = '/subscription/pause'
-      }
-    });
-  }
+  // Subscription paused notification - removed as pause_collection doesn't exist
 
   // Subscription ending soon (for active subscriptions)
   if (subscription?.current_period_end && !isTrial && !isPastDue && !dismissed.includes('subscription-ending')) {

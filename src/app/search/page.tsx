@@ -21,7 +21,7 @@ import {
   FunnelIcon,
   ArrowUpTrayIcon
 } from '@heroicons/react/24/outline';
-import { Item } from '@/types/tarkov';
+import { TarkovItem } from '@/types/tarkov';
 
 interface SearchFilters {
   category: string;
@@ -106,19 +106,36 @@ export default function SearchPage() {
     setShowImageSelector(false);
     
     // Converter resultado para formato de busca
-    if (result.matches.length > 0) {
-      const bestMatch = result.matches[0];
-      const searchResult: ImageSearchResult = {
-         items: [bestMatch.item],
-         confidence: bestMatch.confidence,
-         processingTime: result.processingTime,
-         metadata: {
-           selectedArea: result.selectedArea,
-           manualSelection: true
-         }
-       };
-      setImageSearchResults([searchResult]);
-    }
+    // Converter TarkovItemReference para TarkovItem
+    const tarkovItem: TarkovItem = {
+      id: result.item.id,
+      name: result.item.name,
+      shortName: result.item.name,
+      weight: 0,
+      basePrice: 0,
+      slots: 1,
+      width: 1,
+      height: 1,
+      types: [result.item.category],
+      rarity: result.item.rarity,
+      sellFor: [],
+      buyFor: [],
+      iconLink: result.item.iconUrl,
+      imageLink: result.item.iconUrl
+    };
+    
+    const searchResult: ImageSearchResult = {
+       item: tarkovItem,
+       confidence: result.confidence,
+       boundingBox: result.boundingBox,
+       processingTime: 0, // MatchResult não tem processingTime
+       metadata: {
+         hasMultipleItems: false,
+         backgroundType: 'unknown',
+         imageQuality: 1.0
+       }
+     };
+    setImageSearchResults([searchResult]);
   };
 
   const handleManualSelectionCancel = () => {
@@ -196,7 +213,7 @@ export default function SearchPage() {
                 />
                 <div className="flex gap-2">
                   <Button
-                    variant="outline"
+                    variant="secondary"
                     size="sm"
                     onClick={() => setShowFilters(!showFilters)}
                     className="flex items-center gap-2"
@@ -205,7 +222,7 @@ export default function SearchPage() {
                     Filtros
                   </Button>
                   <Button
-                    variant="outline"
+                    variant="secondary"
                     size="sm"
                     onClick={clearAll}
                     className="flex items-center gap-2"
@@ -294,7 +311,7 @@ export default function SearchPage() {
                   </Button>
                   
                   <Button
-                    variant="outline"
+                    variant="secondary"
                     onClick={() => {
                       if (uploadedImages.length > 0) {
                         setSelectedImageForManualSelection(uploadedImages[0]);
@@ -444,7 +461,7 @@ export default function SearchPage() {
                         
                         <div className="space-y-2">
                           <div className="flex justify-between items-center">
-                            <Badge variant="outline" className="text-xs">
+                            <Badge variant="secondary" className="text-xs">
                               {item.category}
                             </Badge>
                             <span className="text-tarkov-accent font-semibold">
@@ -453,7 +470,7 @@ export default function SearchPage() {
                           </div>
                           
                           <Button
-                            variant="outline"
+                            variant="secondary"
                             size="sm"
                             className="w-full"
                             onClick={() => router.push(`/item/${item.id}`)}
@@ -507,7 +524,7 @@ export default function SearchPage() {
                   <PhotoIcon className="w-5 h-5" />
                   Resultados da Busca por Imagem
                   {manualSelectionResult && (
-                    <Badge variant="outline" className="ml-2">
+                    <Badge variant="secondary" className="ml-2">
                       Seleção Manual
                     </Badge>
                   )}
@@ -522,8 +539,8 @@ export default function SearchPage() {
                           <span className="text-sm text-tarkov-text-secondary">
                             Confiança: {(result.confidence * 100).toFixed(1)}%
                           </span>
-                          {result.metadata?.manualSelection && (
-                            <Badge variant="outline" size="sm">
+                          {result.metadata?.hasMultipleItems === false && (
+                            <Badge variant="secondary" size="sm">
                               Área Selecionada
                             </Badge>
                           )}
@@ -533,7 +550,7 @@ export default function SearchPage() {
                         </span>
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                        {result.items.map((item) => (
+                        {[result.item].map((item) => (
                           <Card key={item.id} className="bg-tarkov-surface border-tarkov-border hover:border-tarkov-accent transition-colors">
                             <CardContent className="p-4">
                               <div className="flex items-center gap-3 mb-3">
@@ -554,8 +571,8 @@ export default function SearchPage() {
                               
                               <div className="space-y-2">
                                 <div className="flex justify-between items-center">
-                                  <Badge variant="outline" className="text-xs">
-                                    {item.category}
+                                  <Badge variant="secondary" className="text-xs">
+                                    {item.types[0] || 'Item'}
                                   </Badge>
                                   <span className="text-tarkov-accent font-semibold">
                                     ₽{item.basePrice?.toLocaleString()}
@@ -563,7 +580,7 @@ export default function SearchPage() {
                                 </div>
                                 
                                 <Button
-                                  variant="outline"
+                                  variant="secondary"
                                   size="sm"
                                   className="w-full"
                                   onClick={() => router.push(`/item/${item.id}`)}

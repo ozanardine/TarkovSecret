@@ -41,7 +41,7 @@ export default function ItemHideout({ itemId }: ItemHideoutProps) {
       try {
         setLoading(true);
         const usageData = await tarkovApi.getHideoutUsageForItem(itemId);
-        setHideoutUsage(usageData);
+        setHideoutUsage(usageData as HideoutUsage[]);
       } catch (err) {
         setError('Erro ao carregar informações do hideout');
         console.error('Error fetching hideout usage:', err);
@@ -144,11 +144,11 @@ export default function ItemHideout({ itemId }: ItemHideoutProps) {
                   )}
                 </div>
                 <div className="flex flex-wrap gap-1">
-                  <Badge variant="outline">
+                  <Badge variant="secondary">
                     {usage.type === 'construction' ? 'Construção' : 'Craft'}
                   </Badge>
                   {usage.usageType && (
-                    <Badge variant={usage.usageType === 'ingredient' ? 'destructive' : 'default'}>
+                    <Badge variant={usage.usageType === 'ingredient' ? 'danger' : 'default'}>
                       {usage.usageType === 'ingredient' ? 'Ingrediente' : 'Produto'}
                     </Badge>
                   )}

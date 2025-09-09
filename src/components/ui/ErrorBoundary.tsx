@@ -60,7 +60,7 @@ export const ErrorDisplay: React.FC<ErrorDisplayProps> = ({
       {onRetry && (
         <Button
           variant="outline"
-          size={variant === 'minimal' ? 'sm' : 'default'}
+          size={variant === 'minimal' ? 'sm' : 'md'}
           onClick={onRetry}
           className="flex items-center gap-2"
         >

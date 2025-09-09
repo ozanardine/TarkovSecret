@@ -35,7 +35,7 @@ interface ItemRequirementsDropdownProps {
   requiredItems: RequiredItem[];
   rewardItems?: RewardItem[];
   currentItemId: string;
-  badgeVariant?: 'default' | 'destructive' | 'outline' | 'secondary';
+  badgeVariant?: 'default' | 'danger' | 'secondary' | 'success' | 'warning' | 'info' | 'primary';
   badgeColor?: string;
   icon?: React.ReactNode;
 }
@@ -46,7 +46,7 @@ export function ItemRequirementsDropdown({
   requiredItems,
   rewardItems,
   currentItemId,
-  badgeVariant = 'outline',
+  badgeVariant = 'secondary',
   badgeColor,
   icon
 }: ItemRequirementsDropdownProps) {
@@ -155,14 +155,14 @@ export function ItemRequirementsDropdown({
                     <div className="flex items-center gap-2 flex-shrink-0">
                       {req.foundInRaid && (
                         <Badge 
-                          variant="outline" 
+                          variant="secondary" 
                           className="text-orange-400 bg-orange-500/20 border-orange-400/30 text-xs"
                         >
                           FiR
                         </Badge>
                       )}
                       <Badge 
-                        variant="outline" 
+                        variant="secondary" 
                         className={cn(
                           "text-xs font-bold",
                           isCurrentItem 
@@ -225,7 +225,7 @@ export function ItemRequirementsDropdown({
                       {/* Quantity Badge */}
                       <div className="flex items-center gap-2 flex-shrink-0">
                         <Badge 
-                          variant="outline" 
+                          variant="secondary" 
                           className="text-xs font-bold text-green-400 bg-green-500/20 border-green-400/40"
                         >
                           {quantity}x

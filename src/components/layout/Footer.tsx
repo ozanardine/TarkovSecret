@@ -77,7 +77,7 @@ const Footer: React.FC<FooterProps> = ({ className }) => {
       <ul className="space-y-3">
         {links.map((link) => (
           <li key={link.href}>
-            {link.external ? (
+            {(link as any).external ? (
               <a
                 href={link.href}
                 target="_blank"

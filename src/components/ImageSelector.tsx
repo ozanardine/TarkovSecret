@@ -180,7 +180,9 @@ export const ImageSelector: React.FC<ImageSelectorProps> = ({
         originalSelection
       );
       
-      onSelectionComplete(result);
+      if (result) {
+        onSelectionComplete(result);
+      }
     } catch (error) {
       console.error('Erro ao identificar item selecionado:', error);
       // Se não encontrou nenhum item, não chama onSelectionComplete

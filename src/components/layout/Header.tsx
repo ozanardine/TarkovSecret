@@ -146,7 +146,7 @@ const Header: React.FC<HeaderProps> = ({ onMenuToggle, isMenuOpen }) => {
                     <span className="hidden sm:block text-sm font-medium">
                       {user?.name?.split(' ')[0] || 'Usuário'}
                     </span>
-                    {hasPlus && (
+                    {isPlus && (
                       <SubscriptionBadge type="PLUS" size="sm" />
                     )}
                   </Button>

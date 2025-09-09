@@ -181,7 +181,7 @@ export default function PauseSubscriptionPage() {
 
   const isPlus = subscriptionData?.isPlus;
   const subscription = subscriptionData?.subscription;
-  const isPaused = subscription?.status === 'PAUSED';
+  const isPaused = subscription?.status === 'INACTIVE';
 
   if (!isPlus) {
     return (

@@ -193,7 +193,7 @@ export function PriceHistory({ item }: PriceHistoryProps) {
             ].map(({ value, label }) => (
               <Button
                 key={value}
-                variant={timeRange === value ? 'default' : 'outline'}
+                variant={timeRange === value ? 'primary' : 'secondary'}
                 size="sm"
                 onClick={() => setTimeRange(value as any)}
                 className={timeRange === value 

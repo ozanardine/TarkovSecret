@@ -46,12 +46,10 @@ const CreateAlertModal: React.FC<CreateAlertModalProps> = ({
   onSuccess,
   editingAlert
 }) => {
-  const { searchItems } = useTarkov();
+  const { searchItems, items: searchResults, loading: searchLoading } = useTarkov.useItemSearch();
   
   const [step, setStep] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState<any[]>([]);
-  const [searchLoading, setSearchLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   
   const [form, setForm] = useState<AlertForm>({
@@ -93,19 +91,10 @@ const CreateAlertModal: React.FC<CreateAlertModalProps> = ({
 
   const searchForItems = async (query: string) => {
     if (!query.trim()) {
-      setSearchResults([]);
       return;
     }
     
-    try {
-      setSearchLoading(true);
-      const results = await searchItems(query);
-      setSearchResults(results.slice(0, 10));
-    } catch (error) {
-      toast.error('Erro ao buscar itens');
-    } finally {
-      setSearchLoading(false);
-    }
+    searchItems({ query });
   };
 
   const selectItem = (item: any) => {
@@ -206,7 +195,8 @@ const CreateAlertModal: React.FC<CreateAlertModalProps> = ({
                 </h3>
                 <SearchInput
                   value={searchQuery}
-                  onChange={(value) => {
+                  onChange={(e) => {
+                    const value = e.target.value;
                     setSearchQuery(value);
                     searchForItems(value);
                   }}

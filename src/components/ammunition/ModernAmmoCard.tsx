@@ -118,11 +118,10 @@ export function ModernAmmoCard({
           {/* Imagem */}
           <div className="flex-shrink-0">
             <ClickableItemImage
-              src={ammo.item.image || ammo.item.icon}
+              src={ammo.item.image || ammo.item.icon || ''}
               alt={ammo.item.name}
               size={64}
               className="rounded-lg"
-              onError={() => setImageError(true)}
             />
           </div>
 
@@ -240,11 +239,10 @@ export function ModernAmmoCard({
       <div className="relative p-4 pb-2">
         <div className="flex items-start justify-between mb-3">
           <ClickableItemImage
-            src={ammo.item.image || ammo.item.icon}
+            src={ammo.item.image || ammo.item.icon || ''}
             alt={ammo.item.name}
             size={48}
             className="rounded-lg"
-            onError={() => setImageError(true)}
           />
           
           {showActions && (

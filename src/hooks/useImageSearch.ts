@@ -1,10 +1,10 @@
 import { useState, useCallback } from 'react';
-import { Item } from '@/types/tarkov';
+import { TarkovItem } from '@/types/tarkov';
 import { intelligentItemMatcher, MatchResult, MultiItemResult } from '@/lib/intelligent-item-matcher';
 import { tarkovReferenceDB } from '@/lib/tarkov-reference-database';
 
 export interface ImageSearchResult {
-  item: Item;
+  item: TarkovItem;
   confidence: number;
   boundingBox?: {
     x: number;

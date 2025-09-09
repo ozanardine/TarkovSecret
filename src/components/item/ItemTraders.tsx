@@ -165,7 +165,7 @@ export function ItemTraders({ item }: ItemTradersProps) {
                     <div>
                       <div className="flex items-center gap-2">
                         <span className="font-medium text-white">{offer.source}</span>
-                        <Badge variant="outline" className={getTraderColor(offer.source)}>
+                        <Badge variant="secondary" className={getTraderColor(offer.source)}>
                           {offer.source}
                         </Badge>
                       </div>
@@ -225,7 +225,7 @@ export function ItemTraders({ item }: ItemTradersProps) {
                     <div>
                       <div className="flex items-center gap-2">
                         <span className="font-medium text-white">{offer.source}</span>
-                        <Badge variant="outline" className={getTraderColor(offer.source)}>
+                        <Badge variant="secondary" className={getTraderColor(offer.source)}>
                           {offer.source}
                         </Badge>
                       </div>

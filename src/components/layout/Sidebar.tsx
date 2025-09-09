@@ -144,13 +144,13 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
     {
           label: 'Exportar Dados',
           href: '/export',
-          icon: Download,
+          icon: <Download className="w-5 h-5" />,
           plusOnly: true
         },
         {
           label: 'Cupons',
           href: '/coupons',
-          icon: Ticket,
+          icon: <Ticket className="w-5 h-5" />,
           plusOnly: true
         },
     {

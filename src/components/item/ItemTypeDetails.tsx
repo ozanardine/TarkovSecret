@@ -158,7 +158,7 @@ export function ItemTypeDetails({ item }: ItemTypeDetailsProps) {
           <span className="text-tarkov-text-secondary text-sm mb-2 block">Zonas Protegidas</span>
           <div className="flex flex-wrap gap-2">
             {['Tórax', 'Estômago', 'Braço Esquerdo', 'Braço Direito'].map(zone => (
-              <Badge key={zone} variant="outline" className="text-xs">
+              <Badge key={zone} variant="secondary" className="text-xs">
                 {zone}
               </Badge>
             ))}
@@ -220,7 +220,7 @@ export function ItemTypeDetails({ item }: ItemTypeDetailsProps) {
           <span className="text-tarkov-text-secondary text-sm mb-2 block">Modos de Tiro</span>
           <div className="flex gap-2">
             {['Semi', 'Auto', 'Burst'].map(mode => (
-              <Badge key={mode} variant="outline" className="text-xs">
+              <Badge key={mode} variant="secondary" className="text-xs">
                 {mode}
               </Badge>
             ))}
@@ -270,7 +270,7 @@ export function ItemTypeDetails({ item }: ItemTypeDetailsProps) {
           <span className="text-tarkov-text-secondary text-sm mb-2 block">Partes do Corpo</span>
           <div className="flex flex-wrap gap-2">
             {['Cabeça', 'Tórax', 'Estômago', 'Braços', 'Pernas'].map(part => (
-              <Badge key={part} variant="outline" className="text-xs">
+              <Badge key={part} variant="secondary" className="text-xs">
                 {part}
               </Badge>
             ))}
@@ -320,7 +320,7 @@ export function ItemTypeDetails({ item }: ItemTypeDetailsProps) {
           <span className="text-tarkov-text-secondary text-sm mb-2 block">Itens Aceitos</span>
           <div className="flex flex-wrap gap-2">
             {['Munição', 'Mods', 'Médicos', 'Chaves', 'Todos'].map(type => (
-              <Badge key={type} variant="outline" className="text-xs">
+              <Badge key={type} variant="secondary" className="text-xs">
                 {type}
               </Badge>
             ))}
@@ -370,7 +370,7 @@ export function ItemTypeDetails({ item }: ItemTypeDetailsProps) {
           <span className="text-tarkov-text-secondary text-sm mb-2 block">Efeitos</span>
           <div className="flex flex-wrap gap-2">
             {['Nutrição', 'Hidratação', 'Estimulante', 'Calmante'].map(effect => (
-              <Badge key={effect} variant="outline" className="text-xs">
+              <Badge key={effect} variant="secondary" className="text-xs">
                 {effect}
               </Badge>
             ))}

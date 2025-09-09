@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/Button';
 import { Card, ItemCard } from '@/components/ui/Card';
 import { SearchInput } from '@/components/ui/Input';
 import { Badge } from '@/components/ui/Badge';
-import { Loading } from '@/components/ui/Loading';
+import { Loading, Skeleton } from '@/components/ui/Loading';
 import { useAuth } from '@/hooks/useAuth';
 import { useSubscription } from '@/hooks/useSubscription';
 import { useTarkov } from '@/hooks/useTarkov';
@@ -31,16 +31,15 @@ const HomePage: React.FC = () => {
   const { user } = useAuth();
   const { isPlus, isTrial, trialDaysRemaining, isTrialExpiringSoon } = useSubscription();
   const router = useRouter();
-  const [searchQuery, setSearchQuery] = React.useState('');
   
   const { 
-    data: popularItems, 
-    isLoading: popularLoading 
+    items: popularItems, 
+    loading: popularLoading 
   } = useTarkov.usePopularItems();
   
   const { 
-    data: trendingItems, 
-    isLoading: trendingLoading 
+    items: trendingItems, 
+    loading: trendingLoading 
   } = useTarkov.useTrendingItems();
 
   const handleSearch = (query: string) => {
@@ -140,11 +139,8 @@ const HomePage: React.FC = () => {
           <div className="max-w-2xl mx-auto mb-8">
             <SearchInput
               placeholder="Buscar itens, armas, equipamentos..."
-              value={searchQuery}
-              onChange={setSearchQuery}
               onSearch={handleSearch}
-              size="lg"
-              className="w-full"
+              className="w-full h-12 text-lg"
             />
           </div>
 
@@ -329,7 +325,7 @@ const HomePage: React.FC = () => {
                   </h3>
                   {feature.plus && (
                     <Badge 
-                      variant={isPlus ? "accent" : "secondary"} 
+                      variant={isPlus ? "primary" : "secondary"} 
                       size="sm"
                       className={isLocked ? 'opacity-60' : ''}
                     >
@@ -376,7 +372,7 @@ const HomePage: React.FC = () => {
         {popularLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {Array.from({ length: 8 }).map((_, i) => (
-              <Loading.Skeleton key={i} className="h-48" />
+              <Skeleton key={i} className="h-48" />
             ))}
           </div>
         ) : (
@@ -385,8 +381,7 @@ const HomePage: React.FC = () => {
               <ItemCard
                 key={item.id}
                 item={item}
-                onClick={() => router.push(`/items/${item.id}`)}
-                showFavorite
+                onItemClick={() => router.push(`/items/${item.id}`)}
               />
             ))}
           </div>
@@ -416,7 +411,7 @@ const HomePage: React.FC = () => {
         {trendingLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {Array.from({ length: 8 }).map((_, i) => (
-              <Loading.Skeleton key={i} className="h-48" />
+              <Skeleton key={i} className="h-48" />
             ))}
           </div>
         ) : (
@@ -425,9 +420,7 @@ const HomePage: React.FC = () => {
               <ItemCard
                 key={item.id}
                 item={item}
-                onClick={() => router.push(`/items/${item.id}`)}
-                showFavorite
-                showTrending
+                onItemClick={() => router.push(`/items/${item.id}`)}
               />
             ))}
           </div>

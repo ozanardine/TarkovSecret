@@ -125,7 +125,7 @@ export function ItemUsageOverview({ itemId }: ItemUsageOverviewProps) {
       <div className="flex items-center gap-3 mb-6">
         <CubeIcon className="w-5 h-5 text-blue-400" />
         <h3 className="text-lg font-semibold text-white">Onde é Usado</h3>
-        <Badge variant="outline" className="bg-blue-500/20 border-blue-400/30 text-blue-300">
+        <Badge variant="secondary" className="bg-blue-500/20 border-blue-400/30 text-blue-300">
           {stats.totalUsages} uso{stats.totalUsages !== 1 ? 's' : ''}
         </Badge>
       </div>
@@ -137,7 +137,7 @@ export function ItemUsageOverview({ itemId }: ItemUsageOverviewProps) {
             <div className="flex items-center gap-2">
               <MapIcon className="w-4 h-4 text-yellow-400" />
               <h4 className="font-medium text-white">Quest Recompensas</h4>
-              <Badge variant="outline" className="bg-yellow-500/20 border-yellow-400/30 text-yellow-300 text-xs">
+              <Badge variant="secondary" className="bg-yellow-500/20 border-yellow-400/30 text-yellow-300 text-xs">
                 {stats.questsAsReward}
               </Badge>
             </div>
@@ -169,7 +169,7 @@ export function ItemUsageOverview({ itemId }: ItemUsageOverviewProps) {
             <div className="flex items-center gap-2">
               <HomeIcon className="w-4 h-4 text-green-400" />
               <h4 className="font-medium text-white">Hideout Requisitos</h4>
-              <Badge variant="outline" className="bg-green-500/20 border-green-400/30 text-green-300 text-xs">
+              <Badge variant="secondary" className="bg-green-500/20 border-green-400/30 text-green-300 text-xs">
                 {stats.hideoutAsRequirement}
               </Badge>
             </div>
@@ -193,7 +193,7 @@ export function ItemUsageOverview({ itemId }: ItemUsageOverviewProps) {
             <div className="flex items-center gap-2">
               <HomeIcon className="w-4 h-4 text-blue-400" />
               <h4 className="font-medium text-white">Hideout Produção</h4>
-              <Badge variant="outline" className="bg-blue-500/20 border-blue-400/30 text-blue-300 text-xs">
+              <Badge variant="secondary" className="bg-blue-500/20 border-blue-400/30 text-blue-300 text-xs">
                 {stats.hideoutAsReward}
               </Badge>
             </div>
@@ -217,7 +217,7 @@ export function ItemUsageOverview({ itemId }: ItemUsageOverviewProps) {
             <div className="flex items-center gap-2">
               <GiftIcon className="w-4 h-4 text-purple-400" />
               <h4 className="font-medium text-white">Troca Requisitos</h4>
-              <Badge variant="outline" className="bg-purple-500/20 border-purple-400/30 text-purple-300 text-xs">
+              <Badge variant="secondary" className="bg-purple-500/20 border-purple-400/30 text-purple-300 text-xs">
                 {stats.bartersAsRequirement}
               </Badge>
             </div>
@@ -249,7 +249,7 @@ export function ItemUsageOverview({ itemId }: ItemUsageOverviewProps) {
             <div className="flex items-center gap-2">
               <GiftIcon className="w-4 h-4 text-orange-400" />
               <h4 className="font-medium text-white">Troca Recompensas</h4>
-              <Badge variant="outline" className="bg-orange-500/20 border-orange-400/30 text-orange-300 text-xs">
+              <Badge variant="secondary" className="bg-orange-500/20 border-orange-400/30 text-orange-300 text-xs">
                 {stats.bartersAsReward}
               </Badge>
             </div>

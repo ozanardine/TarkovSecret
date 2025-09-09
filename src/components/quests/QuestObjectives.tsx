@@ -110,7 +110,7 @@ export const QuestObjectives: React.FC<QuestObjectivesProps> = ({
               <div className="flex items-center space-x-3 p-3 bg-background-secondary/50 rounded-lg">
                 <div className="relative">
                   <img
-                    src={objective.item.iconLink || objective.item.gridImageLink || objective.item.imageLink || '/images/placeholder-item.png'}
+                    src={objective.item.iconLink || '/images/placeholder-item.png'}
                     alt={objective.item.name}
                     className="w-12 h-12 rounded-lg object-cover border border-card-border/30"
                     onError={(e) => {
@@ -148,7 +148,7 @@ export const QuestObjectives: React.FC<QuestObjectivesProps> = ({
                 {objective.items.map((item, index) => (
                   <div key={index} className="flex items-center space-x-3 p-2 bg-background-secondary/30 rounded-lg">
                     <img
-                      src={item.iconLink || item.gridImageLink || item.imageLink || '/images/placeholder-item.png'}
+                      src={item.iconLink || '/images/placeholder-item.png'}
                       alt={item.name}
                       className="w-8 h-8 rounded object-cover border border-card-border/20"
                       onError={(e) => {

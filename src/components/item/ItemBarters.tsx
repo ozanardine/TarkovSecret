@@ -159,9 +159,9 @@ export default function ItemBarters({ itemId }: ItemBartersProps) {
                       );
                     })()} 
                     <span className="font-semibold">{barter.trader?.name}</span>
-                    <Badge variant="outline">Nível {toRomanNumeral(barter.level)}</Badge>
+                    <Badge variant="secondary">Nível {toRomanNumeral(barter.level)}</Badge>
                   </div>
-                  <Badge variant={barterType === 'necessário' ? 'destructive' : 'default'}>
+                  <Badge variant={barterType === 'necessário' ? 'danger' : 'default'}>
                     {barterType === 'necessário' ? 'Você oferece' : 'Você recebe'}
                   </Badge>
                 </div>

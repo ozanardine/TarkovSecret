@@ -178,7 +178,7 @@ export function AdvancedAmmoFilters({
                 {availableCalibers.map(caliber => (
                   <Badge
                     key={caliber}
-                    variant={filters.caliber.includes(caliber) ? 'default' : 'outline'}
+                    variant={filters.caliber.includes(caliber) ? 'default' : 'secondary'}
                     className={`cursor-pointer transition-colors ${
                       filters.caliber.includes(caliber)
                         ? 'bg-tarkov-accent text-tarkov-dark'
@@ -210,7 +210,7 @@ export function AdvancedAmmoFilters({
                 {availableAmmoTypes.map(type => (
                   <Badge
                     key={type}
-                    variant={filters.ammoType.includes(type) ? 'default' : 'outline'}
+                    variant={filters.ammoType.includes(type) ? 'default' : 'secondary'}
                     className={`cursor-pointer transition-colors ${
                       filters.ammoType.includes(type)
                         ? 'bg-tarkov-accent text-tarkov-dark'
@@ -328,7 +328,7 @@ export function AdvancedAmmoFilters({
                 {availableTraders.map(trader => (
                   <Badge
                     key={trader}
-                    variant={filters.trader.includes(trader) ? 'default' : 'outline'}
+                    variant={filters.trader.includes(trader) ? 'default' : 'secondary'}
                     className={`cursor-pointer transition-colors ${
                       filters.trader.includes(trader)
                         ? 'bg-tarkov-accent text-tarkov-dark'
@@ -355,7 +355,7 @@ export function AdvancedAmmoFilters({
                 ].map(option => (
                   <Badge
                     key={option.value}
-                    variant={filters.tracer === option.value ? 'default' : 'outline'}
+                    variant={filters.tracer === option.value ? 'default' : 'secondary'}
                     className={`cursor-pointer transition-colors ${
                       filters.tracer === option.value
                         ? 'bg-tarkov-accent text-tarkov-dark'
@@ -387,7 +387,7 @@ export function AdvancedAmmoFilters({
                 ].map(option => (
                   <Badge
                     key={option.value}
-                    variant={filters.sortBy === option.value ? 'default' : 'outline'}
+                    variant={filters.sortBy === option.value ? 'default' : 'secondary'}
                     className={`cursor-pointer transition-colors ${
                       filters.sortBy === option.value
                         ? 'bg-tarkov-accent text-tarkov-dark'
@@ -413,7 +413,7 @@ export function AdvancedAmmoFilters({
                 ].map(option => (
                   <Badge
                     key={option.value}
-                    variant={filters.sortOrder === option.value ? 'default' : 'outline'}
+                    variant={filters.sortOrder === option.value ? 'default' : 'secondary'}
                     className={`cursor-pointer transition-colors ${
                       filters.sortOrder === option.value
                         ? 'bg-tarkov-accent text-tarkov-dark'

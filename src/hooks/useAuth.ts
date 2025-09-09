@@ -10,7 +10,7 @@ export function useAuth() {
   
   // Helper function to check if user has Plus subscription
   const hasPlus = (user: User): boolean => {
-    return user.subscription?.type === 'plus' && user.subscription?.status === 'active';
+    return user.subscription?.type === 'PLUS' && user.subscription?.status === 'ACTIVE';
   };
   
   // Helper function to check if user can access feature
@@ -37,12 +37,12 @@ export function useAuth() {
   const getSubscriptionStatus = (user: User): string => {
     if (!user.subscription) return 'free';
     
-    const { type, status, ends_at } = user.subscription;
+    const { type, status, end_date } = user.subscription;
     
     if (type === 'free') return 'free';
     
     if (status === 'active') {
-      if (ends_at && new Date(ends_at) < new Date()) {
+      if (end_date && new Date(end_date) < new Date()) {
         return 'expired';
       }
       return 'plus';

@@ -68,11 +68,11 @@ export const QuestRewards: React.FC<QuestRewardsProps> = ({
   ) => {
     if (!rewards) return null;
 
-    const hasAnyRewards = rewards.items?.length > 0 || 
-                         rewards.traderStanding?.length > 0 || 
-                         rewards.offerUnlock?.length > 0 ||
-                         rewards.skillLevelReward?.length > 0 ||
-                         rewards.traderUnlock?.length > 0;
+    const hasAnyRewards = (rewards.items?.length || 0) > 0 || 
+                         (rewards.traderStanding?.length || 0) > 0 || 
+                         (rewards.offerUnlock?.length || 0) > 0 ||
+                         (rewards.skillLevelReward?.length || 0) > 0 ||
+                         (rewards.traderUnlock?.length || 0) > 0;
 
     if (!hasAnyRewards) return null;
 

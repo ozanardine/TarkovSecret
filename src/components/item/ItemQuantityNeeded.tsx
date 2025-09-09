@@ -260,7 +260,7 @@ export function ItemQuantityNeeded({ itemId }: ItemQuantityNeededProps) {
     itemUsage.barterTrades.asRequirement.forEach(barter => {
       if (barter.requiredItems?.some((req: any) => req.item.id === itemId)) {
         const targetReq = barter.requiredItems.find((req: any) => req.item.id === itemId);
-        const quantity = targetReq.count || targetReq.quantity || 1;
+        const quantity = targetReq?.count || targetReq?.quantity || 1;
         barterBreakdown.total += quantity;
         
         const requiredItems = barter.requiredItems.map((req: any) => ({
@@ -364,7 +364,7 @@ export function ItemQuantityNeeded({ itemId }: ItemQuantityNeededProps) {
             <h4 className="font-medium text-white">Total Necessário</h4>
           </div>
           <div className="flex items-center gap-2">
-            <Badge variant="outline" className={`${getSeverityColor(quantities.grandTotal)} font-bold`}>
+            <Badge variant="secondary" className={`${getSeverityColor(quantities.grandTotal)} font-bold`}>
               {quantities.grandTotal}x
             </Badge>
             <span className="text-sm text-tarkov-text-secondary">unidades</span>
@@ -378,7 +378,7 @@ export function ItemQuantityNeeded({ itemId }: ItemQuantityNeededProps) {
               <h4 className="font-medium text-white">Found in Raid</h4>
             </div>
             <div className="flex items-center gap-2">
-              <Badge variant="outline" className="text-orange-400 bg-orange-500/20 border-orange-400/30 font-bold">
+              <Badge variant="secondary" className="text-orange-400 bg-orange-500/20 border-orange-400/30 font-bold">
                 {quantities.foundInRaidRequired}x
               </Badge>
               <span className="text-sm text-tarkov-text-secondary">obrigatório FiR</span>

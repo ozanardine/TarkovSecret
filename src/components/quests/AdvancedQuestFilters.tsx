@@ -99,7 +99,7 @@ export const AdvancedQuestFilters: React.FC<AdvancedQuestFiltersProps> = ({
   };
 
   const clearAllFilters = () => {
-    onClearFilters();
+    onClearFilters?.();
   };
 
   const hasActiveFilters = () => {
@@ -128,7 +128,7 @@ export const AdvancedQuestFilters: React.FC<AdvancedQuestFiltersProps> = ({
             <h3 className="text-lg font-semibold text-tarkov-light">Filtros de Quests</h3>
             {hasActiveFilters() && (
               <Badge variant="primary" size="sm">
-                {filteredCount.toLocaleString()} de {questCount.toLocaleString()}
+                {filteredCount?.toLocaleString() || 0} de {questCount?.toLocaleString() || 0}
               </Badge>
             )}
           </div>
