@@ -41,7 +41,7 @@ export function useAuth() {
     
     if (type === 'FREE') return 'free';
     
-    if (status === 'active') {
+    if (status === 'ACTIVE') {
       if (end_date && new Date(end_date) < new Date()) {
         return 'expired';
       }
