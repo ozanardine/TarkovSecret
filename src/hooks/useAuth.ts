@@ -39,7 +39,7 @@ export function useAuth() {
     
     const { type, status, end_date } = user.subscription;
     
-    if (type === 'free') return 'free';
+    if (type === 'FREE') return 'free';
     
     if (status === 'active') {
       if (end_date && new Date(end_date) < new Date()) {
