@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { Item } from '@/types/tarkov';
+import { TarkovItem } from '@/types/tarkov';
 import { ImageSearchResult } from './useImageSearch';
 
 interface CacheEntry<T> {
@@ -18,8 +18,8 @@ interface SearchCacheOptions {
 
 interface UseSearchCacheReturn {
   // Text search cache
-  getCachedTextSearch: (query: string) => Item[] | null;
-  setCachedTextSearch: (query: string, results: Item[], ttl?: number) => void;
+  getCachedTextSearch: (query: string) => TarkovItem[] | null;
+  setCachedTextSearch: (query: string, results: TarkovItem[], ttl?: number) => void;
   
   // Image search cache
   getCachedImageSearch: (imageHash: string) => ImageSearchResult[] | null;
@@ -73,7 +73,7 @@ const estimateSize = (obj: any): number => {
 export const useSearchCache = (options: SearchCacheOptions = {}): UseSearchCacheReturn => {
   const config = { ...DEFAULT_OPTIONS, ...options };
   
-  const [textCache, setTextCache] = useState<Map<string, CacheEntry<Item[]>>>(new Map());
+  const [textCache, setTextCache] = useState<Map<string, CacheEntry<TarkovItem[]>>>(new Map());
   const [imageCache, setImageCache] = useState<Map<string, CacheEntry<ImageSearchResult[]>>>(new Map());
   const [stats, setStats] = useState<CacheStats>({ hits: 0, misses: 0, totalRequests: 0 });
 
@@ -86,10 +86,10 @@ export const useSearchCache = (options: SearchCacheOptions = {}): UseSearchCache
       const savedTextCache = localStorage.getItem(STORAGE_KEYS.TEXT_CACHE);
       if (savedTextCache) {
         const parsed = JSON.parse(savedTextCache);
-        const cacheMap = new Map<string, CacheEntry<Item[]>>();
+        const cacheMap = new Map<string, CacheEntry<TarkovItem[]>>();
         
         Object.entries(parsed).forEach(([key, value]) => {
-          const entry = value as CacheEntry<Item[]>;
+          const entry = value as CacheEntry<TarkovItem[]>;
           if (entry.expiresAt > Date.now()) {
             cacheMap.set(key, entry);
           }
@@ -176,7 +176,7 @@ export const useSearchCache = (options: SearchCacheOptions = {}): UseSearchCache
     return newCache;
   }, [config.maxEntries]);
 
-  const getCachedTextSearch = useCallback((query: string): Item[] | null => {
+  const getCachedTextSearch = useCallback((query: string): TarkovItem[] | null => {
     const normalizedQuery = query.toLowerCase().trim();
     if (!normalizedQuery) return null;
 
@@ -205,12 +205,12 @@ export const useSearchCache = (options: SearchCacheOptions = {}): UseSearchCache
     return entry.data;
   }, [textCache, updateStats]);
 
-  const setCachedTextSearch = useCallback((query: string, results: Item[], ttl?: number) => {
+  const setCachedTextSearch = useCallback((query: string, results: TarkovItem[], ttl?: number) => {
     const normalizedQuery = query.toLowerCase().trim();
     if (!normalizedQuery || results.length === 0) return;
 
     const now = Date.now();
-    const entry: CacheEntry<Item[]> = {
+    const entry: CacheEntry<TarkovItem[]> = {
       data: results,
       timestamp: now,
       expiresAt: now + (ttl || config.defaultTTL),

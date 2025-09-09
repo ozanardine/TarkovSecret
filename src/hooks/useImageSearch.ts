@@ -59,7 +59,7 @@ const convertMatchResultToImageSearchResult = (matchResult: MatchResult): ImageS
       weight: Math.random() * 2,
       width: 1,
       height: 1
-    } as Item,
+    } as TarkovItem,
     confidence: matchResult.confidence,
     boundingBox: matchResult.boundingBox,
     metadata: {
