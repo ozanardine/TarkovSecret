@@ -116,12 +116,12 @@ export default function SearchPage() {
       slots: 1,
       width: 1,
       height: 1,
-      types: result.item.types || [],
+      types: [result.item.category],
       rarity: result.item.rarity || 'common',
       sellFor: [],
       buyFor: [],
-      iconLink: result.item.image || result.item.iconLink,
-      imageLink: result.item.image || result.item.iconLink
+      iconLink: result.item.iconUrl,
+      imageLink: result.item.iconUrl
     };
     
     const searchResult: ImageSearchResult = {
