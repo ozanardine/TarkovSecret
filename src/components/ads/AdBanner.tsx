@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react';
 
 interface AdBannerProps {
   className?: string;
-  size?: 'small' | 'medium' | 'large' | 'leaderboard' | 'sidebar';
+  size?: 'small' | 'medium' | 'large' | 'leaderboard' | 'sidebar' | 'responsive';
   position?: 'top' | 'bottom' | 'inline' | 'sidebar';
 }
 
@@ -15,7 +15,8 @@ const adSizes = {
   medium: 'w-728 h-90',
   large: 'w-970 h-250',
   leaderboard: 'w-728 h-90',
-  sidebar: 'w-300 h-600'
+  sidebar: 'w-300 h-600',
+  responsive: 'w-full h-32 sm:h-24 md:h-32 lg:h-40'
 };
 
 export function AdBanner({ 
