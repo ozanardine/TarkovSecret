@@ -5,8 +5,7 @@ import { SubscriptionPlan, BillingInterval } from '@/types/subscription';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { Card } from '@/components/ui/Card';
-import { CheckIcon, StarIcon } from '@heroicons/react/24/solid';
-import { Crown } from 'lucide-react';
+import { CheckIcon, StarIcon, TrophyIcon } from '@heroicons/react/24/solid';
 import { useCheckout } from '@/hooks/useCheckout';
 
 interface PlanCardProps {
@@ -83,7 +82,7 @@ export function PlanCard({
           {plan.name === 'Free' ? (
             <StarIcon className="w-8 h-8 text-tarkov-accent" />
           ) : (
-            <Crown className="w-8 h-8 text-tarkov-accent" />
+            <TrophyIcon className="w-8 h-8 text-tarkov-accent" />
           )}
         </div>
         <h3 className="text-2xl font-bold text-tarkov-light mb-2">
