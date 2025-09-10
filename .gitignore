@@ -203,3 +203,4 @@ documentacao/
 supabase/migrations/20250108000003_subscription_plans.sql
 supabase/migrations/20250108000004_add_ad_free_feature.sql
 src/docs/ADSENSE_SETUP.md
+VERCEL_DEPLOYMENT.md
