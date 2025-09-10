@@ -906,71 +906,6 @@ export const tarkovDevApi = {
     }
   },
 
-  // Get crafts that use a specific item (Validated against schema)
-  async getCraftsForItem(itemId: string): Promise<Craft[]> {
-    const cacheKey = `crafts_for_item_${itemId}_${currentLanguage}`;
-    const cached = getCachedData<Craft[]>(cacheKey);
-    if (cached) return cached;
-
-    const query = gql`
-      query GetCraftsForItem($lang: LanguageCode) {
-        crafts(lang: $lang) {
-          id
-          station {
-            id
-            name
-            normalizedName
-          }
-          level
-          duration
-          requiredItems {
-            item {
-              id
-              name
-              shortName
-              iconLink
-            }
-            count
-            quantity
-          }
-          rewardItems {
-            item {
-              id
-              name
-              shortName
-              iconLink
-            }
-            count
-          }
-        }
-      }
-    `;
-
-    try {
-      const response = await request<CraftsResponse>(
-        TARKOV_API_URL,
-        query,
-        { lang: currentLanguage }
-      );
-
-      if (!response?.crafts) {
-        console.error('Invalid response structure from Tarkov.dev API:', response);
-        throw new Error('Invalid API response structure');
-      }
-
-      // Filter crafts that use the specific item
-      const craftsForItem = response.crafts.filter((craft) =>
-        craft.requiredItems.some((req) => req.item.id === itemId) ||
-        craft.rewardItems.some((reward) => reward.item.id === itemId)
-      );
-
-      setCachedData(cacheKey, craftsForItem as any);
-      return craftsForItem as any;
-    } catch (error) {
-      console.error('Error fetching crafts from Tarkov.dev:', error);
-      throw new Error('Failed to fetch crafts');
-    }
-  },
 
   // Get barters (Validated against schema)
   async getBarters(): Promise<Barter[]> {
@@ -2041,6 +1976,70 @@ export const tarkovApi = {
   // Get barters for a specific item
   async getBartersForItem(itemId: string): Promise<Barter[]> {
     return tarkovDevApi.getBartersForItem(itemId);
+  },
+
+  // Get crafts for a specific item
+  async getCraftsForItem(itemId: string): Promise<Craft[]> {
+    const cacheKey = `crafts_for_item_${itemId}_${currentLanguage}`;
+    const cached = getCachedData<Craft[]>(cacheKey);
+    if (cached) return cached;
+
+    const query = gql`
+      query GetCraftsForItem($lang: LanguageCode) {
+        crafts(lang: $lang) {
+          id
+          station {
+            id
+            name
+            normalizedName
+          }
+          level
+          duration
+          requiredItems {
+            item {
+              id
+              name
+              shortName
+              iconLink
+            }
+            count
+            quantity
+          }
+          rewardItems {
+            item {
+              id
+              name
+              shortName
+              iconLink
+            }
+            count
+            quantity
+          }
+        }
+      }
+    `;
+
+    try {
+      const response = await request(TARKOV_DEV_ENDPOINT, query, {
+        lang: currentLanguage as LanguageCode,
+      });
+
+      if (!response?.crafts) {
+        throw new Error('Invalid API response structure');
+      }
+
+      // Filter crafts that use the specific item
+      const craftsForItem = response.crafts.filter((craft: any) =>
+        craft.requiredItems.some((req: any) => req.item.id === itemId) ||
+        craft.rewardItems.some((reward: any) => reward.item.id === itemId)
+      );
+
+      setCachedData(cacheKey, craftsForItem as any);
+      return craftsForItem as any;
+    } catch (error) {
+      console.error('Error fetching crafts from Tarkov.dev:', error);
+      throw new Error('Failed to fetch crafts');
+    }
   },
 
   // Get all skills with images
