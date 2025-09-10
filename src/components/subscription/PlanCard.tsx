@@ -49,7 +49,7 @@ export function PlanCard({
 
   return (
     <div className={`
-      relative bg-tarkov-secondary/80 backdrop-blur-sm rounded-2xl shadow-dark-lg border-2 transition-all duration-200 hover:shadow-glow card-hover
+      relative bg-tarkov-secondary/80 backdrop-blur-sm rounded-2xl shadow-dark-lg border-2 transition-all duration-200 card-hover
       ${plan.isPopular 
         ? 'border-tarkov-accent scale-105' 
         : 'border-tarkov-border/50'
@@ -58,7 +58,7 @@ export function PlanCard({
     `}>
       {plan.isPopular && (
         <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-          <Badge className="bg-tarkov-accent text-black px-4 py-1 text-sm font-semibold shadow-glow">
+          <Badge className="bg-tarkov-accent text-black px-4 py-1 text-sm font-semibold">
             <StarIcon className="w-4 h-4 mr-1" />
             Mais Popular
           </Badge>
@@ -132,7 +132,7 @@ export function PlanCard({
             ${plan.name === 'Free' 
               ? 'bg-tarkov-tertiary text-tarkov-light hover:bg-tarkov-hover' 
               : plan.isPopular
-                ? 'bg-tarkov-accent hover:bg-tarkov-accent/90 text-black shadow-glow'
+                ? 'bg-tarkov-accent hover:bg-tarkov-accent/90 text-black'
                 : 'bg-tarkov-secondary text-tarkov-light hover:bg-tarkov-tertiary'
             }
           `}

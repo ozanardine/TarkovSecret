@@ -19,7 +19,7 @@ export function BillingIntervalSelector({
           className={`
             px-6 py-2 text-sm font-medium rounded-md transition-all duration-200
             ${selectedInterval === 'monthly'
-              ? 'bg-tarkov-accent text-black shadow-glow'
+              ? 'bg-tarkov-accent text-black'
               : 'text-tarkov-muted hover:text-tarkov-light'
             }
           `}
@@ -31,7 +31,7 @@ export function BillingIntervalSelector({
           className={`
             px-6 py-2 text-sm font-medium rounded-md transition-all duration-200 relative
             ${selectedInterval === 'yearly'
-              ? 'bg-tarkov-accent text-black shadow-glow'
+              ? 'bg-tarkov-accent text-black'
               : 'text-tarkov-muted hover:text-tarkov-light'
             }
           `}

@@ -50,7 +50,7 @@ export default function SubscriptionPage() {
   }
 
   return (
-    <Layout showSidebar={false} showFooter={true}>
+    <Layout showSidebar={true} showFooter={true}>
       <div className="min-h-screen">
         {/* Hero Section */}
         <div className="relative overflow-hidden bg-gradient-to-br from-tarkov-dark via-tarkov-secondary to-tarkov-tertiary">

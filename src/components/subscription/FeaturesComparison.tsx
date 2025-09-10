@@ -52,9 +52,7 @@ export function FeaturesComparison({ plans }: FeaturesComparisonProps) {
             {allFeatures.map((feature, index) => (
               <tr 
                 key={feature.key} 
-                className={`border-b border-tarkov-border/30 ${
-                  index % 2 === 0 ? 'bg-tarkov-secondary/30' : ''
-                }`}
+                className="border-b border-tarkov-border/30"
               >
                 <td className="py-4 px-6">
                   <div className="font-medium text-tarkov-light">
