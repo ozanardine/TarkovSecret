@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
@@ -9,7 +9,7 @@ import TrialStatus from '@/components/subscription/TrialStatus';
 import { CheckIcon, StarIcon } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 
-export default function SubscriptionSuccessPage() {
+function SubscriptionSuccessContent() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -138,5 +138,17 @@ export default function SubscriptionSuccessPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function SubscriptionSuccessPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-tarkov-dark flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-tarkov-gold"></div>
+      </div>
+    }>
+      <SubscriptionSuccessContent />
+    </Suspense>
   );
 }
