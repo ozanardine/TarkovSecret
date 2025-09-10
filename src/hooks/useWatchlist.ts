@@ -19,7 +19,27 @@ export function useWatchlists() {
 
     try {
       const userWatchlists = await db.getUserWatchlists(user.id);
-      setWatchlists(userWatchlists);
+      // Mapear dados do banco para o formato da interface Watchlist
+      const mappedWatchlists = userWatchlists.map(watchlist => ({
+        id: watchlist.id,
+        userId: watchlist.user_id,
+        name: watchlist.name,
+        description: watchlist.description,
+        isPublic: watchlist.is_public,
+        createdAt: new Date(watchlist.created_at),
+        updatedAt: new Date(watchlist.updated_at),
+        items: watchlist.items?.map(item => ({
+          id: item.id,
+          watchlistId: item.watchlist_id,
+          itemId: item.item_id,
+          targetPrice: item.target_price,
+          priceDirection: item.price_direction as 'ABOVE' | 'BELOW',
+          notifyOnChange: item.notify_on_change,
+          addedAt: new Date(item.added_at),
+          notes: item.notes
+        })) || []
+      }));
+      setWatchlists(mappedWatchlists);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Erro ao carregar listas de observação';
       setError(errorMessage);
@@ -46,9 +66,21 @@ export function useWatchlists() {
         description,
       });
       
-      setWatchlists(prev => [...prev, newWatchlist]);
+      // Mapear dados do banco para o formato da interface Watchlist
+      const mappedWatchlist = {
+        id: newWatchlist.id,
+        userId: newWatchlist.user_id,
+        name: newWatchlist.name,
+        description: newWatchlist.description,
+        isPublic: newWatchlist.is_public,
+        createdAt: new Date(newWatchlist.created_at),
+        updatedAt: new Date(newWatchlist.updated_at),
+        items: []
+      };
+      
+      setWatchlists(prev => [...prev, mappedWatchlist]);
       toast.success('Lista criada com sucesso!');
-      return newWatchlist;
+      return mappedWatchlist;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Erro ao criar lista';
       toast.error(errorMessage);
@@ -64,7 +96,18 @@ export function useWatchlists() {
 
     try {
       const updatedWatchlist = await db.updateWatchlist(id, updates);
-      setWatchlists(prev => prev.map(w => w.id === id ? updatedWatchlist : w));
+      // Mapear dados do banco para o formato da interface Watchlist
+      const mappedWatchlist = {
+        id: updatedWatchlist.id,
+        userId: updatedWatchlist.user_id,
+        name: updatedWatchlist.name,
+        description: updatedWatchlist.description,
+        isPublic: updatedWatchlist.is_public,
+        createdAt: new Date(updatedWatchlist.created_at),
+        updatedAt: new Date(updatedWatchlist.updated_at),
+        items: []
+      };
+      setWatchlists(prev => prev.map(w => w.id === id ? mappedWatchlist : w));
       toast.success('Lista atualizada com sucesso!');
       return true;
     } catch (err) {
@@ -121,7 +164,18 @@ export function useWatchlistItems(watchlistId: string | null) {
 
     try {
       const watchlistItems = await db.getWatchlistItems(watchlistId);
-      setItems(watchlistItems);
+      // Mapear dados do banco para o formato da interface WatchlistItem
+      const mappedItems = watchlistItems.map(item => ({
+        id: item.id,
+        watchlistId: item.watchlist_id,
+        itemId: item.item_id,
+        targetPrice: item.target_price,
+        priceDirection: item.price_direction as 'ABOVE' | 'BELOW',
+        notifyOnChange: item.notify_on_change,
+        addedAt: new Date(item.added_at),
+        notes: item.notes
+      }));
+      setItems(mappedItems);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Erro ao carregar itens da lista';
       setError(errorMessage);
@@ -148,7 +202,19 @@ export function useWatchlistItems(watchlistId: string | null) {
         notes,
       });
       
-      setItems(prev => [...prev, newItem]);
+      // Mapear dados do banco para o formato da interface WatchlistItem
+      const mappedItem = {
+        id: newItem.id,
+        watchlistId: newItem.watchlist_id,
+        itemId: newItem.item_id,
+        targetPrice: newItem.target_price,
+        priceDirection: newItem.price_direction as 'ABOVE' | 'BELOW',
+        notifyOnChange: newItem.notify_on_change,
+        addedAt: new Date(newItem.added_at),
+        notes: newItem.notes
+      };
+      
+      setItems(prev => [...prev, mappedItem]);
       toast.success('Item adicionado à lista!');
       return true;
     } catch (err) {
@@ -166,7 +232,7 @@ export function useWatchlistItems(watchlistId: string | null) {
 
     try {
       await db.removeFromWatchlist(watchlistId, itemId);
-      setItems(prev => prev.filter(item => item.item_id !== itemId));
+      setItems(prev => prev.filter(item => item.itemId !== itemId));
       toast.success('Item removido da lista!');
       return true;
     } catch (err) {
@@ -185,7 +251,7 @@ export function useWatchlistItems(watchlistId: string | null) {
     try {
       const updatedItem = await db.updateWatchlistItem(watchlistId, itemId, { notes });
       setItems(prev => prev.map(item => 
-        item.item_id === itemId ? { ...item, notes: updatedItem.notes } : item
+        item.itemId === itemId ? { ...item, notes: updatedItem.notes } : item
       ));
       toast.success('Notas atualizadas!');
       return true;
@@ -197,7 +263,7 @@ export function useWatchlistItems(watchlistId: string | null) {
   }, [isAuthenticated, user, watchlistId]);
 
   const isItemInWatchlist = useCallback((itemId: string) => {
-    return items.some(item => item.item_id === itemId);
+    return items.some(item => item.itemId === itemId);
   }, [items]);
 
   return {
@@ -227,7 +293,20 @@ export function usePriceAlerts() {
 
     try {
       const userAlerts = await db.getUserPriceAlerts(user.id);
-      setAlerts(userAlerts);
+      // Mapear dados do banco para o formato da interface PriceAlert
+      const mappedAlerts = userAlerts.map(alert => ({
+        id: alert.id,
+        userId: alert.user_id,
+        itemId: alert.item_id,
+        targetPrice: alert.target_price,
+        condition: alert.condition as 'ABOVE' | 'BELOW' | 'EQUAL',
+        isActive: alert.is_active,
+        triggered: alert.triggered,
+        triggeredAt: alert.triggered_at ? new Date(alert.triggered_at) : undefined,
+        createdAt: new Date(alert.created_at),
+        updatedAt: new Date(alert.updated_at)
+      }));
+      setAlerts(mappedAlerts);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Erro ao carregar alertas de preço';
       setError(errorMessage);
@@ -258,9 +337,23 @@ export function usePriceAlerts() {
         user_id: user.id,
       });
       
-      setAlerts(prev => [...prev, newAlert]);
+      // Mapear dados do banco para o formato da interface PriceAlert
+      const mappedAlert = {
+        id: newAlert.id,
+        userId: newAlert.user_id,
+        itemId: newAlert.item_id,
+        targetPrice: newAlert.target_price,
+        condition: newAlert.condition as 'ABOVE' | 'BELOW' | 'EQUAL',
+        isActive: newAlert.is_active,
+        triggered: newAlert.triggered,
+        triggeredAt: newAlert.triggered_at ? new Date(newAlert.triggered_at) : undefined,
+        createdAt: new Date(newAlert.created_at),
+        updatedAt: new Date(newAlert.updated_at)
+      };
+      
+      setAlerts(prev => [...prev, mappedAlert]);
       toast.success('Alerta de preço criado!');
-      return newAlert;
+      return mappedAlert;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Erro ao criar alerta';
       toast.error(errorMessage);
@@ -276,7 +369,20 @@ export function usePriceAlerts() {
 
     try {
       const updatedAlert = await db.updatePriceAlert(id, updates);
-      setAlerts(prev => prev.map(alert => alert.id === id ? updatedAlert : alert));
+      // Mapear dados do banco para o formato da interface PriceAlert
+      const mappedAlert = {
+        id: updatedAlert.id,
+        userId: updatedAlert.user_id,
+        itemId: updatedAlert.item_id,
+        targetPrice: updatedAlert.target_price,
+        condition: updatedAlert.condition as 'ABOVE' | 'BELOW' | 'EQUAL',
+        isActive: updatedAlert.is_active,
+        triggered: updatedAlert.triggered,
+        triggeredAt: updatedAlert.triggered_at ? new Date(updatedAlert.triggered_at) : undefined,
+        createdAt: new Date(updatedAlert.created_at),
+        updatedAt: new Date(updatedAlert.updated_at)
+      };
+      setAlerts(prev => prev.map(alert => alert.id === id ? mappedAlert : alert));
       toast.success('Alerta atualizado!');
       return true;
     } catch (err) {
