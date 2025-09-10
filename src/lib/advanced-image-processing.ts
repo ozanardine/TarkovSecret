@@ -247,7 +247,7 @@ export class AdvancedImageProcessor {
     const regions: BoundingBox[] = [];
     
     // Converte para escala de cinza para análise de bordas
-    const grayImage = image.clone().greyscale();
+    const grayImage = image.clone().grayscale();
     
     // Detecta bordas usando filtro Sobel
     const edges = await this.detectEdges(grayImage);
