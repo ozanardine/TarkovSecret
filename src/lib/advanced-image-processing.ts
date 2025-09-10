@@ -8,18 +8,25 @@ interface JimpImage {
   crop(x: number, y: number, w: number, h: number): JimpImage;
   resize(w: number, h: number): JimpImage;
   quality(q: number): JimpImage;
+  grayscale(): JimpImage;
   getBuffer(mime: string, cb: (err: Error | null, buffer: Buffer) => void): void;
+  scan(x: number, y: number, w: number, h: number, cb: (x: number, y: number, idx: number) => void): this;
+  bitmap: {
+    data: Uint8ClampedArray;
+  };
 }
 
 class MockJimp implements JimpImage {
   private width: number = 0;
   private height: number = 0;
   private pixels: Uint8ClampedArray = new Uint8ClampedArray(0);
+  public bitmap: { data: Uint8ClampedArray };
 
   constructor(width: number = 0, height: number = 0) {
     this.width = width;
     this.height = height;
     this.pixels = new Uint8ClampedArray(width * height * 4);
+    this.bitmap = { data: this.pixels };
   }
 
   getWidth(): number { return this.width; }
@@ -59,6 +66,29 @@ class MockJimp implements JimpImage {
   
   quality(q: number): JimpImage {
     return this;
+  }
+  
+  grayscale(): JimpImage {
+    const grayImage = new MockJimp(this.width, this.height);
+    grayImage.pixels = new Uint8ClampedArray(this.pixels);
+    
+    // Converte para escala de cinza
+    for (let i = 0; i < this.pixels.length; i += 4) {
+      const r = this.pixels[i];
+      const g = this.pixels[i + 1];
+      const b = this.pixels[i + 2];
+      const a = this.pixels[i + 3];
+      
+      // Fórmula padrão para conversão RGB para escala de cinza
+      const gray = Math.round(0.299 * r + 0.587 * g + 0.114 * b);
+      
+      grayImage.pixels[i] = gray;     // R
+      grayImage.pixels[i + 1] = gray; // G
+      grayImage.pixels[i + 2] = gray; // B
+      grayImage.pixels[i + 3] = a;    // A
+    }
+    
+    return grayImage;
   }
   
   getBuffer(mime: string, cb: (err: Error | null, buffer: Buffer) => void): void {
@@ -538,7 +568,7 @@ export class AdvancedImageProcessor {
    * Extrai características de bordas
    */
   private async extractEdgeFeatures(image: Jimp): Promise<number[]> {
-    const edges = await this.detectEdges(image.clone().greyscale());
+    const edges = await this.detectEdges(image.clone().grayscale());
     const features: number[] = [];
     
     // Conta pixels de borda por região
@@ -575,7 +605,7 @@ export class AdvancedImageProcessor {
    * Extrai características de textura
    */
   private async extractTextureFeatures(image: Jimp): Promise<number[]> {
-    const grayImage = image.clone().greyscale();
+    const grayImage = image.clone().grayscale();
     const features: number[] = [];
     
     // Calcula variância local em diferentes regiões
@@ -632,7 +662,7 @@ export class AdvancedImageProcessor {
     features.push(nonTransparentPixels / totalPixels);
     
     // Compacidade (perímetro² / área)
-    const edges = await this.detectEdges(image.clone().greyscale());
+    const edges = await this.detectEdges(image.clone().grayscale());
     let perimeterPixels = 0;
     
     edges.scan(0, 0, edges.getWidth(), edges.getHeight(), (x, y, idx) => {
@@ -751,7 +781,7 @@ export class AdvancedImageProcessor {
    * Detecta se há múltiplos itens na imagem
    */
   private async detectMultipleItems(image: Jimp): Promise<boolean> {
-    const edges = await this.detectEdges(image.clone().greyscale());
+    const edges = await this.detectEdges(image.clone().grayscale());
     const contours = await this.findContours(edges);
     
     // Filtra contornos válidos
@@ -768,7 +798,7 @@ export class AdvancedImageProcessor {
    */
   private calculateImageQuality(image: Jimp): number {
     // Calcula qualidade baseada em nitidez e contraste
-    const edges = this.detectEdges(image.clone().greyscale());
+    const edges = this.detectEdges(image.clone().grayscale());
     let edgeStrength = 0;
     let totalPixels = 0;
     
