@@ -144,8 +144,9 @@ const intelligentImageRecognitionAPI = async (
       ...result,
       processingTime: result.processingTime || 0,
       metadata: {
-        ...(result.metadata || {}),
-        hasMultipleItems: searchResults.length > 1
+        hasMultipleItems: searchResults.length > 1,
+        backgroundType: result.metadata?.backgroundType || 'inventory',
+        imageQuality: result.metadata?.imageQuality || 0.7
       }
     }));
     
