@@ -1,10 +1,10 @@
 import React from 'react';
-import { PageLayout } from '@/components/layout/Layout';
+// import { PageLayout } from '@/components/layout/Layout';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
-import { SearchInput } from '@/components/ui/Input';
+import { Input } from '@/components/ui/Input';
 import { Badge } from '@/components/ui/Badge';
-import { AdSpace } from '@/components/ui/AdSpace';
+// import { AdSpace } from '@/components/ui/AdSpace';
 import { 
   ArrowTrendingUpIcon as TrendingUpIcon, 
   FireIcon, 
@@ -14,6 +14,7 @@ import {
   UserGroupIcon,
   BoltIcon
 } from '@heroicons/react/24/outline';
+import { Search } from 'lucide-react';
 import { 
   ArrowTrendingUpIcon as TrendingUpSolid,
   FireIcon as FireSolid,
@@ -101,7 +102,7 @@ const HomePage: React.FC = () => {
   ];
 
   return (
-    <PageLayout showFooter={true}>
+    <div className="min-h-screen bg-tarkov-dark">
       {/* Hero Section */}
       <section className="relative py-20 px-4 text-center">
         <div className="absolute inset-0 bg-gradient-to-br from-tarkov-accent/20 via-transparent to-tarkov-secondary/20 rounded-3xl" />
@@ -115,11 +116,19 @@ const HomePage: React.FC = () => {
           
           {/* Search Bar */}
           <div className="max-w-2xl mx-auto mb-8">
-            <SearchInput
-              placeholder="Buscar itens, armas, equipamentos..."
-              onSearch={handleSearch}
-              className="w-full h-12 text-lg"
-            />
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              const formData = new FormData(e.currentTarget);
+              const query = formData.get('search') as string;
+              handleSearch(query);
+            }}>
+              <Input
+                name="search"
+                placeholder="Buscar itens, armas, equipamentos..."
+                className="w-full h-12 text-lg"
+                leftIcon={<Search className="w-4 h-4" />}
+              />
+            </form>
           </div>
 
           {/* CTA Buttons */}
@@ -169,15 +178,21 @@ const HomePage: React.FC = () => {
 
       {/* Ad Banner - Top */}
       <section className="py-8">
-        <AdSpace 
-          type="horizontal" 
-          variant="upgrade"
-          title="Upgrade para Secret Plus"
-          description="Remova anúncios e desbloqueie recursos exclusivos"
-          ctaText="Fazer Upgrade"
-          ctaLink="/subscription"
-          className="max-w-4xl mx-auto"
-        />
+        <Card className="max-w-4xl mx-auto p-6 bg-gradient-to-r from-tarkov-accent/10 to-tarkov-secondary/10 border-tarkov-accent/20">
+          <div className="text-center">
+            <h3 className="text-xl font-semibold text-tarkov-light mb-2">
+              Upgrade para Secret Plus
+            </h3>
+            <p className="text-tarkov-muted mb-4">
+              Remova anúncios e desbloqueie recursos exclusivos
+            </p>
+            <Link href="/subscription">
+              <Button className="bg-tarkov-accent hover:bg-tarkov-accent/90">
+                Fazer Upgrade
+              </Button>
+            </Link>
+          </div>
+        </Card>
       </section>
 
       {/* PLUS User Dashboard Section */}
@@ -341,15 +356,21 @@ const HomePage: React.FC = () => {
 
         {/* Ad Card - Between Popular and Trending */}
         <div className="mt-12">
-          <AdSpace 
-            type="card" 
-            variant="promotional"
-            title="Oferta Especial - Secret Plus"
-            description="Aproveite nossa oferta limitada e remova todos os anúncios"
-            ctaText="Ver Oferta"
-            ctaLink="/subscription"
-            className="max-w-md mx-auto"
-          />
+          <Card className="max-w-md mx-auto p-6 bg-gradient-to-r from-orange-500/10 to-red-500/10 border-orange-500/20">
+            <div className="text-center">
+              <h3 className="text-lg font-semibold text-tarkov-light mb-2">
+                Oferta Especial - Secret Plus
+              </h3>
+              <p className="text-tarkov-muted mb-4 text-sm">
+                Aproveite nossa oferta limitada e remova todos os anúncios
+              </p>
+              <Link href="/subscription">
+                <Button className="bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-500 hover:to-red-500">
+                  Ver Oferta
+                </Button>
+              </Link>
+            </div>
+          </Card>
         </div>
       </section>
 
@@ -430,7 +451,7 @@ const HomePage: React.FC = () => {
           </div>
         </Card>
       </section>
-    </PageLayout>
+    </div>
   );
 };
 
