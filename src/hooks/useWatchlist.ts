@@ -202,7 +202,9 @@ export function useWatchlistItems(watchlistId: string | null) {
     }
 
     try {
+      // A função addToWatchlist espera receber o watchlist_id no objeto.
       const newItem = await db.addToWatchlist(watchlistId, {
+        watchlist_id: watchlistId, // << ADICIONE ESTA LINHA
         item_id: itemId,
         notes,
       });
