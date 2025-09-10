@@ -215,6 +215,12 @@ export default function SubscriptionPage() {
             </p>
           </div>
 
+          {/* Billing Interval Selector */}
+          <BillingIntervalSelector
+            selectedInterval={billingInterval}
+            onIntervalChange={setBillingInterval}
+          />
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {plans.map((plan) => (
               <PlanCard
