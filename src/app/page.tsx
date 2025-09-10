@@ -12,6 +12,7 @@ import { useSubscription } from '@/hooks/useSubscription';
 import { useTarkov } from '@/hooks/useTarkov';
 import { useRouter } from 'next/navigation';
 import SubscriptionNotifications from '@/components/subscription/SubscriptionNotifications';
+import { AdSpace } from '@/components/ui/AdSpace';
 import { 
   ArrowTrendingUpIcon as TrendingUpIcon, 
   FireIcon, 
@@ -211,6 +212,19 @@ const HomePage: React.FC = () => {
         </div>
       </section>
 
+      {/* Ad Banner - Top */}
+      <section className="py-8">
+        <AdSpace 
+          type="horizontal" 
+          variant="upgrade"
+          title="Upgrade para Secret Plus"
+          description="Remova anúncios e desbloqueie recursos exclusivos"
+          ctaText="Fazer Upgrade"
+          ctaLink="/subscription"
+          className="max-w-4xl mx-auto"
+        />
+      </section>
+
       {/* PLUS User Dashboard Section */}
       {isPlus && (
         <section className="py-16">
@@ -386,6 +400,19 @@ const HomePage: React.FC = () => {
             ))}
           </div>
         )}
+
+        {/* Ad Card - Between Popular and Trending */}
+        <div className="mt-12">
+          <AdSpace 
+            type="card" 
+            variant="promotional"
+            title="Oferta Especial - Secret Plus"
+            description="Aproveite nossa oferta limitada e remova todos os anúncios"
+            ctaText="Ver Oferta"
+            ctaLink="/subscription"
+            className="max-w-md mx-auto"
+          />
+        </div>
       </section>
 
       {/* Trending Items Section */}

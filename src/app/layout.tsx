@@ -121,6 +121,8 @@ export default function RootLayout({ children }: RootLayoutProps) {
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://tarkov.dev" />
         <link rel="preconnect" href="https://tarkov-market.com" />
+        <link rel="preconnect" href="https://pagead2.googlesyndication.com" />
+        <link rel="preconnect" href="https://googleads.g.doubleclick.net" />
         
         {/* DNS prefetch for performance */}
         <link rel="dns-prefetch" href="https://accounts.google.com" />
@@ -190,6 +192,13 @@ export default function RootLayout({ children }: RootLayoutProps) {
             {children}
           </div>
         </Providers>
+        
+        {/* Google AdSense Script - Global */}
+        <script 
+          async 
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5475619702541266"
+          crossOrigin="anonymous"
+        />
         
         {/* Analytics scripts */}
         {process.env.NODE_ENV === 'production' && (

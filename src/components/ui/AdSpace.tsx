@@ -1,16 +1,44 @@
 'use client';
 
 import { useAuth } from '@/hooks/useAuth';
+import { useAdBlockerDetection } from '@/hooks/useAdBlockerDetection';
+import { AdBanner } from '@/components/ads/AdBanner';
+import { AdCard } from '@/components/ads/AdCard';
+import { AdHorizontal } from '@/components/ads/AdHorizontal';
+import { AdSenseBanner } from '@/components/ads/AdSenseBanner';
 import { useEffect, useState } from 'react';
 
 interface AdSpaceProps {
   children?: React.ReactNode;
   className?: string;
   fallback?: React.ReactNode;
+  type?: 'banner' | 'card' | 'horizontal' | 'adsense';
+  size?: 'small' | 'medium' | 'large' | 'leaderboard' | 'sidebar' | 'responsive';
+  variant?: 'promotional' | 'upgrade' | 'sponsored' | 'premium';
+  title?: string;
+  description?: string;
+  ctaText?: string;
+  ctaLink?: string;
+  adSlot?: string;
+  useRealAds?: boolean;
 }
 
-export function AdSpace({ children, className = '', fallback }: AdSpaceProps) {
+export function AdSpace({ 
+  children, 
+  className = '', 
+  fallback,
+  type = 'banner',
+  size = 'medium',
+  variant = 'upgrade',
+  title,
+  description,
+  ctaText,
+  ctaLink,
+  adSlot,
+  useRealAds = false
+}: AdSpaceProps) {
   const { canAccess, isLoading } = useAuth();
+  const { isAdBlockerDetected } = useAdBlockerDetection();
   const [showAd, setShowAd] = useState(false);
 
   useEffect(() => {
@@ -35,33 +63,71 @@ export function AdSpace({ children, className = '', fallback }: AdSpaceProps) {
     return <div className={className}>{children}</div>;
   }
 
-  // Default ad placeholder
-  return (
-    <div className={`bg-gray-800 border border-gray-700 rounded-lg p-4 text-center ${className}`}>
-      <div className="text-gray-400 text-sm">
-        <div className="w-full h-24 bg-gray-700 rounded flex items-center justify-center mb-2">
-          <span className="text-xs">Anúncio</span>
-        </div>
-        <p className="text-xs">
-          <a 
-            href="/subscription" 
-            className="text-blue-400 hover:text-blue-300 underline"
-          >
-            Upgrade para Plus
-          </a>{' '}
-          e remova anúncios
-        </p>
-      </div>
-    </div>
-  );
+  // Render appropriate ad component based on type
+  const renderAd = () => {
+    // Se usar anúncios reais e tipo for adsense
+    if (useRealAds && type === 'adsense') {
+      return (
+        <AdSenseBanner
+          className={className}
+          size={size}
+          adSlot={adSlot}
+        />
+      );
+    }
+
+    switch (type) {
+      case 'card':
+        return (
+          <AdCard
+            className={className}
+            variant={variant}
+            title={title}
+            description={description}
+            ctaText={ctaText}
+            ctaLink={ctaLink}
+          />
+        );
+      case 'horizontal':
+        return (
+          <AdHorizontal
+            className={className}
+            variant={variant}
+            title={title}
+            description={description}
+            ctaText={ctaText}
+            ctaLink={ctaLink}
+          />
+        );
+      case 'adsense':
+        return (
+          <AdSenseBanner
+            className={className}
+            size={size}
+            adSlot={adSlot}
+          />
+        );
+      default: // banner
+        return (
+          <AdBanner
+            className={className}
+            size={size}
+          />
+        );
+    }
+  };
+
+  return renderAd();
 }
 
 // Hook para verificar se deve mostrar anúncios
 export function useAdDisplay() {
   const { canAccess, isLoading } = useAuth();
+  const { isAdBlockerDetected } = useAdBlockerDetection();
   
   return {
     showAds: !isLoading && !canAccess('ad_free'),
     isLoading,
+    isAdBlockerDetected,
   };
 }

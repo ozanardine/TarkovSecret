@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils';
 import { Header } from './Header';
 import { Sidebar } from './Sidebar';
 import { Footer } from './Footer';
+import { AdManager } from '@/components/ads/AdManager';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -44,46 +45,47 @@ const Layout: React.FC<LayoutProps> = ({
   }, []);
 
   return (
-    <div className="min-h-screen bg-tarkov-dark flex flex-col">
-      {/* Header */}
-      <Header
-        onMenuToggle={toggleSidebar}
-        isMenuOpen={isSidebarOpen}
-      />
+    <AdManager>
+      <div className="min-h-screen bg-tarkov-dark flex flex-col">
+        {/* Header */}
+        <Header
+          onMenuToggle={toggleSidebar}
+          isMenuOpen={isSidebarOpen}
+        />
 
-      <div className="flex flex-1">
-        {/* Sidebar */}
-        {showSidebar && (
-          <Sidebar
-            isOpen={isSidebarOpen}
-            onClose={closeSidebar}
-          />
-        )}
-
-        {/* Main Content */}
-        <main
-          className={cn(
-            'flex-1 transition-all duration-300',
-            showSidebar && 'lg:ml-64',
-            className
+        <div className="flex flex-1">
+          {/* Sidebar */}
+          {showSidebar && (
+            <Sidebar
+              isOpen={isSidebarOpen}
+              onClose={closeSidebar}
+            />
           )}
-        >
-          <div
+
+          {/* Main Content */}
+          <main
             className={cn(
-              'min-h-[calc(100vh-4rem)]',
-              !fullWidth && 'container mx-auto px-4 py-6',
-              fullWidth && 'w-full'
+              'flex-1 transition-all duration-300',
+              showSidebar && 'lg:ml-64',
+              className
             )}
           >
-            {children}
-          </div>
+            <div
+              className={cn(
+                'min-h-[calc(100vh-4rem)]',
+                !fullWidth && 'container mx-auto px-4 py-6',
+                fullWidth && 'w-full'
+              )}
+            >
+              {children}
+            </div>
 
-          {/* Footer */}
-          {showFooter && <Footer />}
-        </main>
+            {/* Footer */}
+            {showFooter && <Footer />}
+          </main>
+        </div>
       </div>
-      
-    </div>
+    </AdManager>
   );
 };
 
