@@ -207,7 +207,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
           {item.icon}
         </span>
         
-        <span className="flex-1 font-medium truncate">
+        <span className="flex-1 font-medium">
           {item.label}
         </span>
         
@@ -279,7 +279,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
       {/* Sidebar */}
       <aside
         className={cn(
-          'fixed left-0 top-16 z-30 h-[calc(100vh-4rem)] w-64 transform transition-transform duration-300 ease-in-out lg:translate-x-0',
+          'fixed left-0 top-16 z-30 h-[calc(100vh-4rem)] w-72 transform transition-transform duration-300 ease-in-out lg:translate-x-0',
           'bg-tarkov-secondary/95 backdrop-blur-md border-r border-tarkov-border',
           'overflow-y-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-tarkov-border',
           isOpen ? 'translate-x-0' : '-translate-x-full'
