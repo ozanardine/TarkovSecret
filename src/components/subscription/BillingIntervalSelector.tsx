@@ -14,7 +14,7 @@ export function BillingIntervalSelector({
 }: BillingIntervalSelectorProps) {
   return (
     <div className="flex items-center justify-center mb-12">
-      <div className="bg-tarkov-secondary/50 rounded-lg p-1 flex border border-tarkov-border">
+      <div className="bg-tarkov-secondary/50 rounded-lg p-1 flex border border-tarkov-border relative">
         <button
           onClick={() => onIntervalChange('monthly')}
           className={`
@@ -40,7 +40,7 @@ export function BillingIntervalSelector({
           >
             Anual
           </button>
-          <Badge className="absolute -top-2 -right-2 bg-tarkov-success text-white text-xs px-2 py-0.5">
+          <Badge className="absolute -top-2 -right-2 bg-tarkov-success text-white text-xs px-2 py-1 rounded-full shadow-lg z-20 transform -translate-y-1 translate-x-1">
             Economize 17%
           </Badge>
         </div>

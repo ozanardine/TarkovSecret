@@ -7,7 +7,7 @@ import { ArrowRightIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
 interface AdHorizontalProps {
   className?: string;
-  variant?: 'upgrade' | 'sponsored';
+  variant?: 'upgrade' | 'sponsored' | 'promotional';
   title?: string;
   description?: string;
   ctaText?: string;
@@ -104,6 +104,14 @@ export function AdHorizontal({
           accent: 'text-cyan-400',
           button: 'bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500'
         };
+      case 'promotional':
+        return {
+          bg: 'bg-gradient-to-r from-orange-900/20 to-red-900/20',
+          border: 'border-orange-500/30',
+          text: 'text-orange-300',
+          accent: 'text-orange-400',
+          button: 'bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-500 hover:to-red-500'
+        };
       default: // upgrade
         return {
           bg: 'bg-gradient-to-r from-purple-900/20 to-pink-900/20',
@@ -117,11 +125,16 @@ export function AdHorizontal({
 
   const styles = getVariantStyles();
   const defaultTitle = variant === 'upgrade' ? 'Upgrade para Secret Plus' : 
+                      variant === 'promotional' ? 'Oferta Especial' :
                       'Anúncio Patrocinado';
   const defaultDescription = variant === 'upgrade' ? 
     'Remova anúncios e desbloqueie recursos exclusivos' :
+    variant === 'promotional' ?
+    'Aproveite nossa promoção limitada' :
     'Descubra mais sobre nossos produtos';
-  const defaultCtaText = variant === 'upgrade' ? 'Fazer Upgrade' : 'Saiba Mais';
+  const defaultCtaText = variant === 'upgrade' ? 'Fazer Upgrade' : 
+                        variant === 'promotional' ? 'Aproveitar' :
+                        'Saiba Mais';
 
   return (
     <div className={`relative ${styles.bg} border ${styles.border} rounded-lg p-4 ${className}`}>

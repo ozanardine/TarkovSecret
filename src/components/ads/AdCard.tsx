@@ -7,7 +7,7 @@ import { StarIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
 interface AdCardProps {
   className?: string;
-  variant?: 'promotional' | 'upgrade' | 'sponsored';
+  variant?: 'upgrade' | 'sponsored' | 'promotional';
   title?: string;
   description?: string;
   ctaText?: string;

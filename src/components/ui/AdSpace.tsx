@@ -14,7 +14,7 @@ interface AdSpaceProps {
   fallback?: React.ReactNode;
   type?: 'banner' | 'card' | 'horizontal' | 'adsense';
   size?: 'small' | 'medium' | 'large' | 'leaderboard' | 'sidebar' | 'responsive';
-  variant?: 'promotional' | 'upgrade' | 'sponsored';
+  variant?: 'upgrade' | 'sponsored' | 'promotional';
   title?: string;
   description?: string;
   ctaText?: string;
