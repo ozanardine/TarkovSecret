@@ -1,18 +1,22 @@
 import Stripe from 'stripe';
+import { User } from '@/types/user';
 
-// Check if Stripe is configured
-const isStripeConfigured = !!process.env.STRIPE_SECRET_KEY && process.env.STRIPE_SECRET_KEY.startsWith('sk_');
+const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
+const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET;
+
+const isStripeConfigured = STRIPE_SECRET_KEY && STRIPE_WEBHOOK_SECRET;
+
+export const stripe = isStripeConfigured
+  ? new Stripe(process.env.STRIPE_SECRET_KEY!, {
+      // Corrigido para a versão esperada pela biblioteca
+      apiVersion: '2025-02-24.acacia',
+      typescript: true,
+    })
+  : null;
 
 if (!isStripeConfigured) {
   console.warn('Stripe is not configured. Some features may not work properly.');
 }
-
-export const stripe = isStripeConfigured 
-  ? new Stripe(process.env.STRIPE_SECRET_KEY!, {
-      apiVersion: '2025-08-27.basil',
-      typescript: true,
-    })
-  : null;
 
 // Export configuration status
 export { isStripeConfigured };
