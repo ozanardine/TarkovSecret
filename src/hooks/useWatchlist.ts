@@ -18,7 +18,7 @@ export function useWatchlists() {
     setError(null);
 
     try {
-      const userWatchlists = await db.watchlists.getByUserId(user.id);
+      const userWatchlists = await db.getUserWatchlists(user.id);
       setWatchlists(userWatchlists);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Erro ao carregar listas de observação';
@@ -40,7 +40,7 @@ export function useWatchlists() {
     }
 
     try {
-      const newWatchlist = await db.watchlists.create({
+      const newWatchlist = await db.createWatchlist({
         user_id: user.id,
         name,
         description,
@@ -63,7 +63,7 @@ export function useWatchlists() {
     }
 
     try {
-      const updatedWatchlist = await db.watchlists.update(id, updates);
+      const updatedWatchlist = await db.updateWatchlist(id, updates);
       setWatchlists(prev => prev.map(w => w.id === id ? updatedWatchlist : w));
       toast.success('Lista atualizada com sucesso!');
       return true;
@@ -81,7 +81,7 @@ export function useWatchlists() {
     }
 
     try {
-      await db.watchlists.delete(id);
+      await db.deleteWatchlist(id);
       setWatchlists(prev => prev.filter(w => w.id !== id));
       toast.success('Lista deletada com sucesso!');
       return true;
@@ -120,7 +120,7 @@ export function useWatchlistItems(watchlistId: string | null) {
     setError(null);
 
     try {
-      const watchlistItems = await db.watchlists.getItems(watchlistId);
+      const watchlistItems = await db.getWatchlistItems(watchlistId);
       setItems(watchlistItems);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Erro ao carregar itens da lista';
@@ -142,7 +142,7 @@ export function useWatchlistItems(watchlistId: string | null) {
     }
 
     try {
-      const newItem = await db.watchlists.addItem({
+      const newItem = await db.addToWatchlist(watchlistId, {
         watchlist_id: watchlistId,
         item_id: itemId,
         notes,
@@ -165,7 +165,7 @@ export function useWatchlistItems(watchlistId: string | null) {
     }
 
     try {
-      await db.watchlists.removeItem(watchlistId, itemId);
+      await db.removeFromWatchlist(watchlistId, itemId);
       setItems(prev => prev.filter(item => item.item_id !== itemId));
       toast.success('Item removido da lista!');
       return true;
@@ -183,7 +183,7 @@ export function useWatchlistItems(watchlistId: string | null) {
     }
 
     try {
-      const updatedItem = await db.watchlists.updateItem(watchlistId, itemId, { notes });
+      const updatedItem = await db.updateWatchlistItem(watchlistId, itemId, { notes });
       setItems(prev => prev.map(item => 
         item.item_id === itemId ? { ...item, notes: updatedItem.notes } : item
       ));
@@ -226,7 +226,7 @@ export function usePriceAlerts() {
     setError(null);
 
     try {
-      const userAlerts = await db.priceAlerts.getByUserId(user.id);
+      const userAlerts = await db.getUserPriceAlerts(user.id);
       setAlerts(userAlerts);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Erro ao carregar alertas de preço';
@@ -253,7 +253,7 @@ export function usePriceAlerts() {
     }
 
     try {
-      const newAlert = await db.priceAlerts.create({
+      const newAlert = await db.createPriceAlert({
         ...data,
         user_id: user.id,
       });
@@ -275,7 +275,7 @@ export function usePriceAlerts() {
     }
 
     try {
-      const updatedAlert = await db.priceAlerts.update(id, updates);
+      const updatedAlert = await db.updatePriceAlert(id, updates);
       setAlerts(prev => prev.map(alert => alert.id === id ? updatedAlert : alert));
       toast.success('Alerta atualizado!');
       return true;
@@ -293,7 +293,7 @@ export function usePriceAlerts() {
     }
 
     try {
-      await db.priceAlerts.delete(id);
+      await db.deletePriceAlert(id);
       setAlerts(prev => prev.filter(alert => alert.id !== id));
       toast.success('Alerta deletado!');
       return true;

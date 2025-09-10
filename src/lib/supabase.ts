@@ -231,6 +231,51 @@ export const db = {
     if (error) throw error;
   },
 
+  async updateWatchlist(id: string, updates: Database['public']['Tables']['watchlists']['Update']) {
+    const { data, error } = await supabase
+      .from('watchlists')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
+  },
+
+  async deleteWatchlist(id: string) {
+    const { error } = await supabase
+      .from('watchlists')
+      .delete()
+      .eq('id', id);
+    
+    if (error) throw error;
+  },
+
+  async getWatchlistItems(watchlistId: string) {
+    const { data, error } = await supabase
+      .from('watchlist_items')
+      .select('*')
+      .eq('watchlist_id', watchlistId)
+      .order('created_at', { ascending: false });
+    
+    if (error) throw error;
+    return data;
+  },
+
+  async updateWatchlistItem(watchlistId: string, itemId: string, updates: Database['public']['Tables']['watchlist_items']['Update']) {
+    const { data, error } = await supabase
+      .from('watchlist_items')
+      .update(updates)
+      .eq('watchlist_id', watchlistId)
+      .eq('item_id', itemId)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
+  },
+
   // Price Alerts
   async getUserPriceAlerts(userId: string) {
     const { data, error } = await supabase
@@ -265,6 +310,15 @@ export const db = {
     
     if (error) throw error;
     return data;
+  },
+
+  async deletePriceAlert(id: string) {
+    const { error } = await supabase
+      .from('price_alerts')
+      .delete()
+      .eq('id', id);
+    
+    if (error) throw error;
   },
 
   // User Activity
