@@ -1,12 +1,11 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase';
 
 export async function GET() {
   try {
-    const supabase = createClient();
 
     // Buscar planos ativos com suas features
-    const { data: plans, error: plansError } = await supabase
+    const { data: plans, error: plansError } = await supabaseAdmin
       .from('subscription_plans')
       .select(`
         id,
