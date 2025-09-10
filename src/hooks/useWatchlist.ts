@@ -339,9 +339,13 @@ export function usePriceAlerts() {
     }
 
     try {
+      // Modificamos a chamada para a função do banco de dados aqui.
       const newAlert = await db.createPriceAlert({
-        ...data,
         user_id: user.id,
+        item_id: data.item_id,
+        target_price: data.target_price,
+        // Convertemos a 'condition' para maiúsculas, como esperado pelo DB.
+        condition: data.condition.toUpperCase() as 'ABOVE' | 'BELOW',
       });
       
       // Mapear dados do banco para o formato da interface PriceAlert
