@@ -1,7 +1,6 @@
 'use client';
 
 import { BillingInterval } from '@/types/subscription';
-import { Badge } from '@/components/ui/Badge';
 
 interface BillingIntervalSelectorProps {
   selectedInterval: BillingInterval;
@@ -27,23 +26,18 @@ export function BillingIntervalSelector({
         >
           Mensal
         </button>
-        <div className="relative">
-          <button
-            onClick={() => onIntervalChange('yearly')}
-            className={`
-              px-6 py-3 text-sm font-medium rounded-md transition-all duration-200
-              ${selectedInterval === 'yearly'
-                ? 'bg-tarkov-accent text-black'
-                : 'text-tarkov-muted hover:text-tarkov-light'
-              }
-            `}
-          >
-            Anual
-          </button>
-          <Badge className="absolute -top-1 -right-1 bg-tarkov-success text-white text-xs px-2 py-1 rounded-full shadow-lg z-20">
-            Economize 17%
-          </Badge>
-        </div>
+        <button
+          onClick={() => onIntervalChange('yearly')}
+          className={`
+            px-6 py-3 text-sm font-medium rounded-md transition-all duration-200
+            ${selectedInterval === 'yearly'
+              ? 'bg-tarkov-accent text-black'
+              : 'text-tarkov-muted hover:text-tarkov-light'
+            }
+          `}
+        >
+          Anual
+        </button>
       </div>
     </div>
   );
