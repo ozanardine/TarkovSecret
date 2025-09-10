@@ -1,8 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Enable experimental features
+  exclude: ['node_modules', '.next'],
+
+  // Configurações experimentais
   experimental: {
-    // Disable optimized package imports to prevent stack overflow
     // optimizePackageImports: [
     //   '@heroicons/react',
     //   'react-hot-toast',
@@ -10,18 +11,18 @@ const nextConfig = {
     // ],
   },
 
-  // TypeScript configuration
+  // Configuração do TypeScript
   typescript: {
     ignoreBuildErrors: false,
   },
 
-  // ESLint configuration
+  // Configuração do ESLint
   eslint: {
     ignoreDuringBuilds: false,
     dirs: ['src'],
   },
 
-  // Image optimization
+  // Otimização de Imagens
   images: {
     domains: [
       'assets.tarkov.dev',
@@ -34,26 +35,13 @@ const nextConfig = {
     formats: ['image/webp', 'image/avif'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
-    minimumCacheTTL: 60 * 60 * 24 * 30, // 30 days
+    minimumCacheTTL: 60 * 60 * 24 * 30, // 30 dias
     dangerouslyAllowSVG: true,
-    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self';",
   },
 
-  // Webpack configuration
-  webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
-    // Add support for importing SVG as React components
-    // config.module.rules.push({
-    //   test: /\.svg$/,
-    //   use: ['@svgr/webpack'],
-    // });
-
-    // Add aliases for better imports
-    config.resolve.alias = {
-      ...config.resolve.alias,
-      '@': require('path').resolve(__dirname, 'src'),
-    };
-
-    // Add polyfills for Node.js modules in client-side code
+  // Configuração do Webpack para resolver problemas de compatibilidade
+  webpack: (config, { isServer }) => {
     if (!isServer) {
       config.resolve.fallback = {
         ...config.resolve.fallback,
@@ -63,63 +51,35 @@ const nextConfig = {
         crypto: false,
       };
     }
-
     return config;
   },
 
-  // Headers configuration
+  // Configuração de Cabeçalhos (Headers)
   async headers() {
     return [
       {
         source: '/(.*)',
         headers: [
-          {
-            key: 'X-DNS-Prefetch-Control',
-            value: 'on',
-          },
-          {
-            key: 'X-XSS-Protection',
-            value: '1; mode=block',
-          },
-          {
-            key: 'X-Frame-Options',
-            value: 'SAMEORIGIN',
-          },
-          {
-            key: 'X-Content-Type-Options',
-            value: 'nosniff',
-          },
-          {
-            key: 'Referrer-Policy',
-            value: 'strict-origin-when-cross-origin',
-          },
+          { key: 'X-DNS-Prefetch-Control', value: 'on' },
+          { key: 'X-XSS-Protection', value: '1; mode=block' },
+          { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
         ],
       },
     ];
   },
 
-  // Redirects configuration
+  // Configuração de Redirecionamentos (Redirects)
   async redirects() {
     return [
-      {
-        source: '/home',
-        destination: '/',
-        permanent: true,
-      },
-      {
-        source: '/login',
-        destination: '/auth/signin',
-        permanent: true,
-      },
-      {
-        source: '/register',
-        destination: '/auth/signup',
-        permanent: true,
-      },
+      { source: '/home', destination: '/', permanent: true },
+      { source: '/login', destination: '/auth/signin', permanent: true },
+      { source: '/register', destination: '/auth/signup', permanent: true },
     ];
   },
 
-  // Output configuration
+  // Configurações de Saída e Performance
   output: 'standalone',
   compress: true,
   poweredByHeader: false,
@@ -128,13 +88,10 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
 
-  // Compiler options
+  // Opções do compilador
   compiler: {
-    removeConsole: process.env.NODE_ENV === 'production' ? {
-      exclude: ['error', 'warn'],
-    } : false,
+    removeConsole: process.env.NODE_ENV === 'production',
   },
-
 };
 
 module.exports = nextConfig;
