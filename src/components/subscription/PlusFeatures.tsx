@@ -9,7 +9,8 @@ import {
   StarIcon, 
   CheckIcon, 
   LockClosedIcon,
-  ArrowRightIcon
+  ArrowRightIcon,
+  ShieldCheckIcon
 } from '@heroicons/react/24/outline';
 
 interface PlusFeaturesProps {
