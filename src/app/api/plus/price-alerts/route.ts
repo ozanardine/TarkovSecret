@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const { searchParams } = new URL(request.url);
+    const { searchParams } = request.nextUrl;
     const status = searchParams.get('status');
     const itemId = searchParams.get('itemId');
     const limit = parseInt(searchParams.get('limit') || '50');
@@ -429,7 +429,7 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    const { searchParams } = new URL(request.url);
+    const { searchParams } = request.nextUrl;
     const alertId = searchParams.get('alertId');
 
     if (!alertId) {

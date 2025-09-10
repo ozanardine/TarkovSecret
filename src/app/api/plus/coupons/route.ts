@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const { searchParams } = new URL(request.url);
+    const { searchParams } = request.nextUrl;
     const type = searchParams.get('type'); // 'available', 'used', 'all'
     const includeExpired = searchParams.get('includeExpired') === 'true';
 

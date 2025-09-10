@@ -3,7 +3,7 @@ import { tarkovDevApi } from '@/lib/tarkov-api';
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
+    const { searchParams } = request.nextUrl;
     const limit = searchParams.get('limit');
     const trader = searchParams.get('trader');
     const minLevel = searchParams.get('minLevel');

@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const { searchParams } = new URL(request.url);
+    const { searchParams } = request.nextUrl;
     const period = searchParams.get('period') || '30d'; // 7d, 30d, 90d, 1y
     const type = searchParams.get('type') || 'overview'; // overview, searches, items, performance
 

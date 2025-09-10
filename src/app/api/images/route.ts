@@ -342,7 +342,7 @@ export async function GET(request: NextRequest) {
   const startTime = Date.now();
   
   try {
-    const { searchParams } = new URL(request.url);
+    const { searchParams } = request.nextUrl;
     
     const requestData: ImageRequest = {
       type: (searchParams.get('type') as any) || 'all',

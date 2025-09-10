@@ -2,12 +2,12 @@
 const nextConfig = {
   // Enable experimental features
   experimental: {
-    // Enable optimized package imports
-    optimizePackageImports: [
-      '@heroicons/react',
-      'react-hot-toast',
-      'date-fns',
-    ],
+    // Disable optimized package imports to prevent stack overflow
+    // optimizePackageImports: [
+    //   '@heroicons/react',
+    //   'react-hot-toast',
+    //   'date-fns',
+    // ],
   },
 
   // TypeScript configuration
@@ -135,15 +135,6 @@ const nextConfig = {
     } : false,
   },
 
-  // Modularize imports
-  modularizeImports: {
-    '@heroicons/react/24/outline': {
-      transform: '@heroicons/react/24/outline/{{member}}',
-    },
-    '@heroicons/react/24/solid': {
-      transform: '@heroicons/react/24/solid/{{member}}',
-    },
-  },
 };
 
 module.exports = nextConfig;
