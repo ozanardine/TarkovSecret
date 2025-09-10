@@ -13,14 +13,14 @@ export function BillingIntervalSelector({
 }: BillingIntervalSelectorProps) {
   return (
     <div className="flex items-center justify-center mb-12">
-      <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-1 flex">
+      <div className="bg-tarkov-secondary/50 backdrop-blur-sm rounded-lg p-1 flex border border-tarkov-border/30">
         <button
           onClick={() => onIntervalChange('monthly')}
           className={`
             px-6 py-2 text-sm font-medium rounded-md transition-all duration-200
             ${selectedInterval === 'monthly'
-              ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
-              : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'
+              ? 'bg-tarkov-accent text-black shadow-glow'
+              : 'text-tarkov-muted hover:text-tarkov-light'
             }
           `}
         >
@@ -31,13 +31,13 @@ export function BillingIntervalSelector({
           className={`
             px-6 py-2 text-sm font-medium rounded-md transition-all duration-200 relative
             ${selectedInterval === 'yearly'
-              ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
-              : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'
+              ? 'bg-tarkov-accent text-black shadow-glow'
+              : 'text-tarkov-muted hover:text-tarkov-light'
             }
           `}
         >
           Anual
-          <span className="absolute -top-2 -right-2 bg-green-500 text-white text-xs px-2 py-0.5 rounded-full font-semibold">
+          <span className="absolute -top-2 -right-2 bg-tarkov-success text-white text-xs px-2 py-0.5 rounded-full font-semibold">
             -17%
           </span>
         </button>

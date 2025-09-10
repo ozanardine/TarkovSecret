@@ -49,16 +49,16 @@ export function PlanCard({
 
   return (
     <div className={`
-      relative bg-white dark:bg-gray-800 rounded-2xl shadow-lg border-2 transition-all duration-200 hover:shadow-xl
+      relative bg-tarkov-secondary/80 backdrop-blur-sm rounded-2xl shadow-dark-lg border-2 transition-all duration-200 hover:shadow-glow card-hover
       ${plan.isPopular 
-        ? 'border-blue-500 dark:border-blue-400 scale-105' 
-        : 'border-gray-200 dark:border-gray-700'
+        ? 'border-tarkov-accent scale-105' 
+        : 'border-tarkov-border/50'
       }
-      ${isCurrentPlan ? 'ring-2 ring-green-500 dark:ring-green-400' : ''}
+      ${isCurrentPlan ? 'ring-2 ring-tarkov-success' : ''}
     `}>
       {plan.isPopular && (
         <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-          <Badge className="bg-blue-500 text-white px-4 py-1 text-sm font-semibold">
+          <Badge className="bg-tarkov-accent text-black px-4 py-1 text-sm font-semibold shadow-glow">
             <StarIcon className="w-4 h-4 mr-1" />
             Mais Popular
           </Badge>
@@ -67,7 +67,7 @@ export function PlanCard({
 
       {isCurrentPlan && (
         <div className="absolute -top-4 right-4">
-          <Badge className="bg-green-500 text-white px-3 py-1 text-sm font-semibold">
+          <Badge className="bg-tarkov-success text-white px-3 py-1 text-sm font-semibold">
             Seu Plano
           </Badge>
         </div>
@@ -76,10 +76,10 @@ export function PlanCard({
       <div className="p-8">
         {/* Header */}
         <div className="text-center mb-8">
-          <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+          <h3 className="text-2xl font-bold text-tarkov-light mb-2">
             {plan.name}
           </h3>
-          <p className="text-gray-600 dark:text-gray-300 text-sm">
+          <p className="text-tarkov-muted text-sm">
             {plan.description}
           </p>
         </div>
@@ -87,18 +87,18 @@ export function PlanCard({
         {/* Pricing */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center mb-2">
-            <span className="text-4xl font-bold text-gray-900 dark:text-white">
+            <span className="text-4xl font-bold text-tarkov-light">
               R$ {price.toFixed(2).replace('.', ',')}
             </span>
             {price > 0 && (
-              <span className="text-gray-600 dark:text-gray-300 ml-2">
+              <span className="text-tarkov-muted ml-2">
                 /{isYearly ? 'ano' : 'mês'}
               </span>
             )}
           </div>
           
           {yearlyDiscount > 0 && (
-            <div className="inline-flex items-center px-3 py-1 rounded-full bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 text-sm font-medium">
+            <div className="inline-flex items-center px-3 py-1 rounded-full bg-tarkov-success/20 text-tarkov-success text-sm font-medium">
               Economize {yearlyDiscount}%
             </div>
           )}
@@ -108,13 +108,13 @@ export function PlanCard({
         <div className="space-y-4 mb-8">
           {plan.features.map((feature, index) => (
             <div key={index} className="flex items-start">
-              <CheckIcon className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
+              <CheckIcon className="w-5 h-5 text-tarkov-accent mr-3 mt-0.5 flex-shrink-0" />
               <div>
-                <div className="text-gray-900 dark:text-white font-medium text-sm">
+                <div className="text-tarkov-light font-medium text-sm">
                   {feature.title}
                 </div>
                 {feature.description && (
-                  <div className="text-gray-600 dark:text-gray-300 text-xs mt-1">
+                  <div className="text-tarkov-muted text-xs mt-1">
                     {feature.description}
                   </div>
                 )}
@@ -128,12 +128,12 @@ export function PlanCard({
           onClick={handleSelectPlan}
           disabled={isLoading}
           className={`
-            w-full py-3 text-sm font-semibold rounded-lg transition-all duration-200
+            w-full py-3 text-sm font-semibold rounded-lg transition-all duration-200 btn-hover
             ${plan.name === 'Free' 
-              ? 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-600' 
+              ? 'bg-tarkov-tertiary text-tarkov-light hover:bg-tarkov-hover' 
               : plan.isPopular
-                ? 'bg-blue-600 hover:bg-blue-700 text-white'
-                : 'bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-200'
+                ? 'bg-tarkov-accent hover:bg-tarkov-accent/90 text-black shadow-glow'
+                : 'bg-tarkov-secondary text-tarkov-light hover:bg-tarkov-tertiary'
             }
           `}
         >
