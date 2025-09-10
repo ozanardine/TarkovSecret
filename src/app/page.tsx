@@ -23,11 +23,6 @@ import {
 import Link from 'next/link';
 
 const HomePage: React.FC = () => {
-  const handleSearch = (query: string) => {
-    if (query.trim()) {
-      window.location.href = `/search?q=${encodeURIComponent(query.trim())}`;
-    }
-  };
 
   const features = [
     {
@@ -116,19 +111,17 @@ const HomePage: React.FC = () => {
           
           {/* Search Bar */}
           <div className="max-w-2xl mx-auto mb-8">
-            <form onSubmit={(e) => {
-              e.preventDefault();
-              const formData = new FormData(e.currentTarget);
-              const query = formData.get('search') as string;
-              handleSearch(query);
-            }}>
-              <Input
-                name="search"
-                placeholder="Buscar itens, armas, equipamentos..."
-                className="w-full h-12 text-lg"
-                leftIcon={<Search className="w-4 h-4" />}
-              />
-            </form>
+            <Link href="/search">
+              <div className="relative cursor-pointer">
+                <Input
+                  placeholder="Buscar itens, armas, equipamentos..."
+                  className="w-full h-12 text-lg"
+                  leftIcon={<Search className="w-4 h-4" />}
+                  readOnly
+                />
+                <div className="absolute inset-0 bg-transparent"></div>
+              </div>
+            </Link>
           </div>
 
           {/* CTA Buttons */}
