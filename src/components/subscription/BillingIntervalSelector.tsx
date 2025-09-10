@@ -40,7 +40,7 @@ export function BillingIntervalSelector({
           >
             Anual
           </button>
-          <Badge className="absolute -top-2 -right-2 bg-tarkov-success text-white text-xs px-2 py-1 rounded-full shadow-lg z-20 transform -translate-y-1 translate-x-1">
+          <Badge className="absolute -top-1 -right-1 bg-tarkov-success text-white text-xs px-2 py-1 rounded-full shadow-lg z-20">
             Economize 17%
           </Badge>
         </div>
