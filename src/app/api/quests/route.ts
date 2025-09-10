@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { tarkovDevApi } from '@/lib/tarkov-api';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = request.nextUrl;
