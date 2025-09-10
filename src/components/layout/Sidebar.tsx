@@ -96,7 +96,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
       icon: <Home className="w-5 h-5" />,
     },
     {
-      label: 'Secret Tarkov PLUS',
+      label: 'Secret Plus',
       href: '/subscription',
       icon: <Crown className="w-5 h-5" />,
       badge: 'Premium',
@@ -330,7 +330,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
             <div className="bg-gradient-to-br from-tarkov-accent/20 to-purple-500/20 border border-tarkov-accent/30 rounded-lg p-4">
               <div className="flex items-center gap-2 mb-2">
                 <Crown className="w-5 h-5 text-tarkov-accent" />
-                <span className="font-semibold text-tarkov-light">Secret Tarkov Plus</span>
+                <span className="font-semibold text-tarkov-light">Secret Plus</span>
               </div>
               
               <ul className="text-xs text-tarkov-muted space-y-1 mb-3">
