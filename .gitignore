@@ -201,3 +201,4 @@ $RECYCLE.BIN/
 *.lnk
 
 documentacao/
+supabase/migrations/20250108000003_subscription_plans.sql

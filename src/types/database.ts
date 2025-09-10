@@ -678,6 +678,94 @@ export interface Database {
           }
         ]
       }
+      subscription_plans: {
+        Row: {
+          id: string
+          name: string
+          description: string | null
+          price_monthly: number
+          price_yearly: number
+          stripe_price_id_monthly: string | null
+          stripe_price_id_yearly: string | null
+          features: Json
+          is_popular: boolean
+          is_active: boolean
+          sort_order: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          description?: string | null
+          price_monthly: number
+          price_yearly: number
+          stripe_price_id_monthly?: string | null
+          stripe_price_id_yearly?: string | null
+          features?: Json
+          is_popular?: boolean
+          is_active?: boolean
+          sort_order?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          description?: string | null
+          price_monthly?: number
+          price_yearly?: number
+          stripe_price_id_monthly?: string | null
+          stripe_price_id_yearly?: string | null
+          features?: Json
+          is_popular?: boolean
+          is_active?: boolean
+          sort_order?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      subscription_features: {
+        Row: {
+          id: string
+          plan_id: string
+          feature_key: string
+          feature_title: string
+          feature_description: string | null
+          is_included: boolean
+          sort_order: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          plan_id: string
+          feature_key: string
+          feature_title: string
+          feature_description?: string | null
+          is_included?: boolean
+          sort_order?: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          plan_id?: string
+          feature_key?: string
+          feature_title?: string
+          feature_description?: string | null
+          is_included?: boolean
+          sort_order?: number
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscription_features_plan_id_fkey"
+            columns: ["plan_id"]
+            referencedRelation: "subscription_plans"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
     }
     Views: {
       [_ in never]: never
