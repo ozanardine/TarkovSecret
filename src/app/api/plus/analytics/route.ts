@@ -1,12 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+import { getServerSession, authOptions } from '@/lib/auth';
 import { supabaseAdmin } from '@/lib/supabase';
 
 // Advanced analytics for PLUS users
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession();
     
     if (!session?.user?.email) {
       return NextResponse.json(

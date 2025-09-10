@@ -1,13 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+import { getServerSession, authOptions } from '@/lib/auth';
 import { supabaseAdmin } from '@/lib/supabase';
 import { stripe } from '@/lib/stripe';
 
 // Coupon and promotion management
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession();
     
     if (!session?.user?.email) {
       return NextResponse.json(
@@ -124,7 +123,7 @@ export async function GET(request: NextRequest) {
 // Validate and apply coupon
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession();
     
     if (!session?.user?.email) {
       return NextResponse.json(

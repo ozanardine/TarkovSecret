@@ -251,3 +251,9 @@ export async function isUserPlus(userId: string): Promise<boolean> {
 }
 
 export default authOptions;
+
+// Helper function to get server session
+export async function getServerSession() {
+  const { getServerSession: getSession } = await import('next-auth/next');
+  return getSession(authOptions);
+}
