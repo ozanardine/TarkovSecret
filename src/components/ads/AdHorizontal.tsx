@@ -7,7 +7,7 @@ import { ArrowRightIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
 interface AdHorizontalProps {
   className?: string;
-  variant?: 'premium' | 'upgrade' | 'sponsored';
+  variant?: 'upgrade' | 'sponsored';
   title?: string;
   description?: string;
   ctaText?: string;
@@ -96,14 +96,6 @@ export function AdHorizontal({
 
   const getVariantStyles = () => {
     switch (variant) {
-      case 'premium':
-        return {
-          bg: 'bg-gradient-to-r from-yellow-900/20 to-orange-900/20',
-          border: 'border-yellow-500/30',
-          text: 'text-yellow-300',
-          accent: 'text-yellow-400',
-          button: 'bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-500 hover:to-orange-500'
-        };
       case 'sponsored':
         return {
           bg: 'bg-gradient-to-r from-cyan-900/20 to-blue-900/20',
@@ -125,12 +117,9 @@ export function AdHorizontal({
 
   const styles = getVariantStyles();
   const defaultTitle = variant === 'upgrade' ? 'Upgrade para Secret Plus' : 
-                      variant === 'premium' ? 'Oferta Premium' : 
                       'Anúncio Patrocinado';
   const defaultDescription = variant === 'upgrade' ? 
     'Remova anúncios e desbloqueie recursos exclusivos' :
-    variant === 'premium' ?
-    'Aproveite nossa oferta premium limitada' :
     'Descubra mais sobre nossos produtos';
   const defaultCtaText = variant === 'upgrade' ? 'Fazer Upgrade' : 'Saiba Mais';
 
