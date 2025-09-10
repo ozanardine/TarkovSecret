@@ -90,30 +90,6 @@ export default function SubscriptionPage() {
               acompanhe tendências e domine o mercado como nunca antes.
             </p>
 
-            {/* Estatísticas */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-tarkov-accent mb-2">+50K</div>
-                <div className="text-tarkov-muted">Jogadores Ativos</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-tarkov-accent mb-2">R$ 2.5M+</div>
-                <div className="text-tarkov-muted">Lucros Gerados</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-tarkov-accent mb-2">99.9%</div>
-                <div className="text-tarkov-muted">Precisão dos Dados</div>
-              </div>
-            </div>
-
-            {/* Billing Interval Selector */}
-            <div className="mb-8">
-              <BillingIntervalSelector
-                selectedInterval={billingInterval}
-                onIntervalChange={setBillingInterval}
-              />
-            </div>
-
             {/* CTA Principal */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button

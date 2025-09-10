@@ -141,7 +141,7 @@ export function PlanCard({
         className={`
           w-full py-3 font-semibold transition-all duration-300
           ${plan.name === 'Free' 
-            ? 'bg-tarkov-secondary hover:bg-tarkov-hover text-tarkov-light' 
+            ? 'bg-tarkov-accent hover:bg-tarkov-accent/90 text-white' 
             : plan.isPopular
               ? 'bg-tarkov-accent hover:bg-tarkov-accent/90 text-white'
               : 'bg-tarkov-secondary hover:bg-tarkov-hover text-tarkov-light'

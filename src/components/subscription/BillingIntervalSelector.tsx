@@ -27,21 +27,23 @@ export function BillingIntervalSelector({
         >
           Mensal
         </button>
-        <button
-          onClick={() => onIntervalChange('yearly')}
-          className={`
-            px-6 py-3 text-sm font-medium rounded-md transition-all duration-200 relative
-            ${selectedInterval === 'yearly'
-              ? 'bg-tarkov-accent text-black'
-              : 'text-tarkov-muted hover:text-tarkov-light'
-            }
-          `}
-        >
-          Anual
+        <div className="relative">
+          <button
+            onClick={() => onIntervalChange('yearly')}
+            className={`
+              px-6 py-3 text-sm font-medium rounded-md transition-all duration-200
+              ${selectedInterval === 'yearly'
+                ? 'bg-tarkov-accent text-black'
+                : 'text-tarkov-muted hover:text-tarkov-light'
+              }
+            `}
+          >
+            Anual
+          </button>
           <Badge className="absolute -top-2 -right-2 bg-tarkov-success text-white text-xs px-2 py-0.5">
             Economize 17%
           </Badge>
-        </button>
+        </div>
       </div>
     </div>
   );
