@@ -24,6 +24,11 @@ export function useAuth() {
       'discord_integration',
       'custom_themes',
       'advanced_analytics',
+      'ad_free',
+      'early_access',
+      'api_access',
+      'analytics',
+      'coupons',
     ];
     
     if (plusFeatures.includes(feature)) {

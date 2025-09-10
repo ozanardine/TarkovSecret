@@ -19,6 +19,11 @@ interface PlusFeaturesProps {
 
 const plusFeatures = [
   {
+    title: 'Experiência Sem Anúncios',
+    description: 'Navegue sem interrupções! Usuários Plus desfrutam de uma experiência completamente livre de anúncios e distrações.',
+    icon: ShieldCheckIcon,
+  },
+  {
     title: 'Lista de Favoritos Ilimitada',
     description: 'Adicione quantos itens quiser às suas listas de favoritos',
     icon: StarIcon,
