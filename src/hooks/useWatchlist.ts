@@ -95,7 +95,13 @@ export function useWatchlists() {
     }
 
     try {
-      const updatedWatchlist = await db.updateWatchlist(id, updates);
+      // Converter campos camelCase para snake_case para o banco
+      const dbUpdates: any = {};
+      if (updates.name !== undefined) dbUpdates.name = updates.name;
+      if (updates.description !== undefined) dbUpdates.description = updates.description;
+      if (updates.isPublic !== undefined) dbUpdates.is_public = updates.isPublic;
+      
+      const updatedWatchlist = await db.updateWatchlist(id, dbUpdates);
       // Mapear dados do banco para o formato da interface Watchlist
       const mappedWatchlist = {
         id: updatedWatchlist.id,
@@ -197,7 +203,6 @@ export function useWatchlistItems(watchlistId: string | null) {
 
     try {
       const newItem = await db.addToWatchlist(watchlistId, {
-        watchlist_id: watchlistId,
         item_id: itemId,
         notes,
       });
@@ -251,7 +256,7 @@ export function useWatchlistItems(watchlistId: string | null) {
     try {
       const updatedItem = await db.updateWatchlistItem(watchlistId, itemId, { notes });
       setItems(prev => prev.map(item => 
-        item.itemId === itemId ? { ...item, notes: updatedItem.notes } : item
+        item.itemId === itemId ? { ...item, notes: updatedItem.notes || undefined } : item
       ));
       toast.success('Notas atualizadas!');
       return true;
@@ -368,7 +373,15 @@ export function usePriceAlerts() {
     }
 
     try {
-      const updatedAlert = await db.updatePriceAlert(id, updates);
+      // Converter campos camelCase para snake_case para o banco
+      const dbUpdates: any = {};
+      if (updates.targetPrice !== undefined) dbUpdates.target_price = updates.targetPrice;
+      if (updates.condition !== undefined) dbUpdates.condition = updates.condition;
+      if (updates.isActive !== undefined) dbUpdates.is_active = updates.isActive;
+      if (updates.triggered !== undefined) dbUpdates.triggered = updates.triggered;
+      if (updates.triggeredAt !== undefined) dbUpdates.triggered_at = updates.triggeredAt;
+      
+      const updatedAlert = await db.updatePriceAlert(id, dbUpdates);
       // Mapear dados do banco para o formato da interface PriceAlert
       const mappedAlert = {
         id: updatedAlert.id,
@@ -414,15 +427,15 @@ export function usePriceAlerts() {
     const alert = alerts.find(a => a.id === id);
     if (!alert) return false;
 
-    return updateAlert(id, { is_active: !alert.is_active });
+    return updateAlert(id, { isActive: !alert.isActive });
   }, [alerts, updateAlert]);
 
   const getActiveAlerts = useCallback(() => {
-    return alerts.filter(alert => alert.is_active);
+    return alerts.filter(alert => alert.isActive);
   }, [alerts]);
 
   const getAlertsForItem = useCallback((itemId: string) => {
-    return alerts.filter(alert => alert.item_id === itemId);
+    return alerts.filter(alert => alert.itemId === itemId);
   }, [alerts]);
 
   return {
