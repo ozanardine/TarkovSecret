@@ -9,7 +9,7 @@ if (!isStripeConfigured) {
 
 export const stripe = isStripeConfigured 
   ? new Stripe(process.env.STRIPE_SECRET_KEY!, {
-      apiVersion: '2024-12-18.acacia',
+      apiVersion: '2025-08-27.basil',
       typescript: true,
     })
   : null;
@@ -103,6 +103,10 @@ export const stripeHelpers = {
 export const stripeApi = {
   // Create or get customer
   async createOrGetCustomer(email: string, name: string, userId: string) {
+    if (!stripe) {
+      throw new Error('Stripe is not configured');
+    }
+    
     try {
       // First, try to find existing customer
       const existingCustomers = await stripe.customers.list({
@@ -144,6 +148,10 @@ export const stripeApi = {
     cancelUrl: string;
     trialPeriodDays?: number;
   }) {
+    if (!stripe) {
+      throw new Error('Stripe is not configured');
+    }
+    
     try {
       const sessionConfig: any = {
         customer: customerId,
@@ -185,6 +193,10 @@ export const stripeApi = {
 
   // Create customer portal session
   async createPortalSession(customerId: string, returnUrl: string) {
+    if (!stripe) {
+      throw new Error('Stripe is not configured');
+    }
+    
     try {
       const session = await stripe.billingPortal.sessions.create({
         customer: customerId,
@@ -200,6 +212,10 @@ export const stripeApi = {
 
   // Get subscription details
   async getSubscription(subscriptionId: string) {
+    if (!stripe) {
+      throw new Error('Stripe is not configured');
+    }
+    
     try {
       const subscription = await stripe.subscriptions.retrieve(subscriptionId, {
         expand: ['latest_invoice', 'customer'],
@@ -214,6 +230,10 @@ export const stripeApi = {
 
   // Cancel subscription
   async cancelSubscription(subscriptionId: string, immediately = false) {
+    if (!stripe) {
+      throw new Error('Stripe is not configured');
+    }
+    
     try {
       if (immediately) {
         const subscription = await stripe.subscriptions.cancel(subscriptionId);
@@ -232,6 +252,10 @@ export const stripeApi = {
 
   // Reactivate subscription
   async reactivateSubscription(subscriptionId: string) {
+    if (!stripe) {
+      throw new Error('Stripe is not configured');
+    }
+    
     try {
       const subscription = await stripe.subscriptions.update(subscriptionId, {
         cancel_at_period_end: false,
@@ -246,6 +270,10 @@ export const stripeApi = {
 
   // Get customer's subscriptions
   async getCustomerSubscriptions(customerId: string) {
+    if (!stripe) {
+      throw new Error('Stripe is not configured');
+    }
+    
     try {
       const subscriptions = await stripe.subscriptions.list({
         customer: customerId,

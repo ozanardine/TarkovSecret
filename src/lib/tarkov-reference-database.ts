@@ -73,7 +73,7 @@ export class TarkovReferenceDatabase {
     
     const results: Array<{ item: TarkovItemReference; similarity: number }> = [];
     
-    for (const item of this.items.values()) {
+    for (const item of Array.from(this.items.values())) {
       // Verificação de segurança para item e suas features
       if (!item || !item.features || !item.features.colorHistogram || 
           !item.features.edgeFeatures || !item.features.textureFeatures || 
@@ -108,7 +108,7 @@ export class TarkovReferenceDatabase {
       return results;
     }
     
-    for (const item of this.items.values()) {
+    for (const item of Array.from(this.items.values())) {
       // Busca no nome
       if (item.name.toLowerCase().includes(normalizedQuery)) {
         results.push(item);
@@ -212,7 +212,7 @@ export class TarkovReferenceDatabase {
     this.categoryIndex.clear();
     this.nameIndex.clear();
     
-    for (const item of this.items.values()) {
+    for (const item of Array.from(this.items.values())) {
       this.updateIndexes(item);
     }
   }

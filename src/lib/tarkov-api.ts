@@ -2020,16 +2020,16 @@ export const tarkovApi = {
     `;
 
     try {
-      const response = await request(TARKOV_DEV_ENDPOINT, query, {
-        lang: currentLanguage as LanguageCode,
+      const response = await request(TARKOV_API_URL, query, {
+        lang: currentLanguage as SupportedLanguage,
       });
 
-      if (!response?.crafts) {
+      if (!(response as any)?.crafts) {
         throw new Error('Invalid API response structure');
       }
 
       // Filter crafts that use the specific item
-      const craftsForItem = response.crafts.filter((craft: any) =>
+      const craftsForItem = (response as any).crafts.filter((craft: any) =>
         craft.requiredItems.some((req: any) => req.item.id === itemId) ||
         craft.rewardItems.some((reward: any) => reward.item.id === itemId)
       );

@@ -251,7 +251,7 @@ export class IntelligentItemMatcher {
       );
       
       return nameMatch || aliasMatch || tagMatch;
-    }).slice(0, this.maxResults);
+    }).slice(0, this.config.maxResults);
   }
 
   /**

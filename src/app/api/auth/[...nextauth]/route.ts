@@ -1,21 +1,13 @@
 import NextAuth from 'next-auth';
-import GoogleProvider from 'next-auth/providers/google';
-
-const authOptions = {
-  providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    }),
-  ],
-  pages: {
-    signIn: '/auth/signin',
-  },
-  session: {
-    strategy: 'jwt' as const,
-  },
-};
+import { authOptions } from '@/lib/auth';
+import { NextRequest } from 'next/server';
 
 const handler = NextAuth(authOptions);
 
-export { handler as GET, handler as POST };
+export async function GET(request: NextRequest) {
+  return (handler as any).GET(request);
+}
+
+export async function POST(request: NextRequest) {
+  return (handler as any).POST(request);
+}

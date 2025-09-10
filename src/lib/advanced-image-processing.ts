@@ -124,6 +124,18 @@ const mockJimpRead = async (input: File | Buffer | string): Promise<Jimp> => {
 
 const Jimp = {
   read: mockJimpRead,
+  create: async (width: number, height: number, color: number) => {
+    const image = new MockJimp(width, height);
+    // Preenche com a cor especificada
+    for (let i = 0; i < width * height; i++) {
+      const idx = i * 4;
+      image.bitmap.data[idx] = (color >> 24) & 255;     // R
+      image.bitmap.data[idx + 1] = (color >> 16) & 255; // G
+      image.bitmap.data[idx + 2] = (color >> 8) & 255;  // B
+      image.bitmap.data[idx + 3] = color & 255;         // A
+    }
+    return image;
+  },
   intToRGBA: (int: number) => ({
     r: (int >> 24) & 255,
     g: (int >> 16) & 255,
@@ -264,7 +276,7 @@ export class AdvancedImageProcessor {
       width,
       height,
       format: 'processed',
-      quality: this.calculateImageQuality(image),
+      quality: await this.calculateImageQuality(image),
       hasMultipleItems,
       backgroundType
     };
@@ -280,7 +292,7 @@ export class AdvancedImageProcessor {
     const grayImage = image.clone().grayscale();
     
     // Detecta bordas usando filtro Sobel
-    const edges = await this.detectEdges(grayImage);
+    const edges = await this.detectEdgesJimp(grayImage);
     
     // Encontra contornos e regiões de interesse
     const contours = await this.findContours(edges);
@@ -311,10 +323,10 @@ export class AdvancedImageProcessor {
   /**
    * Detecta bordas na imagem usando filtro Sobel
    */
-  private async detectEdges(image: Jimp): Promise<Jimp> {
+  private async detectEdgesJimp(image: Jimp): Promise<Jimp> {
     const width = image.getWidth();
     const height = image.getHeight();
-    const edgeImage = new Jimp(width, height, 0x000000ff);
+    const edgeImage = await Jimp.create(width, height, 0x000000ff);
     
     // Kernels Sobel
     const sobelX = [[-1, 0, 1], [-2, 0, 2], [-1, 0, 1]];
@@ -568,7 +580,7 @@ export class AdvancedImageProcessor {
    * Extrai características de bordas
    */
   private async extractEdgeFeatures(image: Jimp): Promise<number[]> {
-    const edges = await this.detectEdges(image.clone().grayscale());
+    const edges = await this.detectEdgesJimp(image.clone().grayscale());
     const features: number[] = [];
     
     // Conta pixels de borda por região
@@ -662,7 +674,7 @@ export class AdvancedImageProcessor {
     features.push(nonTransparentPixels / totalPixels);
     
     // Compacidade (perímetro² / área)
-    const edges = await this.detectEdges(image.clone().grayscale());
+    const edges = await this.detectEdgesJimp(image.clone().grayscale());
     let perimeterPixels = 0;
     
     edges.scan(0, 0, edges.getWidth(), edges.getHeight(), (x, y, idx) => {
@@ -695,7 +707,7 @@ export class AdvancedImageProcessor {
     };
     
     // Compara com base de dados de referência
-    for (const [itemId, refFeatures] of this.referenceDatabase) {
+    for (const [itemId, refFeatures] of Array.from(this.referenceDatabase.entries())) {
       const similarity = this.calculateFeatureSimilarity(features, refFeatures);
       
       if (similarity > bestMatch.confidence) {
@@ -781,7 +793,7 @@ export class AdvancedImageProcessor {
    * Detecta se há múltiplos itens na imagem
    */
   private async detectMultipleItems(image: Jimp): Promise<boolean> {
-    const edges = await this.detectEdges(image.clone().grayscale());
+    const edges = await this.detectEdgesJimp(image.clone().grayscale());
     const contours = await this.findContours(edges);
     
     // Filtra contornos válidos
@@ -796,9 +808,9 @@ export class AdvancedImageProcessor {
   /**
    * Calcula qualidade da imagem
    */
-  private calculateImageQuality(image: Jimp): number {
+  private async calculateImageQuality(image: Jimp): Promise<number> {
     // Calcula qualidade baseada em nitidez e contraste
-    const edges = this.detectEdges(image.clone().grayscale());
+    const edges = await this.detectEdgesJimp(image.clone().grayscale());
     let edgeStrength = 0;
     let totalPixels = 0;
     
