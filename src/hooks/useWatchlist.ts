@@ -24,7 +24,7 @@ export function useWatchlists() {
         id: watchlist.id,
         userId: watchlist.user_id,
         name: watchlist.name,
-        description: watchlist.description,
+        description: watchlist.description || undefined,
         isPublic: watchlist.is_public,
         createdAt: new Date(watchlist.created_at),
         updatedAt: new Date(watchlist.updated_at),
@@ -32,11 +32,11 @@ export function useWatchlists() {
           id: item.id,
           watchlistId: item.watchlist_id,
           itemId: item.item_id,
-          targetPrice: item.target_price,
+          targetPrice: item.target_price || undefined,
           priceDirection: item.price_direction as 'ABOVE' | 'BELOW',
           notifyOnChange: item.notify_on_change,
           addedAt: new Date(item.added_at),
-          notes: item.notes
+          notes: item.notes || undefined
         })) || []
       }));
       setWatchlists(mappedWatchlists);
@@ -71,7 +71,7 @@ export function useWatchlists() {
         id: newWatchlist.id,
         userId: newWatchlist.user_id,
         name: newWatchlist.name,
-        description: newWatchlist.description,
+        description: newWatchlist.description || undefined,
         isPublic: newWatchlist.is_public,
         createdAt: new Date(newWatchlist.created_at),
         updatedAt: new Date(newWatchlist.updated_at),
@@ -101,7 +101,7 @@ export function useWatchlists() {
         id: updatedWatchlist.id,
         userId: updatedWatchlist.user_id,
         name: updatedWatchlist.name,
-        description: updatedWatchlist.description,
+        description: updatedWatchlist.description || undefined,
         isPublic: updatedWatchlist.is_public,
         createdAt: new Date(updatedWatchlist.created_at),
         updatedAt: new Date(updatedWatchlist.updated_at),
@@ -169,11 +169,11 @@ export function useWatchlistItems(watchlistId: string | null) {
         id: item.id,
         watchlistId: item.watchlist_id,
         itemId: item.item_id,
-        targetPrice: item.target_price,
+        targetPrice: item.target_price || undefined,
         priceDirection: item.price_direction as 'ABOVE' | 'BELOW',
         notifyOnChange: item.notify_on_change,
         addedAt: new Date(item.added_at),
-        notes: item.notes
+        notes: item.notes || undefined
       }));
       setItems(mappedItems);
     } catch (err) {
@@ -207,11 +207,11 @@ export function useWatchlistItems(watchlistId: string | null) {
         id: newItem.id,
         watchlistId: newItem.watchlist_id,
         itemId: newItem.item_id,
-        targetPrice: newItem.target_price,
+        targetPrice: newItem.target_price || undefined,
         priceDirection: newItem.price_direction as 'ABOVE' | 'BELOW',
         notifyOnChange: newItem.notify_on_change,
         addedAt: new Date(newItem.added_at),
-        notes: newItem.notes
+        notes: newItem.notes || undefined
       };
       
       setItems(prev => [...prev, mappedItem]);
