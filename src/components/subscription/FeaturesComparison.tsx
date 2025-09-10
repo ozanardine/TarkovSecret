@@ -1,6 +1,7 @@
 'use client';
 
 import { SubscriptionPlan } from '@/types/subscription';
+import { Card } from '@/components/ui/Card';
 import { CheckIcon, XMarkIcon } from '@heroicons/react/24/solid';
 
 interface FeaturesComparisonProps {
@@ -19,29 +20,31 @@ export function FeaturesComparison({ plans }: FeaturesComparisonProps) {
   }, [] as typeof plans[0]['features']);
 
   return (
-    <div className="bg-gradient-to-br from-gray-900/90 to-gray-800/90 backdrop-blur-sm rounded-3xl shadow-2xl overflow-hidden border border-gray-700/50">
-      <div className="px-10 py-8 border-b border-gray-700/50 bg-gradient-to-r from-blue-900/20 to-purple-900/20">
-        <h3 className="text-3xl font-bold text-white text-center mb-3">
+    <Card className="overflow-hidden">
+      <div className="p-6 border-b border-tarkov-border bg-tarkov-secondary/30">
+        <h3 className="text-2xl font-bold text-tarkov-light text-center mb-2">
           Comparação de Recursos
         </h3>
-        <p className="text-gray-400 text-center text-lg">
+        <p className="text-tarkov-muted text-center">
           Veja todos os recursos incluídos em cada plano
         </p>
       </div>
+  );
+}
 
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-gray-700/50 bg-gradient-to-r from-gray-800/50 to-gray-700/50">
-              <th className="text-left py-6 px-8 text-lg font-bold text-white">
+            <tr className="border-b border-tarkov-border bg-tarkov-secondary/20">
+              <th className="text-left py-4 px-6 text-base font-semibold text-tarkov-light">
                 Recursos
               </th>
               {plans.map((plan) => (
-                <th key={plan.id} className="text-center py-6 px-8">
-                  <div className="text-2xl font-bold text-white mb-2">
+                <th key={plan.id} className="text-center py-4 px-6">
+                  <div className="text-lg font-bold text-tarkov-light mb-1">
                     {plan.name}
                   </div>
-                  <div className="text-lg text-gray-400">
+                  <div className="text-sm text-tarkov-muted">
                     {plan.price.monthly === 0 ? 'Gratuito' : `R$ ${plan.price.monthly.toFixed(2).replace('.', ',')}/mês`}
                   </div>
                 </th>
@@ -52,14 +55,16 @@ export function FeaturesComparison({ plans }: FeaturesComparisonProps) {
             {allFeatures.map((feature, index) => (
               <tr 
                 key={feature.key} 
-                className="border-b border-gray-700/30 hover:bg-gray-800/30 transition-colors group"
+                className={`border-b border-tarkov-border/30 hover:bg-tarkov-secondary/10 transition-colors ${
+                  index % 2 === 0 ? 'bg-tarkov-secondary/5' : ''
+                }`}
               >
-                <td className="py-6 px-8 group-hover:bg-gray-800/20 transition-colors">
-                  <div className="font-semibold text-white text-lg">
+                <td className="py-4 px-6">
+                  <div className="font-medium text-tarkov-light">
                     {feature.title}
                   </div>
                   {feature.description && (
-                    <div className="text-sm text-gray-400 mt-2 leading-relaxed">
+                    <div className="text-sm text-tarkov-muted mt-1">
                       {feature.description}
                     </div>
                   )}
@@ -67,14 +72,14 @@ export function FeaturesComparison({ plans }: FeaturesComparisonProps) {
                 {plans.map((plan) => {
                   const hasFeature = plan.features.some(f => f.key === feature.key);
                   return (
-                    <td key={plan.id} className="text-center py-6 px-8 group-hover:bg-gray-800/20 transition-colors">
+                    <td key={plan.id} className="text-center py-4 px-6">
                       {hasFeature ? (
-                        <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-500 rounded-full flex items-center justify-center mx-auto">
-                          <CheckIcon className="w-5 h-5 text-white" />
+                        <div className="w-6 h-6 bg-tarkov-success rounded-full flex items-center justify-center mx-auto">
+                          <CheckIcon className="w-4 h-4 text-white" />
                         </div>
                       ) : (
-                        <div className="w-8 h-8 bg-gradient-to-br from-gray-600 to-gray-700 rounded-full flex items-center justify-center mx-auto">
-                          <XMarkIcon className="w-5 h-5 text-gray-400" />
+                        <div className="w-6 h-6 bg-tarkov-secondary rounded-full flex items-center justify-center mx-auto">
+                          <XMarkIcon className="w-4 h-4 text-tarkov-muted" />
                         </div>
                       )}
                     </td>
@@ -85,6 +90,4 @@ export function FeaturesComparison({ plans }: FeaturesComparisonProps) {
           </tbody>
         </table>
       </div>
-    </div>
-  );
-}
+    </Card>

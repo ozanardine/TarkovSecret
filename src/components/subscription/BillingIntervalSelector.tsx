@@ -1,6 +1,7 @@
 'use client';
 
 import { BillingInterval } from '@/types/subscription';
+import { Badge } from '@/components/ui/Badge';
 
 interface BillingIntervalSelectorProps {
   selectedInterval: BillingInterval;
@@ -13,11 +14,11 @@ export function BillingIntervalSelector({
 }: BillingIntervalSelectorProps) {
   return (
     <div className="flex items-center justify-center mb-12">
-      <div className="bg-tarkov-secondary/50 backdrop-blur-sm rounded-lg p-1 flex border border-tarkov-border/30">
+      <div className="bg-tarkov-secondary/50 rounded-lg p-1 flex border border-tarkov-border">
         <button
           onClick={() => onIntervalChange('monthly')}
           className={`
-            px-6 py-2 text-sm font-medium rounded-md transition-all duration-200
+            px-6 py-3 text-sm font-medium rounded-md transition-all duration-200
             ${selectedInterval === 'monthly'
               ? 'bg-tarkov-accent text-black'
               : 'text-tarkov-muted hover:text-tarkov-light'
@@ -29,7 +30,7 @@ export function BillingIntervalSelector({
         <button
           onClick={() => onIntervalChange('yearly')}
           className={`
-            px-6 py-2 text-sm font-medium rounded-md transition-all duration-200 relative
+            px-6 py-3 text-sm font-medium rounded-md transition-all duration-200 relative
             ${selectedInterval === 'yearly'
               ? 'bg-tarkov-accent text-black'
               : 'text-tarkov-muted hover:text-tarkov-light'
@@ -37,9 +38,9 @@ export function BillingIntervalSelector({
           `}
         >
           Anual
-          <span className="absolute -top-2 -right-2 bg-tarkov-success text-white text-xs px-2 py-0.5 rounded-full font-semibold">
-            -17%
-          </span>
+          <Badge className="absolute -top-2 -right-2 bg-tarkov-success text-white text-xs px-2 py-0.5">
+            Economize 17%
+          </Badge>
         </button>
       </div>
     </div>
