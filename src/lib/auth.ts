@@ -10,6 +10,13 @@ export const authOptions = {
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      authorization: {
+        params: {
+          prompt: "consent",
+          access_type: "offline",
+          response_type: "code"
+        }
+      }
     }),
   ] : [],
   
@@ -22,8 +29,16 @@ export const authOptions = {
   // Configure the base URL for production
   url: process.env.NEXTAUTH_URL || 'https://tarkovsecret.vercel.app',
   
+  // Secret for JWT signing
+  secret: process.env.NEXTAUTH_SECRET,
+  
   session: {
     strategy: 'jwt' as const,
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+  },
+  
+  // JWT configuration
+  jwt: {
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   

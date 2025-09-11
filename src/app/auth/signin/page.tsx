@@ -4,7 +4,7 @@ import React from 'react';
 import { signIn, getSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { PageLayout } from '@/components/layout/Layout';
+import { Layout } from '@/components/layout/Layout';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Loading } from '@/components/ui/Loading';
@@ -36,19 +36,21 @@ export default function SignInPage() {
       });
 
       if (result?.error) {
-        setError('Erro ao fazer login. Tente novamente.');
+        console.error('Sign in error:', result.error);
+        setError(`Erro ao fazer login: ${result.error}`);
       } else if (result?.ok) {
         router.push('/');
       }
     } catch (err) {
-      setError('Erro inesperado. Tente novamente.');
+      console.error('Sign in error:', err);
+      setError(`Erro inesperado: ${err instanceof Error ? err.message : 'Tente novamente.'}`);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <PageLayout>
+    <Layout>
       <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full space-y-8">
           <div className="text-center">
@@ -129,6 +131,6 @@ export default function SignInPage() {
           </div>
         </div>
       </div>
-    </PageLayout>
+    </Layout>
   );
 }
