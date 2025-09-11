@@ -1,5 +1,5 @@
 import React from 'react';
-// import { PageLayout } from '@/components/layout/Layout';
+import { Layout } from '@/components/layout/Layout';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
@@ -97,7 +97,8 @@ const HomePage: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-tarkov-dark">
+    <Layout>
+      <div className="min-h-screen bg-tarkov-dark">
       {/* Hero Section */}
       <section className="relative py-20 px-4 text-center">
         <div className="absolute inset-0 bg-gradient-to-br from-tarkov-accent/20 via-transparent to-tarkov-secondary/20 rounded-3xl" />
@@ -444,7 +445,8 @@ const HomePage: React.FC = () => {
           </div>
         </Card>
       </section>
-    </div>
+      </div>
+    </Layout>
   );
 };
 
