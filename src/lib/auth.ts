@@ -1,6 +1,6 @@
 import GoogleProvider from 'next-auth/providers/google';
-import { supabaseAdmin } from './supabase';
-import { User } from '@/types/user';
+// import { supabaseAdmin } from './supabase';
+// import { User } from '@/types/user';
 
 // Check if Google OAuth is configured
 const isGoogleConfigured = !!process.env.GOOGLE_CLIENT_ID && !!process.env.GOOGLE_CLIENT_SECRET;
@@ -10,13 +10,6 @@ export const authOptions = {
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-      authorization: {
-        params: {
-          prompt: "consent",
-          access_type: "offline",
-          response_type: "code"
-        }
-      }
     }),
   ] : [],
   
@@ -44,160 +37,22 @@ export const authOptions = {
   
   callbacks: {
     async signIn({ user, account, profile }: any) {
-      if (account?.provider === 'google') {
-        try {
-          // Check if user exists
-          const { data: existingUser } = await supabaseAdmin
-            .from('users')
-            .select('*')
-            .eq('email', user.email!)
-            .single();
-          
-          if (!existingUser) {
-            // Create new user
-            const { data: newUser, error: userError } = await supabaseAdmin
-              .from('users')
-              .insert({
-                id: user.id!,
-                email: user.email!,
-                name: user.name || '',
-                image: user.image || '',
-              })
-              .select()
-              .single();
-            
-            if (userError) throw userError;
-            
-            // Create default free subscription
-            await supabaseAdmin
-              .from('user_subscriptions')
-              .insert({
-                user_id: newUser.id,
-                type: 'FREE',
-                status: 'ACTIVE',
-                start_date: new Date().toISOString(),
-                auto_renew: false,
-                cancel_at_period_end: false,
-              });
-            
-            // Create default profile
-            await supabaseAdmin
-              .from('user_profiles')
-              .insert({
-                user_id: newUser.id,
-                display_name: user.name || '',
-                bio: '',
-                is_public: false,
-              });
-            
-            // Create default preferences
-            await supabaseAdmin
-              .from('user_preferences')
-              .insert({
-                user_id: newUser.id,
-                theme: 'DARK',
-                language: 'PT',
-                currency: 'USD',
-                notifications: {
-                  email: true,
-                  push: true,
-                  discord: false,
-                  priceAlerts: true,
-                  questUpdates: true,
-                  marketUpdates: true,
-                  newsUpdates: false,
-                },
-                privacy: {
-                  showProfile: false,
-                  showStats: false,
-                  showInventory: false,
-                  showProgress: false,
-                },
-                display: {
-                  itemsPerPage: 20,
-                  showImages: true,
-                  compactMode: false,
-                  showTooltips: true,
-                },
-              });
-            
-            // Create default stats
-            await supabaseAdmin
-              .from('user_stats')
-              .insert({
-                user_id: newUser.id,
-                total_logins: 1,
-                last_login: new Date().toISOString(),
-                total_searches: 0,
-                favorite_items: [],
-                watched_items: [],
-                completed_quests: [],
-                hideout_progress: {},
-                achievements: [],
-              });
-          } else {
-            // Update existing user info
-            await supabaseAdmin
-              .from('users')
-              .update({
-                name: user.name || existingUser.name,
-                image: user.image || existingUser.image,
-                updated_at: new Date().toISOString(),
-              })
-              .eq('id', existingUser.id);
-            
-            // Update last login
-            await supabaseAdmin
-              .from('user_stats')
-              .update({
-                total_logins: (existingUser as any).total_logins + 1,
-                last_login: new Date().toISOString(),
-              })
-              .eq('user_id', existingUser.id);
-          }
-          
-          return true;
-        } catch (error) {
-          console.error('Error during sign in:', error);
-          return false;
-        }
-      }
+      console.log('SignIn callback triggered:', { user: user?.email, provider: account?.provider });
       
+      // Allow all sign-ins for now to test connectivity
       return true;
     },
     
     async session({ session, token }: any) {
-      if (session.user?.email) {
-        try {
-          const { data: user } = await supabaseAdmin
-            .from('users')
-            .select('*')
-            .eq('email', session.user.email)
-            .single();
-            
-          if (user) {
-            const { data: subscription } = await supabaseAdmin
-              .from('user_subscriptions')
-              .select('*')
-              .eq('user_id', user.id)
-              .eq('status', 'ACTIVE')
-              .single();
-            
-            session.user = {
-              ...session.user,
-              id: user.id,
-              subscription: subscription || null,
-            };
-          }
-        } catch (error) {
-          console.error('Error fetching user session:', error);
-        }
-      }
+      console.log('Session callback triggered:', { user: session.user?.email });
       
+      // Return session as-is for now
       return session;
     },
     
     async jwt({ token, user, account }: any) {
+      console.log('JWT callback triggered:', { user: user?.email });
+      
       if (user) {
         token.sub = user.id;
       }
@@ -207,19 +62,7 @@ export const authOptions = {
   
   events: {
     async signOut({ session, token }: any) {
-      if (session?.user?.id) {
-        try {
-          // Update last sign out time
-          await supabaseAdmin
-            .from('users')
-            .update({
-              updated_at: new Date().toISOString(),
-            })
-            .eq('id', session.user.id);
-        } catch (error) {
-          console.error('Error during sign out:', error);
-        }
-      }
+      console.log('SignOut event triggered:', { user: session?.user?.email });
     },
   },
   
@@ -227,46 +70,46 @@ export const authOptions = {
 };
 
 // Helper function to get current user
-export async function getCurrentUser(email: string): Promise<User | null> {
-  try {
-    const { data: user } = await supabaseAdmin
-      .from('users')
-      .select(`
-        *,
-        user_subscriptions!inner(*),
-        user_profiles(*),
-        user_preferences(*)
-      `)
-      .eq('email', email)
-      .single();
+// export async function getCurrentUser(email: string): Promise<User | null> {
+//   try {
+//     const { data: user } = await supabaseAdmin
+//       .from('users')
+//       .select(`
+//         *,
+//         user_subscriptions!inner(*),
+//         user_profiles(*),
+//         user_preferences(*)
+//       `)
+//       .eq('email', email)
+//       .single();
     
-    return {
-      ...user,
-      created_at: user?.created_at ? new Date(user.created_at) : undefined,
-      updated_at: user?.updated_at ? new Date(user.updated_at) : undefined,
-    } as User;
-  } catch (error) {
-    console.error('Error fetching current user:', error);
-    return null;
-  }
-}
+//     return {
+//       ...user,
+//       created_at: user?.created_at ? new Date(user.created_at) : undefined,
+//       updated_at: user?.updated_at ? new Date(user.updated_at) : undefined,
+//     } as User;
+//   } catch (error) {
+//     console.error('Error fetching current user:', error);
+//     return null;
+//   }
+// }
 
 // Helper function to check if user has Plus subscription
-export async function isUserPlus(userId: string): Promise<boolean> {
-  try {
-    const { data: subscription } = await supabaseAdmin
-      .from('user_subscriptions')
-      .select('type, status')
-      .eq('user_id', userId)
-      .eq('status', 'ACTIVE')
-      .single();
+// export async function isUserPlus(userId: string): Promise<boolean> {
+//   try {
+//     const { data: subscription } = await supabaseAdmin
+//       .from('user_subscriptions')
+//       .select('type, status')
+//       .eq('user_id', userId)
+//       .eq('status', 'ACTIVE')
+//       .single();
     
-    return subscription?.type === 'PLUS';
-  } catch (error) {
-    console.error('Error checking user subscription:', error);
-    return false;
-  }
-}
+//     return subscription?.type === 'PLUS';
+//   } catch (error) {
+//     console.error('Error checking user subscription:', error);
+//     return false;
+//   }
+// }
 
 export default authOptions;
 
