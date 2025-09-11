@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { signOut } from 'next-auth/react';
@@ -33,9 +33,9 @@ const Header: React.FC<HeaderProps> = ({ onMenuToggle, isMenuOpen }) => {
   const router = useRouter();
   const { user, isAuthenticated } = useAuth();
   const { isPlus, upgradeToPlus, manageSubscription } = useSubscription();
-  const [isProfileMenuOpen, setIsProfileMenuOpen] = React.useState(false);
-  const [searchQuery, setSearchQuery] = React.useState('');
-  const [notifications] = React.useState(3); // Mock notification count
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [notifications] = useState(3); // Mock notification count
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);

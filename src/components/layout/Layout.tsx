@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { Header } from './Header';
 import { Sidebar } from './Sidebar';
@@ -22,7 +22,7 @@ const Layout: React.FC<LayoutProps> = ({
   showFooter = true,
   fullWidth = false,
 }) => {
-  const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -33,7 +33,7 @@ const Layout: React.FC<LayoutProps> = ({
   };
 
   // Close sidebar on route change (mobile)
-  React.useEffect(() => {
+  useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 1024) {
         setIsSidebarOpen(false);

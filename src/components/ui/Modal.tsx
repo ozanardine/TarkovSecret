@@ -1,4 +1,6 @@
-import React from 'react';
+'use client';
+
+import React, { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { X } from 'lucide-react';
 import { Button } from './Button';
@@ -28,10 +30,10 @@ const Modal: React.FC<ModalProps> = ({
   children,
   className,
 }) => {
-  const [isAnimating, setIsAnimating] = React.useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
 
   // Handle escape key
-  React.useEffect(() => {
+  useEffect(() => {
     if (!closeOnEscape) return;
 
     const handleEscape = (e: KeyboardEvent) => {
@@ -47,7 +49,7 @@ const Modal: React.FC<ModalProps> = ({
   }, [isOpen, onClose, closeOnEscape]);
 
   // Handle body scroll lock
-  React.useEffect(() => {
+  useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
       setIsAnimating(true);

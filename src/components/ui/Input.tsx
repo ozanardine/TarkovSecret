@@ -1,4 +1,6 @@
-import React from 'react';
+'use client';
+
+import React, { useState, useRef, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { Eye, EyeOff, Search, X } from 'lucide-react';
 
@@ -27,8 +29,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     disabled,
     ...props
   }, ref) => {
-    const [showPassword, setShowPassword] = React.useState(false);
-    const [isFocused, setIsFocused] = React.useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [isFocused, setIsFocused] = useState(false);
 
     const inputType = type === 'password' && showPassword ? 'text' : type;
     const hasValue = value !== undefined && value !== '';
@@ -160,10 +162,10 @@ interface SearchInputProps extends Omit<InputProps, 'leftIcon' | 'type'> {
 
 const SearchInput = React.forwardRef<HTMLInputElement, SearchInputProps>(
   ({ onSearch, searchDelay = 300, ...props }, ref) => {
-    const [searchValue, setSearchValue] = React.useState('');
-    const timeoutRef = React.useRef<NodeJS.Timeout>();
+    const [searchValue, setSearchValue] = useState('');
+    const timeoutRef = useRef<NodeJS.Timeout>();
 
-    React.useEffect(() => {
+    useEffect(() => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }

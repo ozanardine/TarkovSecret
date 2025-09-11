@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useContext } from 'react';
 import { ChevronDownIcon, CheckIcon } from '@heroicons/react/24/outline';
 import { cn } from '@/lib/utils';
 
@@ -54,7 +54,7 @@ export function Select({ value, onValueChange, children, disabled, placeholder }
 }
 
 export function SelectTrigger({ children, className }: SelectTriggerProps) {
-  const { open, setOpen, disabled } = React.useContext(SelectContext);
+  const { open, setOpen, disabled } = useContext(SelectContext);
   const triggerRef = useRef<HTMLButtonElement>(null);
 
   return (
@@ -75,7 +75,7 @@ export function SelectTrigger({ children, className }: SelectTriggerProps) {
 }
 
 export function SelectValue({ placeholder, className }: SelectValueProps) {
-  const { value } = React.useContext(SelectContext);
+  const { value } = useContext(SelectContext);
   const [displayValue, setDisplayValue] = useState<string>('');
 
   // Find the display value from the selected item
@@ -96,7 +96,7 @@ export function SelectValue({ placeholder, className }: SelectValueProps) {
 }
 
 export function SelectContent({ children, className }: SelectContentProps) {
-  const { open, setOpen } = React.useContext(SelectContext);
+  const { open, setOpen } = useContext(SelectContext);
   const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -128,7 +128,7 @@ export function SelectContent({ children, className }: SelectContentProps) {
 }
 
 export function SelectItem({ value, children, className }: SelectItemProps) {
-  const { value: selectedValue, onValueChange, setOpen } = React.useContext(SelectContext);
+  const { value: selectedValue, onValueChange, setOpen } = useContext(SelectContext);
   const isSelected = selectedValue === value;
 
   const handleClick = () => {

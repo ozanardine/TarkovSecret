@@ -1,4 +1,6 @@
-import React from 'react';
+'use client';
+
+import React, { useState, useCallback } from 'react';
 import { ExclamationTriangleIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 import { Button } from './Button';
 import { Card, CardContent } from './Card';
@@ -173,19 +175,19 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
 
 // Hook para tratamento de erros assíncronos
 export function useErrorHandler() {
-  const [error, setError] = React.useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleError = React.useCallback((error: unknown) => {
+  const handleError = useCallback((error: unknown) => {
     const message = error instanceof Error ? error.message : 'Erro desconhecido';
     setError(message);
     console.error('Error handled:', error);
   }, []);
 
-  const clearError = React.useCallback(() => {
+  const clearError = useCallback(() => {
     setError(null);
   }, []);
 
-  const retry = React.useCallback((fn: () => void | Promise<void>) => {
+  const retry = useCallback((fn: () => void | Promise<void>) => {
     clearError();
     try {
       const result = fn();

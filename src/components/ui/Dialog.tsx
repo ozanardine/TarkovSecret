@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { cn } from '@/lib/utils';
 import { X } from 'lucide-react';
 
@@ -64,7 +64,7 @@ const Dialog: React.FC<DialogProps> = ({ children, open: controlledOpen, onOpenC
 };
 
 const DialogTrigger: React.FC<DialogTriggerProps> = ({ children, className }) => {
-  const { setOpen } = React.useContext(DialogContext);
+  const { setOpen } = useContext(DialogContext);
 
   const handleClick = () => {
     setOpen(true);
@@ -82,7 +82,7 @@ const DialogContent: React.FC<DialogContentProps> = ({
   className, 
   showCloseButton = true 
 }) => {
-  const { open, setOpen } = React.useContext(DialogContext);
+  const { open, setOpen } = useContext(DialogContext);
 
   if (!open) return null;
 
