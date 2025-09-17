@@ -286,33 +286,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
         )}
       >
         <div className="p-4 space-y-6">
-          {/* Subscription Status */}
-          {isAuthenticated && (
-            <div className="bg-tarkov-accent/10 border border-tarkov-accent/20 rounded-lg p-3">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-tarkov-light">
-                  Plano Atual
-                </span>
-                <SubscriptionBadge type={hasPlus ? 'PLUS' : 'FREE'} size="sm" />
-              </div>
-              
-              {!hasPlus && (
-                <div className="space-y-2">
-                  <p className="text-xs text-tarkov-muted">
-                    Upgrade para Plus e desbloqueie recursos exclusivos!
-                  </p>
-                  <Link
-                    href="/subscription"
-                    className="inline-flex items-center gap-1 text-xs text-tarkov-accent hover:text-tarkov-accent/80 transition-colors"
-                    onClick={onClose}
-                  >
-                    <Crown className="w-3 h-3" />
-                    Fazer upgrade
-                  </Link>
-                </div>
-              )}
-            </div>
-          )}
 
           {/* Navigation Sections */}
           {renderNavSection('Principal', mainNavItems)}
@@ -325,31 +298,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
             </>
           )}
 
-          {/* Plus Features Teaser for Free Users */}
-          {isAuthenticated && !hasPlus && (
-            <div className="bg-gradient-to-br from-tarkov-accent/20 to-purple-500/20 border border-tarkov-accent/30 rounded-lg p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <Crown className="w-5 h-5 text-tarkov-accent" />
-                <span className="font-semibold text-tarkov-light">Secret Plus</span>
-              </div>
-              
-              <ul className="text-xs text-tarkov-muted space-y-1 mb-3">
-                <li>• Alertas de preço em tempo real</li>
-                <li>• Análise avançada de mercado</li>
-                <li>• Histórico de preços detalhado</li>
-                <li>• Suporte prioritário</li>
-              </ul>
-              
-              <Link
-                href="/subscription"
-                className="inline-flex items-center gap-1 text-xs bg-tarkov-accent text-white px-3 py-1.5 rounded-md hover:bg-tarkov-accent/90 transition-colors"
-                onClick={onClose}
-              >
-                <Crown className="w-3 h-3" />
-                Upgrade agora
-              </Link>
-            </div>
-          )}
         </div>
       </aside>
     </>
