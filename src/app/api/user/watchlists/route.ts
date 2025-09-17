@@ -29,10 +29,10 @@ export async function GET(request: NextRequest) {
 
     // Get user watchlists with items
     const { data: watchlists } = await supabaseAdmin
-      .from('user_watchlists')
+      .from('watchlists')
       .select(`
         *,
-        user_watchlist_items(*)
+        watchlist_items(*)
       `)
       .eq('user_id', user.id)
       .order('created_at', { ascending: false });
@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
 
     // Create new watchlist
     const { data: watchlist, error: watchlistError } = await supabaseAdmin
-      .from('user_watchlists')
+      .from('watchlists')
       .insert({
         user_id: user.id,
         name,
