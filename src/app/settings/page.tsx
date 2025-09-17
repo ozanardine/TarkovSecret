@@ -140,7 +140,7 @@ const SettingsPage: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
             {/* Sidebar com Tabs */}
             <div className="lg:col-span-1">
-              <div className="bg-tarkov-secondary/50 rounded-lg p-4">
+              <div className="bg-tarkov-secondary/50 rounded-lg p-4 sticky top-24">
                 <nav className="space-y-2">
                   {tabs.map((tab) => {
                     const Icon = tab.icon;
@@ -148,14 +148,16 @@ const SettingsPage: React.FC = () => {
                       <button
                         key={tab.id}
                         onClick={() => setActiveTab(tab.id)}
-                        className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left transition-colors ${
+                        className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-all duration-300 ease-in-out transform ${
                           activeTab === tab.id
-                            ? 'bg-tarkov-accent text-white'
-                            : 'text-tarkov-muted hover:text-tarkov-light hover:bg-tarkov-accent/10'
+                            ? 'bg-tarkov-accent text-white shadow-lg shadow-tarkov-accent/25 scale-105'
+                            : 'text-tarkov-muted hover:text-tarkov-light hover:bg-tarkov-accent/10 hover:scale-102'
                         }`}
                       >
-                        <Icon className="w-5 h-5" />
-                        {tab.label}
+                        <Icon className={`w-5 h-5 transition-transform duration-300 ${
+                          activeTab === tab.id ? 'scale-110' : ''
+                        }`} />
+                        <span className="font-medium">{tab.label}</span>
                       </button>
                     );
                   })}
@@ -165,10 +167,10 @@ const SettingsPage: React.FC = () => {
 
             {/* Conteúdo Principal */}
             <div className="lg:col-span-3">
-              <div className="bg-tarkov-secondary/50 rounded-lg p-6">
+              <div className="bg-tarkov-secondary/50 rounded-lg p-6 min-h-[600px] transition-all duration-500 ease-in-out">
                 {/* Tab: Perfil */}
                 {activeTab === 'profile' && (
-                  <div className="space-y-6">
+                  <div className="space-y-6 animate-in fade-in-50 slide-in-from-bottom-4 duration-500">
                     <h2 className="text-xl font-semibold text-tarkov-light mb-4">Informações do Perfil</h2>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -201,7 +203,7 @@ const SettingsPage: React.FC = () => {
 
                 {/* Tab: Geral */}
                 {activeTab === 'general' && settings && (
-                  <div className="space-y-6">
+                  <div className="space-y-6 animate-in fade-in-50 slide-in-from-bottom-4 duration-500">
                     <h2 className="text-xl font-semibold text-tarkov-light mb-4">Configurações Gerais</h2>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -212,7 +214,7 @@ const SettingsPage: React.FC = () => {
                         <select
                           value={settings.language}
                           onChange={(e) => updateSetting('language', e.target.value)}
-                          className="w-full px-3 py-2 bg-tarkov-dark border border-tarkov-border rounded-lg text-tarkov-light focus:outline-none focus:border-tarkov-accent"
+                          className="w-full px-3 py-2 bg-tarkov-dark border border-tarkov-border rounded-lg text-tarkov-light focus:outline-none focus:border-tarkov-accent transition-all duration-300 ease-in-out hover:border-tarkov-accent/50"
                         >
                           <option value="pt-BR">Português (Brasil)</option>
                           <option value="en-US">English (US)</option>
@@ -230,7 +232,7 @@ const SettingsPage: React.FC = () => {
                         <select
                           value={settings.theme}
                           onChange={(e) => updateSetting('theme', e.target.value)}
-                          className="w-full px-3 py-2 bg-tarkov-dark border border-tarkov-border rounded-lg text-tarkov-light focus:outline-none focus:border-tarkov-accent"
+                          className="w-full px-3 py-2 bg-tarkov-dark border border-tarkov-border rounded-lg text-tarkov-light focus:outline-none focus:border-tarkov-accent transition-all duration-300 ease-in-out hover:border-tarkov-accent/50"
                         >
                           <option value="dark">Escuro</option>
                           <option value="light">Claro</option>
@@ -246,7 +248,7 @@ const SettingsPage: React.FC = () => {
                         <select
                           value={settings.timezone}
                           onChange={(e) => updateSetting('timezone', e.target.value)}
-                          className="w-full px-3 py-2 bg-tarkov-dark border border-tarkov-border rounded-lg text-tarkov-light focus:outline-none focus:border-tarkov-accent"
+                          className="w-full px-3 py-2 bg-tarkov-dark border border-tarkov-border rounded-lg text-tarkov-light focus:outline-none focus:border-tarkov-accent transition-all duration-300 ease-in-out hover:border-tarkov-accent/50"
                         >
                           <option value="America/Sao_Paulo">São Paulo (UTC-3)</option>
                           <option value="America/New_York">Nova York (UTC-5)</option>
@@ -262,7 +264,7 @@ const SettingsPage: React.FC = () => {
 
                 {/* Tab: Privacidade */}
                 {activeTab === 'privacy' && settings && (
-                  <div className="space-y-6">
+                  <div className="space-y-6 animate-in fade-in-50 slide-in-from-bottom-4 duration-500">
                     <h2 className="text-xl font-semibold text-tarkov-light mb-4">Privacidade</h2>
                     
                     <div className="space-y-4">
@@ -273,7 +275,7 @@ const SettingsPage: React.FC = () => {
                         <select
                           value={settings.profile_visibility}
                           onChange={(e) => updateSetting('profile_visibility', e.target.value)}
-                          className="w-full px-3 py-2 bg-tarkov-dark border border-tarkov-border rounded-lg text-tarkov-light focus:outline-none focus:border-tarkov-accent"
+                          className="w-full px-3 py-2 bg-tarkov-dark border border-tarkov-border rounded-lg text-tarkov-light focus:outline-none focus:border-tarkov-accent transition-all duration-300 ease-in-out hover:border-tarkov-accent/50"
                         >
                           <option value="private">Privado</option>
                           <option value="public">Público</option>
@@ -294,7 +296,7 @@ const SettingsPage: React.FC = () => {
                               onChange={(e) => updateSetting('show_activity', e.target.checked)}
                               className="sr-only peer"
                             />
-                            <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-tarkov-accent"></div>
+                            <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all duration-300 ease-in-out peer-checked:bg-tarkov-accent"></div>
                           </label>
                         </div>
                         
@@ -310,7 +312,7 @@ const SettingsPage: React.FC = () => {
                               onChange={(e) => updateSetting('allow_messages', e.target.checked)}
                               className="sr-only peer"
                             />
-                            <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-tarkov-accent"></div>
+                            <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all duration-300 ease-in-out peer-checked:bg-tarkov-accent"></div>
                           </label>
                         </div>
                       </div>
@@ -320,11 +322,11 @@ const SettingsPage: React.FC = () => {
 
                 {/* Tab: Integrações */}
                 {activeTab === 'integrations' && settings && (
-                  <div className="space-y-6">
+                  <div className="space-y-6 animate-in fade-in-50 slide-in-from-bottom-4 duration-500">
                     <h2 className="text-xl font-semibold text-tarkov-light mb-4">Integrações</h2>
                     
                     <div className="space-y-4">
-                      <div className="p-4 bg-tarkov-dark/30 rounded-lg">
+                      <div className="p-4 bg-tarkov-dark/30 rounded-lg transition-all duration-300 ease-in-out hover:bg-tarkov-dark/40 hover:scale-102">
                         <div className="flex items-center justify-between mb-2">
                           <div className="flex items-center gap-2">
                             <div className="w-8 h-8 bg-indigo-500 rounded-lg flex items-center justify-center">
@@ -342,12 +344,13 @@ const SettingsPage: React.FC = () => {
                         <Button
                           variant={settings.discord_connected ? 'secondary' : 'primary'}
                           size="sm"
+                          className="transition-all duration-300 ease-in-out hover:scale-105"
                         >
                           {settings.discord_connected ? 'Desconectar' : 'Conectar Discord'}
                         </Button>
                       </div>
                       
-                      <div className="p-4 bg-tarkov-dark/30 rounded-lg">
+                      <div className="p-4 bg-tarkov-dark/30 rounded-lg transition-all duration-300 ease-in-out hover:bg-tarkov-dark/40 hover:scale-102">
                         <div className="flex items-center gap-2 mb-2">
                           <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
                             <span className="text-white font-bold text-sm">S</span>
@@ -365,7 +368,7 @@ const SettingsPage: React.FC = () => {
                         />
                       </div>
                       
-                      <div className="p-4 bg-tarkov-dark/30 rounded-lg">
+                      <div className="p-4 bg-tarkov-dark/30 rounded-lg transition-all duration-300 ease-in-out hover:bg-tarkov-dark/40 hover:scale-102">
                         <div className="flex items-center gap-2 mb-2">
                           <div className="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center">
                             <span className="text-white font-bold text-sm">T</span>
@@ -395,7 +398,7 @@ const SettingsPage: React.FC = () => {
             <Button
               onClick={saveSettings}
               disabled={saving}
-              className="bg-tarkov-accent hover:bg-tarkov-accent/90 text-black"
+              className="bg-tarkov-accent hover:bg-tarkov-accent/90 text-black transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg hover:shadow-tarkov-accent/25 disabled:hover:scale-100 disabled:hover:shadow-none"
             >
               {saving ? (
                 <>
