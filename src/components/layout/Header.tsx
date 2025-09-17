@@ -10,7 +10,6 @@ import { useSubscription } from '@/hooks/useSubscription';
 import { Button } from '@/components/ui/Button';
 import { SearchInput } from '@/components/ui/Input';
 import { Badge, SubscriptionBadge, NotificationBadge } from '@/components/ui/Badge';
-import LanguageSelector from '@/components/ui/LanguageSelector';
 import SubscriptionStatus from '@/components/subscription/SubscriptionStatus';
 import {
   Search,
@@ -94,9 +93,6 @@ const Header: React.FC<HeaderProps> = ({ onMenuToggle, isMenuOpen }) => {
 
           {/* Right Section */}
           <div className="flex items-center gap-2">
-            {/* Language Selector */}
-            <LanguageSelector />
-
             {/* Mobile Search Button */}
             <Button
               variant="ghost"
@@ -146,7 +142,6 @@ const Header: React.FC<HeaderProps> = ({ onMenuToggle, isMenuOpen }) => {
                     <span className="hidden sm:block text-sm font-medium">
                       {user?.name?.split(' ')[0] || 'Usuário'}
                     </span>
-                    <SubscriptionBadge type={isPlus ? 'PLUS' : 'FREE'} size="sm" />
                   </Button>
 
                   {/* Profile Dropdown */}

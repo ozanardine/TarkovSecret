@@ -1,373 +1,419 @@
 'use client';
 
-import React from 'react';
-import { Layout } from '@/components/layout/Layout';
-import { Card } from '@/components/ui/Card';
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '@/hooks/useAuth';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Badge } from '@/components/ui/Badge';
 import { 
   User, 
-  Bell, 
-  Shield, 
-  Palette, 
   Globe, 
-  Download, 
-  Trash2,
+  Shield, 
+  Eye, 
+  Gamepad2,
   Save,
-  Eye,
-  EyeOff
+  X,
+  Check,
+  AlertCircle
 } from 'lucide-react';
-import { useState } from 'react';
 
-export default function SettingsPage() {
-  const [showApiKey, setShowApiKey] = useState(false);
-  const [notifications, setNotifications] = useState({
-    email: true,
-    push: true,
-    priceAlerts: true,
-    questUpdates: true,
-    marketUpdates: false,
-    newsUpdates: false,
-  });
+interface UserSettings {
+  id?: string;
+  user_id: string;
+  language: string;
+  theme: string;
+  timezone: string;
+  profile_visibility: string;
+  show_activity: boolean;
+  allow_messages: boolean;
+  discord_user_id?: string;
+  discord_username?: string;
+  discord_connected: boolean;
+  steam_profile?: string;
+  twitch_username?: string;
+}
 
-  const [privacy, setPrivacy] = useState({
-    showProfile: false,
-    showStats: false,
-    showInventory: false,
-    showProgress: false,
-  });
+type TabType = 'profile' | 'general' | 'privacy' | 'integrations';
 
-  const [display, setDisplay] = useState({
-    theme: 'dark',
-    language: 'pt',
-    currency: 'USD',
-    itemsPerPage: 20,
-    showImages: true,
-    compactMode: false,
-    showTooltips: true,
-  });
+const SettingsPage: React.FC = () => {
+  const { user, isAuthenticated } = useAuth();
+  const router = useRouter();
+  const [activeTab, setActiveTab] = useState<TabType>('profile');
+  const [settings, setSettings] = useState<UserSettings | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  const tabs = [
+    { id: 'profile' as TabType, label: 'Perfil', icon: User },
+    { id: 'general' as TabType, label: 'Geral', icon: Globe },
+    { id: 'privacy' as TabType, label: 'Privacidade', icon: Shield },
+    { id: 'integrations' as TabType, label: 'Integrações', icon: Gamepad2 },
+  ];
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      router.push('/auth/signin');
+      return;
+    }
+    loadSettings();
+  }, [isAuthenticated, router]);
+
+  const loadSettings = async () => {
+    try {
+      const response = await fetch('/api/user/settings');
+      if (response.ok) {
+        const data = await response.json();
+        setSettings(data.settings);
+      }
+    } catch (error) {
+      console.error('Erro ao carregar configurações:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const saveSettings = async () => {
+    if (!settings) return;
+    
+    setSaving(true);
+    try {
+      const response = await fetch('/api/user/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(settings),
+      });
+
+      if (response.ok) {
+        setMessage({ type: 'success', text: 'Configurações salvas com sucesso!' });
+      } else {
+        setMessage({ type: 'error', text: 'Erro ao salvar configurações' });
+      }
+    } catch (error) {
+      setMessage({ type: 'error', text: 'Erro ao salvar configurações' });
+    } finally {
+      setSaving(false);
+      setTimeout(() => setMessage(null), 3000);
+    }
+  };
+
+  const updateSetting = (key: keyof UserSettings, value: any) => {
+    if (!settings) return;
+    setSettings({ ...settings, [key]: value });
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-tarkov-dark flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-tarkov-accent"></div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return null;
+  }
 
   return (
-    <Layout>
-      <div className="min-h-screen bg-tarkov-dark py-8">
-        <div className="max-w-4xl mx-auto px-4">
+    <div className="min-h-screen bg-tarkov-dark">
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-6xl mx-auto">
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-3xl md:text-4xl font-bold text-tarkov-light mb-2">
-              <User className="inline w-8 h-8 text-tarkov-accent mr-3" />
-              Configurações
-            </h1>
-            <p className="text-tarkov-muted">
-              Gerencie suas preferências e configurações da conta
-            </p>
+            <h1 className="text-3xl font-bold text-tarkov-light mb-2">Configurações</h1>
+            <p className="text-tarkov-muted">Gerencie suas preferências e configurações da conta</p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Settings Navigation */}
+          {/* Message */}
+          {message && (
+            <div className={`mb-6 p-4 rounded-lg flex items-center gap-2 ${
+              message.type === 'success' 
+                ? 'bg-green-500/20 text-green-400 border border-green-500/30' 
+                : 'bg-red-500/20 text-red-400 border border-red-500/30'
+            }`}>
+              {message.type === 'success' ? <Check className="w-5 h-5" /> : <AlertCircle className="w-5 h-5" />}
+              {message.text}
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            {/* Sidebar com Tabs */}
             <div className="lg:col-span-1">
-              <Card className="p-4">
+              <div className="bg-tarkov-secondary/50 rounded-lg p-4">
                 <nav className="space-y-2">
-                  <a href="#profile" className="flex items-center gap-3 p-3 rounded-lg bg-tarkov-accent/10 text-tarkov-accent">
-                    <User className="w-4 h-4" />
-                    Perfil
-                  </a>
-                  <a href="#notifications" className="flex items-center gap-3 p-3 rounded-lg text-tarkov-muted hover:text-tarkov-light hover:bg-tarkov-secondary/50 transition-colors">
-                    <Bell className="w-4 h-4" />
-                    Notificações
-                  </a>
-                  <a href="#privacy" className="flex items-center gap-3 p-3 rounded-lg text-tarkov-muted hover:text-tarkov-light hover:bg-tarkov-secondary/50 transition-colors">
-                    <Shield className="w-4 h-4" />
-                    Privacidade
-                  </a>
-                  <a href="#display" className="flex items-center gap-3 p-3 rounded-lg text-tarkov-muted hover:text-tarkov-light hover:bg-tarkov-secondary/50 transition-colors">
-                    <Palette className="w-4 h-4" />
-                    Aparência
-                  </a>
-                  <a href="#api" className="flex items-center gap-3 p-3 rounded-lg text-tarkov-muted hover:text-tarkov-light hover:bg-tarkov-secondary/50 transition-colors">
-                    <Globe className="w-4 h-4" />
-                    API
-                  </a>
-                  <a href="#data" className="flex items-center gap-3 p-3 rounded-lg text-tarkov-muted hover:text-tarkov-light hover:bg-tarkov-secondary/50 transition-colors">
-                    <Download className="w-4 h-4" />
-                    Dados
-                  </a>
+                  {tabs.map((tab) => {
+                    const Icon = tab.icon;
+                    return (
+                      <button
+                        key={tab.id}
+                        onClick={() => setActiveTab(tab.id)}
+                        className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left transition-colors ${
+                          activeTab === tab.id
+                            ? 'bg-tarkov-accent text-white'
+                            : 'text-tarkov-muted hover:text-tarkov-light hover:bg-tarkov-accent/10'
+                        }`}
+                      >
+                        <Icon className="w-5 h-5" />
+                        {tab.label}
+                      </button>
+                    );
+                  })}
                 </nav>
-              </Card>
+              </div>
             </div>
 
-            {/* Settings Content */}
-            <div className="lg:col-span-2 space-y-6">
-              {/* Profile Settings */}
-              <Card className="p-6" id="profile">
-                <h2 className="text-xl font-semibold text-tarkov-light mb-6 flex items-center gap-2">
-                  <User className="w-5 h-5" />
-                  Perfil
-                </h2>
-                <div className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <Input
-                      label="Nome de usuário"
-                      placeholder="Seu nome de usuário"
-                      defaultValue="Jogador123"
-                    />
-                    <Input
-                      label="Email"
-                      placeholder="seu@email.com"
-                      defaultValue="usuario@exemplo.com"
-                      type="email"
-                    />
+            {/* Conteúdo Principal */}
+            <div className="lg:col-span-3">
+              <div className="bg-tarkov-secondary/50 rounded-lg p-6">
+                {/* Tab: Perfil */}
+                {activeTab === 'profile' && (
+                  <div className="space-y-6">
+                    <h2 className="text-xl font-semibold text-tarkov-light mb-4">Informações do Perfil</h2>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-tarkov-light mb-2">
+                          Nome
+                        </label>
+                        <Input
+                          value={user?.name || ''}
+                          disabled
+                          className="bg-tarkov-dark/50"
+                        />
+                        <p className="text-xs text-tarkov-muted mt-1">Nome não pode ser alterado aqui</p>
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-tarkov-light mb-2">
+                          Email
+                        </label>
+                        <Input
+                          value={user?.email || ''}
+                          disabled
+                          className="bg-tarkov-dark/50"
+                        />
+                        <p className="text-xs text-tarkov-muted mt-1">Email não pode ser alterado aqui</p>
+                      </div>
+                    </div>
                   </div>
-                  <Input
-                    label="Bio"
-                    placeholder="Conte um pouco sobre você..."
-                    defaultValue="Jogador de Tarkov desde 2017"
-                  />
-                  <div className="flex items-center gap-4">
-                    <Button>
-                      <Save className="w-4 h-4 mr-2" />
-                      Salvar Alterações
-                    </Button>
-                    <Button variant="outline">
-                      Alterar Senha
-                    </Button>
-                  </div>
-                </div>
-              </Card>
+                )}
 
-              {/* Notifications */}
-              <Card className="p-6" id="notifications">
-                <h2 className="text-xl font-semibold text-tarkov-light mb-6 flex items-center gap-2">
-                  <Bell className="w-5 h-5" />
-                  Notificações
-                </h2>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="text-tarkov-light font-medium">Notificações por Email</div>
-                      <div className="text-sm text-tarkov-muted">Receba atualizações importantes por email</div>
+                {/* Tab: Geral */}
+                {activeTab === 'general' && settings && (
+                  <div className="space-y-6">
+                    <h2 className="text-xl font-semibold text-tarkov-light mb-4">Configurações Gerais</h2>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-tarkov-light mb-2">
+                          Idioma
+                        </label>
+                        <select
+                          value={settings.language}
+                          onChange={(e) => updateSetting('language', e.target.value)}
+                          className="w-full px-3 py-2 bg-tarkov-dark border border-tarkov-border rounded-lg text-tarkov-light focus:outline-none focus:border-tarkov-accent"
+                        >
+                          <option value="pt-BR">Português (Brasil)</option>
+                          <option value="en-US">English (US)</option>
+                          <option value="es-ES">Español</option>
+                          <option value="fr-FR">Français</option>
+                          <option value="de-DE">Deutsch</option>
+                          <option value="ru-RU">Русский</option>
+                        </select>
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-tarkov-light mb-2">
+                          Tema
+                        </label>
+                        <select
+                          value={settings.theme}
+                          onChange={(e) => updateSetting('theme', e.target.value)}
+                          className="w-full px-3 py-2 bg-tarkov-dark border border-tarkov-border rounded-lg text-tarkov-light focus:outline-none focus:border-tarkov-accent"
+                        >
+                          <option value="dark">Escuro</option>
+                          <option value="light">Claro</option>
+                          <option value="auto">Automático</option>
+                        </select>
+                      </div>
+                      
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-tarkov-light mb-2">
+                          Fuso Horário
+                        </label>
+                        <select
+                          value={settings.timezone}
+                          onChange={(e) => updateSetting('timezone', e.target.value)}
+                          className="w-full px-3 py-2 bg-tarkov-dark border border-tarkov-border rounded-lg text-tarkov-light focus:outline-none focus:border-tarkov-accent"
+                        >
+                          <option value="America/Sao_Paulo">São Paulo (UTC-3)</option>
+                          <option value="America/New_York">Nova York (UTC-5)</option>
+                          <option value="Europe/London">Londres (UTC+0)</option>
+                          <option value="Europe/Paris">Paris (UTC+1)</option>
+                          <option value="Asia/Tokyo">Tóquio (UTC+9)</option>
+                        </select>
+                      </div>
                     </div>
-                    <input
-                      type="checkbox"
-                      checked={notifications.email}
-                      onChange={(e) => setNotifications({...notifications, email: e.target.checked})}
-                      className="w-4 h-4 text-tarkov-accent bg-tarkov-dark border-tarkov-border rounded focus:ring-tarkov-accent"
-                    />
                   </div>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="text-tarkov-light font-medium">Notificações Push</div>
-                      <div className="text-sm text-tarkov-muted">Receba notificações no navegador</div>
-                    </div>
-                    <input
-                      type="checkbox"
-                      checked={notifications.push}
-                      onChange={(e) => setNotifications({...notifications, push: e.target.checked})}
-                      className="w-4 h-4 text-tarkov-accent bg-tarkov-dark border-tarkov-border rounded focus:ring-tarkov-accent"
-                    />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="text-tarkov-light font-medium">Alertas de Preço</div>
-                      <div className="text-sm text-tarkov-muted">Notificações quando preços atingirem seus alvos</div>
-                    </div>
-                    <input
-                      type="checkbox"
-                      checked={notifications.priceAlerts}
-                      onChange={(e) => setNotifications({...notifications, priceAlerts: e.target.checked})}
-                      className="w-4 h-4 text-tarkov-accent bg-tarkov-dark border-tarkov-border rounded focus:ring-tarkov-accent"
-                    />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="text-tarkov-light font-medium">Atualizações de Quest</div>
-                      <div className="text-sm text-tarkov-muted">Notificações sobre progresso de quests</div>
-                    </div>
-                    <input
-                      type="checkbox"
-                      checked={notifications.questUpdates}
-                      onChange={(e) => setNotifications({...notifications, questUpdates: e.target.checked})}
-                      className="w-4 h-4 text-tarkov-accent bg-tarkov-dark border-tarkov-border rounded focus:ring-tarkov-accent"
-                    />
-                  </div>
-                </div>
-              </Card>
+                )}
 
-              {/* Privacy */}
-              <Card className="p-6" id="privacy">
-                <h2 className="text-xl font-semibold text-tarkov-light mb-6 flex items-center gap-2">
-                  <Shield className="w-5 h-5" />
-                  Privacidade
-                </h2>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="text-tarkov-light font-medium">Mostrar Perfil Público</div>
-                      <div className="text-sm text-tarkov-muted">Permitir que outros usuários vejam seu perfil</div>
-                    </div>
-                    <input
-                      type="checkbox"
-                      checked={privacy.showProfile}
-                      onChange={(e) => setPrivacy({...privacy, showProfile: e.target.checked})}
-                      className="w-4 h-4 text-tarkov-accent bg-tarkov-dark border-tarkov-border rounded focus:ring-tarkov-accent"
-                    />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="text-tarkov-light font-medium">Mostrar Estatísticas</div>
-                      <div className="text-sm text-tarkov-muted">Compartilhar suas estatísticas de jogo</div>
-                    </div>
-                    <input
-                      type="checkbox"
-                      checked={privacy.showStats}
-                      onChange={(e) => setPrivacy({...privacy, showStats: e.target.checked})}
-                      className="w-4 h-4 text-tarkov-accent bg-tarkov-dark border-tarkov-border rounded focus:ring-tarkov-accent"
-                    />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="text-tarkov-light font-medium">Mostrar Inventário</div>
-                      <div className="text-sm text-tarkov-muted">Permitir visualização do seu inventário</div>
-                    </div>
-                    <input
-                      type="checkbox"
-                      checked={privacy.showInventory}
-                      onChange={(e) => setPrivacy({...privacy, showInventory: e.target.checked})}
-                      className="w-4 h-4 text-tarkov-accent bg-tarkov-dark border-tarkov-border rounded focus:ring-tarkov-accent"
-                    />
-                  </div>
-                </div>
-              </Card>
 
-              {/* Display Settings */}
-              <Card className="p-6" id="display">
-                <h2 className="text-xl font-semibold text-tarkov-light mb-6 flex items-center gap-2">
-                  <Palette className="w-5 h-5" />
-                  Aparência
-                </h2>
-                <div className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-tarkov-light mb-2">
-                        Tema
-                      </label>
-                      <select 
-                        value={display.theme}
-                        onChange={(e) => setDisplay({...display, theme: e.target.value})}
-                        className="w-full p-3 bg-tarkov-secondary/50 border border-tarkov-border rounded-md text-tarkov-light focus:ring-2 focus:ring-tarkov-accent focus:border-tarkov-accent"
-                      >
-                        <option value="dark">Escuro</option>
-                        <option value="light">Claro</option>
-                        <option value="auto">Automático</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-tarkov-light mb-2">
-                        Idioma
-                      </label>
-                      <select 
-                        value={display.language}
-                        onChange={(e) => setDisplay({...display, language: e.target.value})}
-                        className="w-full p-3 bg-tarkov-secondary/50 border border-tarkov-border rounded-md text-tarkov-light focus:ring-2 focus:ring-tarkov-accent focus:border-tarkov-accent"
-                      >
-                        <option value="pt">Português</option>
-                        <option value="en">English</option>
-                        <option value="es">Español</option>
-                      </select>
+                {/* Tab: Privacidade */}
+                {activeTab === 'privacy' && settings && (
+                  <div className="space-y-6">
+                    <h2 className="text-xl font-semibold text-tarkov-light mb-4">Privacidade</h2>
+                    
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-tarkov-light mb-2">
+                          Visibilidade do Perfil
+                        </label>
+                        <select
+                          value={settings.profile_visibility}
+                          onChange={(e) => updateSetting('profile_visibility', e.target.value)}
+                          className="w-full px-3 py-2 bg-tarkov-dark border border-tarkov-border rounded-lg text-tarkov-light focus:outline-none focus:border-tarkov-accent"
+                        >
+                          <option value="private">Privado</option>
+                          <option value="public">Público</option>
+                          <option value="friends">Apenas Amigos</option>
+                        </select>
+                      </div>
+                      
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between p-4 bg-tarkov-dark/30 rounded-lg">
+                          <div>
+                            <h3 className="font-medium text-tarkov-light">Mostrar Atividade</h3>
+                            <p className="text-sm text-tarkov-muted">Permitir que outros vejam sua atividade</p>
+                          </div>
+                          <label className="relative inline-flex items-center cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={settings.show_activity}
+                              onChange={(e) => updateSetting('show_activity', e.target.checked)}
+                              className="sr-only peer"
+                            />
+                            <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-tarkov-accent"></div>
+                          </label>
+                        </div>
+                        
+                        <div className="flex items-center justify-between p-4 bg-tarkov-dark/30 rounded-lg">
+                          <div>
+                            <h3 className="font-medium text-tarkov-light">Permitir Mensagens</h3>
+                            <p className="text-sm text-tarkov-muted">Permitir que outros usuários enviem mensagens</p>
+                          </div>
+                          <label className="relative inline-flex items-center cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={settings.allow_messages}
+                              onChange={(e) => updateSetting('allow_messages', e.target.checked)}
+                              className="sr-only peer"
+                            />
+                            <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-tarkov-accent"></div>
+                          </label>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="text-tarkov-light font-medium">Modo Compacto</div>
-                      <div className="text-sm text-tarkov-muted">Interface mais compacta para telas menores</div>
-                    </div>
-                    <input
-                      type="checkbox"
-                      checked={display.compactMode}
-                      onChange={(e) => setDisplay({...display, compactMode: e.target.checked})}
-                      className="w-4 h-4 text-tarkov-accent bg-tarkov-dark border-tarkov-border rounded focus:ring-tarkov-accent"
-                    />
-                  </div>
-                </div>
-              </Card>
+                )}
 
-              {/* API Settings */}
-              <Card className="p-6" id="api">
-                <h2 className="text-xl font-semibold text-tarkov-light mb-6 flex items-center gap-2">
-                  <Globe className="w-5 h-5" />
-                  API
-                </h2>
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-tarkov-light mb-2">
-                      Chave da API
-                    </label>
-                    <div className="flex gap-2">
-                      <Input
-                        type={showApiKey ? "text" : "password"}
-                        value="sk_live_1234567890abcdef"
-                        readOnly
-                        className="flex-1"
-                      />
-                      <Button
-                        variant="outline"
-                        onClick={() => setShowApiKey(!showApiKey)}
-                      >
-                        {showApiKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                      </Button>
-                      <Button variant="outline">
-                        Regenerar
-                      </Button>
+                {/* Tab: Integrações */}
+                {activeTab === 'integrations' && settings && (
+                  <div className="space-y-6">
+                    <h2 className="text-xl font-semibold text-tarkov-light mb-4">Integrações</h2>
+                    
+                    <div className="space-y-4">
+                      <div className="p-4 bg-tarkov-dark/30 rounded-lg">
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center gap-2">
+                            <div className="w-8 h-8 bg-indigo-500 rounded-lg flex items-center justify-center">
+                              <span className="text-white font-bold text-sm">D</span>
+                            </div>
+                            <span className="font-medium text-tarkov-light">Discord</span>
+                          </div>
+                          <Badge variant={settings.discord_connected ? 'success' : 'secondary'}>
+                            {settings.discord_connected ? 'Conectado' : 'Desconectado'}
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-tarkov-muted mb-3">
+                          Conecte sua conta Discord para sincronizar dados e receber notificações
+                        </p>
+                        <Button
+                          variant={settings.discord_connected ? 'secondary' : 'primary'}
+                          size="sm"
+                        >
+                          {settings.discord_connected ? 'Desconectar' : 'Conectar Discord'}
+                        </Button>
+                      </div>
+                      
+                      <div className="p-4 bg-tarkov-dark/30 rounded-lg">
+                        <div className="flex items-center gap-2 mb-2">
+                          <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+                            <span className="text-white font-bold text-sm">S</span>
+                          </div>
+                          <span className="font-medium text-tarkov-light">Steam</span>
+                        </div>
+                        <p className="text-sm text-tarkov-muted mb-3">
+                          Vincule seu perfil Steam para sincronizar dados do jogo
+                        </p>
+                        <Input
+                          placeholder="URL do perfil Steam"
+                          value={settings.steam_profile || ''}
+                          onChange={(e) => updateSetting('steam_profile', e.target.value)}
+                          className="mb-3"
+                        />
+                      </div>
+                      
+                      <div className="p-4 bg-tarkov-dark/30 rounded-lg">
+                        <div className="flex items-center gap-2 mb-2">
+                          <div className="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center">
+                            <span className="text-white font-bold text-sm">T</span>
+                          </div>
+                          <span className="font-medium text-tarkov-light">Twitch</span>
+                        </div>
+                        <p className="text-sm text-tarkov-muted mb-3">
+                          Conecte sua conta Twitch para streaming e integração
+                        </p>
+                        <Input
+                          placeholder="Nome de usuário Twitch"
+                          value={settings.twitch_username || ''}
+                          onChange={(e) => updateSetting('twitch_username', e.target.value)}
+                          className="mb-3"
+                        />
+                      </div>
                     </div>
-                    <p className="text-xs text-tarkov-muted mt-1">
-                      Use esta chave para acessar a API do Secret Tarkov
-                    </p>
                   </div>
-                  <div className="bg-tarkov-secondary/30 p-4 rounded-lg">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-medium text-tarkov-light">Rate Limit</span>
-                      <Badge variant="success">1000/hora</Badge>
-                    </div>
-                    <div className="text-xs text-tarkov-muted">
-                      Você tem 1000 requisições por hora disponíveis
-                    </div>
-                  </div>
-                </div>
-              </Card>
+                )}
 
-              {/* Data Management */}
-              <Card className="p-6" id="data">
-                <h2 className="text-xl font-semibold text-tarkov-light mb-6 flex items-center gap-2">
-                  <Download className="w-5 h-5" />
-                  Dados
-                </h2>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between p-4 bg-tarkov-secondary/30 rounded-lg">
-                    <div>
-                      <div className="text-tarkov-light font-medium">Exportar Dados</div>
-                      <div className="text-sm text-tarkov-muted">Baixe todos os seus dados em formato JSON</div>
-                    </div>
-                    <Button variant="outline">
-                      <Download className="w-4 h-4 mr-2" />
-                      Exportar
-                    </Button>
-                  </div>
-                  <div className="flex items-center justify-between p-4 bg-red-500/10 border border-red-500/20 rounded-lg">
-                    <div>
-                      <div className="text-red-400 font-medium">Excluir Conta</div>
-                      <div className="text-sm text-tarkov-muted">Esta ação não pode ser desfeita</div>
-                    </div>
-                    <Button variant="danger">
-                      <Trash2 className="w-4 h-4 mr-2" />
-                      Excluir
-                    </Button>
-                  </div>
-                </div>
-              </Card>
+              </div>
             </div>
+          </div>
+
+          {/* Botão Salvar */}
+          <div className="mt-8 flex justify-end">
+            <Button
+              onClick={saveSettings}
+              disabled={saving}
+              className="bg-tarkov-accent hover:bg-tarkov-accent/90 text-black"
+            >
+              {saving ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-black mr-2"></div>
+                  Salvando...
+                </>
+              ) : (
+                <>
+                  <Save className="w-4 h-4 mr-2" />
+                  Salvar Configurações
+                </>
+              )}
+            </Button>
           </div>
         </div>
       </div>
-    </Layout>
+    </div>
   );
-}
+};
+
+export default SettingsPage;
