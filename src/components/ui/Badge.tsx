@@ -250,12 +250,8 @@ interface SubscriptionBadgeProps extends Omit<BadgeProps, 'variant' | 'children'
 
 const SubscriptionBadge = React.forwardRef<HTMLSpanElement, SubscriptionBadgeProps>(
   ({ type, className, ...props }, ref) => {
-    // Não mostrar badge para usuários FREE
-    if (type === 'FREE') {
-      return null;
-    }
-
     const config = {
+      FREE: { variant: 'secondary' as const, label: 'Free' },
       PLUS: { variant: 'primary' as const, label: 'Plus' },
     };
 

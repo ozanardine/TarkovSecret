@@ -50,9 +50,6 @@ export default function SubscriptionStatus({
   if (!subscription) {
     return (
       <div className={`flex items-center space-x-2 ${className}`}>
-        <Badge className="bg-gray-600 text-white">
-          Gratuito
-        </Badge>
         {showUpgradeButton && (
           <Button
             onClick={upgradeToPlus}
@@ -81,8 +78,8 @@ export default function SubscriptionStatus({
     if (isActive) {
       return {
         icon: CheckCircleIcon,
-        text: isPlus ? 'PLUS' : 'Gratuito',
-        className: isPlus ? 'bg-tarkov-gold text-black' : 'bg-gray-600 text-white',
+        text: isPlus ? 'PLUS' : null,
+        className: isPlus ? 'bg-tarkov-gold text-black' : '',
         description: isPlus ? 'Assinatura PLUS ativa' : 'Plano gratuito'
       };
     }
@@ -127,10 +124,12 @@ export default function SubscriptionStatus({
 
   return (
     <div className={`flex items-center space-x-2 ${className}`}>
-      <Badge className={statusInfo.className}>
-        <StatusIcon className="w-3 h-3 mr-1" />
-        {statusInfo.text}
-      </Badge>
+      {statusInfo.text && (
+        <Badge className={statusInfo.className}>
+          <StatusIcon className="w-3 h-3 mr-1" />
+          {statusInfo.text}
+        </Badge>
+      )}
       
       {isPlus && isActive && (
         <Button
