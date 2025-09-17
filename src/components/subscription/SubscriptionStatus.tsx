@@ -54,7 +54,7 @@ export default function SubscriptionStatus({
           <Button
             onClick={upgradeToPlus}
             size="sm"
-            className="bg-tarkov-gold hover:bg-tarkov-gold/90 text-black"
+            className="bg-[#d4af37] hover:bg-[#d4af37]/90 text-black"
           >
             <StarIcon className="w-4 h-4 mr-1" />
             Upgrade
@@ -145,7 +145,7 @@ export default function SubscriptionStatus({
         <Button
           onClick={upgradeToPlus}
           size="sm"
-          className="bg-tarkov-gold hover:bg-tarkov-gold/90 text-black"
+          className="bg-[#d4af37] hover:bg-[#d4af37]/90 text-black"
         >
           <StarIcon className="w-4 h-4 mr-1" />
           Upgrade
@@ -156,7 +156,7 @@ export default function SubscriptionStatus({
         <Button
           onClick={() => router.push('/subscription')}
           size="sm"
-          className="bg-tarkov-gold hover:bg-tarkov-gold/90 text-black"
+          className="bg-[#d4af37] hover:bg-[#d4af37]/90 text-black"
         >
           <StarIcon className="w-4 h-4 mr-1" />
           Reativar
