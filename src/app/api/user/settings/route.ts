@@ -27,9 +27,9 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Get user settings
+    // Get user preferences
     const { data: settings, error } = await supabaseAdmin
-      .from('user_settings')
+      .from('user_preferences')
       .select('*')
       .eq('user_id', user.id)
       .single();
@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
     // If no settings found, create default settings
     if (!settings) {
       const { data: newSettings, error: createError } = await supabaseAdmin
-        .from('user_settings')
+        .from('user_preferences')
         .insert({
           user_id: user.id,
         })
@@ -125,9 +125,9 @@ export async function PUT(request: NextRequest) {
         return obj;
       }, {} as any);
 
-    // Update user settings
+    // Update user preferences
     const { data: updatedSettings, error } = await supabaseAdmin
-      .from('user_settings')
+      .from('user_preferences')
       .update(filteredData)
       .eq('user_id', user.id)
       .select()

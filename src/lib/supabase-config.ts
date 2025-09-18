@@ -89,10 +89,10 @@ export const dbHelpers = {
     return data
   },
   
-  // Obter configurações do usuário
-  async getUserSettings(userId: string) {
+  // Obter preferências do usuário
+  async getUserPreferences(userId: string) {
     const { data, error } = await supabase
-      .from('user_settings')
+      .from('user_preferences')
       .select('*')
       .eq('user_id', userId)
       .single()
@@ -101,11 +101,11 @@ export const dbHelpers = {
     return data
   },
   
-  // Atualizar configurações do usuário
-  async updateUserSettings(userId: string, settings: Partial<Database['public']['Tables']['user_settings']['Update']>) {
+  // Atualizar preferências do usuário
+  async updateUserPreferences(userId: string, preferences: Partial<Database['public']['Tables']['user_preferences']['Update']>) {
     const { data, error } = await supabase
-      .from('user_settings')
-      .update(settings)
+      .from('user_preferences')
+      .update(preferences)
       .eq('user_id', userId)
       .select()
       .single()
@@ -114,10 +114,10 @@ export const dbHelpers = {
     return data
   },
   
-  // Criar configurações padrão para usuário
-  async createDefaultUserSettings(userId: string) {
+  // Criar preferências padrão para usuário
+  async createDefaultUserPreferences(userId: string) {
     const { data, error } = await supabase
-      .from('user_settings')
+      .from('user_preferences')
       .insert({ user_id: userId })
       .select()
       .single()
