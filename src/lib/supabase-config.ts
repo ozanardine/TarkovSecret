@@ -2,7 +2,7 @@
 // Data de geração: 17 de Setembro de 2025
 
 import { createClient } from '@supabase/supabase-js'
-import type { Database } from '../types/database-schema'
+import type { Database } from '../types/database'
 
 // Configurações do Supabase local (desenvolvimento)
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'http://127.0.0.1:54321'
