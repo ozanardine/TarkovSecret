@@ -225,3 +225,4 @@ supabase/migrations/20241220120000_create_users.sql
 supabase/migrations/20241220120001_create_user_settings.sql
 supabase/migrations/20241220130000_create_additional_tables.sql
 supabase/migrations/20241217_initial_schema.sql
+.nvmrc

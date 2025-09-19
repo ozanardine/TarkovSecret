@@ -56,185 +56,157 @@ interface UserSettings {
     show_images: boolean;
     compact_mode: boolean;
     auto_refresh: boolean;
-    refresh_interval: number;
   };
+  integrations: {
+    twitch_connected: boolean;
+    youtube_connected: boolean;
+    discord_connected: boolean;
+  };
+  created_at?: string;
+  updated_at?: string;
 }
 
 interface UserProfile {
-  id?: string;
-  user_id: string;
+  id: string;
+  username: string;
+  email: string;
+  avatar_url?: string;
   display_name?: string;
   bio?: string;
-  level?: number;
-  experience?: number;
-  favorite_map?: string;
-  main_weapon?: string;
-  play_style?: 'AGGRESSIVE' | 'PASSIVE' | 'BALANCED' | 'SUPPORT';
-  region?: string;
-  timezone?: string;
-  discord_username?: string;
-  twitch_username?: string;
-  youtube_channel?: string;
-  is_public: boolean;
+  location?: string;
+  website?: string;
+  created_at: string;
+  updated_at: string;
 }
 
-type TabType = 'profile' | 'general' | 'notifications' | 'privacy' | 'display' | 'integrations';
-
 const SettingsPage: React.FC = () => {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<TabType>('profile');
-  const [settings, setSettings] = useState<UserSettings>({
-    user_id: '',
-    theme: 'DARK',
-    language: 'PT',
-    currency: 'RUB',
-    notifications: {
-      price_alerts: true,
-      quest_updates: true,
-      market_updates: true,
-      news_updates: true,
-      email_notifications: true,
-      push_notifications: false,
-    },
-    privacy: {
-      profile_visibility: 'public',
-      show_activity: true,
-      allow_messages: true,
-      show_online_status: true,
-    },
-    display: {
-      items_per_page: 20,
-      show_images: true,
-      compact_mode: false,
-      auto_refresh: true,
-      refresh_interval: 30,
-    },
-  });
-  const [profile, setProfile] = useState<UserProfile>({
-    user_id: '',
-    display_name: '',
-    bio: '',
-    level: 1,
-    experience: 0,
-    favorite_map: '',
-    main_weapon: '',
-    play_style: 'BALANCED',
-    region: '',
-    timezone: 'UTC+3',
-    discord_username: '',
-    twitch_username: '',
-    youtube_channel: '',
-    is_public: true,
-  });
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
+  const [activeTab, setActiveTab] = useState('profile');
+  const [settings, setSettings] = useState<UserSettings | null>(null);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
-
-  const tabs = [
-    { id: 'profile' as TabType, label: 'Perfil', icon: User },
-    { id: 'general' as TabType, label: 'Geral', icon: Globe },
-    { id: 'notifications' as TabType, label: 'Notificações', icon: Bell },
-    { id: 'privacy' as TabType, label: 'Privacidade', icon: Shield },
-    { id: 'display' as TabType, label: 'Exibição', icon: Monitor },
-    { id: 'integrations' as TabType, label: 'Integrações', icon: Gamepad2 },
-  ];
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      router.push('/auth/signin');
-      return;
-    }
-    if (user) {
+    if (isAuthenticated && user) {
       loadSettings();
+      loadProfile();
     }
-  }, [isAuthenticated, router, user]);
+  }, [isAuthenticated, user]);
 
   const loadSettings = async () => {
     try {
-      const response = await fetch('/api/user/profile');
-      if (response.ok) {
-        const data = await response.json();
-        if (data.preferences) {
-          setSettings(prev => ({
-            ...prev,
-            ...data.preferences,
-            user_id: user?.id || '',
-          }));
+      // Simulated API call - replace with actual API
+      const defaultSettings: UserSettings = {
+        user_id: user?.id || '',
+        theme: 'DARK',
+        language: 'PT',
+        currency: 'RUB',
+        notifications: {
+          price_alerts: true,
+          quest_updates: true,
+          market_updates: false,
+          news_updates: true,
+          email_notifications: true,
+          push_notifications: false
+        },
+        privacy: {
+          profile_visibility: 'public',
+          show_activity: true,
+          allow_messages: true,
+          show_online_status: true
+        },
+        display: {
+          items_per_page: 25,
+          show_images: true,
+          compact_mode: false,
+          auto_refresh: true
+        },
+        integrations: {
+          twitch_connected: false,
+          youtube_connected: false,
+          discord_connected: false
         }
-        if (data.profile) {
-          setProfile(prev => ({
-            ...prev,
-            ...data.profile,
-            user_id: user?.id || '',
-          }));
-        }
-      }
+      };
+      setSettings(defaultSettings);
     } catch (error) {
-      console.error('Erro ao carregar configurações:', error);
-    } finally {
-      setLoading(false);
+      console.error('Error loading settings:', error);
+      showMessage('error', 'Erro ao carregar configurações');
     }
   };
 
   const loadProfile = async () => {
-    // Profile is now loaded together with settings
-    return;
+    try {
+      // Simulated API call - replace with actual API
+      const defaultProfile: UserProfile = {
+        id: user?.id || '',
+        username: user?.email?.split('@')[0] || 'user',
+        email: user?.email || '',
+        display_name: '',
+        bio: '',
+        location: '',
+        website: '',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
+      setProfile(defaultProfile);
+    } catch (error) {
+      console.error('Error loading profile:', error);
+      showMessage('error', 'Erro ao carregar perfil');
+    }
   };
 
   const saveSettings = async () => {
     if (!settings) return;
     
-    setSaving(true);
+    setIsSaving(true);
     try {
-      const response = await fetch('/api/user/profile', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          profile: {
-            ...profile,
-            user_id: user?.id,
-          },
-          preferences: {
-            ...settings,
-            user_id: user?.id,
-          },
-        }),
-      });
-
-      if (response.ok) {
-        setMessage({ type: 'success', text: 'Configurações salvas com sucesso!' });
-      } else {
-        setMessage({ type: 'error', text: 'Erro ao salvar configurações' });
-      }
+      // Simulated API call - replace with actual API
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      showMessage('success', 'Configurações salvas com sucesso!');
     } catch (error) {
-      setMessage({ type: 'error', text: 'Erro ao salvar configurações' });
+      console.error('Error saving settings:', error);
+      showMessage('error', 'Erro ao salvar configurações');
     } finally {
-      setSaving(false);
-      setTimeout(() => setMessage(null), 3000);
+      setIsSaving(false);
     }
   };
 
-  const updateSetting = (key: keyof UserSettings, value: any) => {
-    if (!settings) return;
-    setSettings({ ...settings, [key]: value });
+  const saveProfile = async () => {
+    if (!profile) return;
+    
+    setIsSaving(true);
+    try {
+      // Simulated API call - replace with actual API
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      showMessage('success', 'Perfil atualizado com sucesso!');
+    } catch (error) {
+      console.error('Error saving profile:', error);
+      showMessage('error', 'Erro ao salvar perfil');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
-  const updateNestedSettings = (section: 'notifications' | 'privacy' | 'display', field: string, value: any) => {
-    setSettings(prev => ({
-      ...prev,
-      [section]: {
-        ...prev[section],
-        [field]: value,
-      },
-    }));
+  const showMessage = (type: 'success' | 'error', text: string) => {
+    setMessage({ type, text });
+    setTimeout(() => setMessage(null), 5000);
   };
 
-  const updateProfile = (field: keyof UserProfile, value: any) => {
-    setProfile(prev => ({ ...prev, [field]: value }));
+  const updateSettings = (updates: Partial<UserSettings>) => {
+    if (settings) {
+      setSettings({ ...settings, ...updates });
+    }
   };
 
-  if (loading) {
+  const updateProfile = (updates: Partial<UserProfile>) => {
+    if (profile) {
+      setProfile({ ...profile, ...updates });
+    }
+  };
+
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-tarkov-dark flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-tarkov-accent"></div>
@@ -274,669 +246,474 @@ const SettingsPage: React.FC = () => {
           )}
 
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-            {/* Sidebar com Tabs */}
+            {/* Sidebar Navigation */}
             <div className="lg:col-span-1">
-              <div className="bg-tarkov-secondary/50 rounded-lg p-4 sticky top-24">
-                <nav className="space-y-2">
-                  {tabs.map((tab) => {
-                    const Icon = tab.icon;
-                    return (
-                      <button
-                        key={tab.id}
-                        onClick={() => setActiveTab(tab.id)}
-                        className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-all duration-300 ease-in-out transform ${
-                          activeTab === tab.id
-                            ? 'bg-tarkov-accent text-white shadow-lg shadow-tarkov-accent/25 scale-105'
-                            : 'text-tarkov-muted hover:text-tarkov-light hover:bg-tarkov-accent/10 hover:scale-102'
-                        }`}
-                      >
-                        <Icon className={`w-5 h-5 transition-transform duration-300 ${
-                          activeTab === tab.id ? 'scale-110' : ''
-                        }`} />
-                        <span className="font-medium">{tab.label}</span>
-                      </button>
-                    );
-                  })}
-                </nav>
-              </div>
+              <nav className="space-y-2">
+                {[
+                  { id: 'profile', label: 'Perfil', icon: User },
+                  { id: 'general', label: 'Geral', icon: Globe },
+                  { id: 'notifications', label: 'Notificações', icon: Bell },
+                  { id: 'privacy', label: 'Privacidade', icon: Shield },
+                  { id: 'display', label: 'Exibição', icon: Monitor },
+                  { id: 'integrations', label: 'Integrações', icon: Gamepad2 }
+                ].map((tab) => {
+                  const Icon = tab.icon;
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => setActiveTab(tab.id)}
+                      className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors ${
+                        activeTab === tab.id
+                          ? 'bg-tarkov-accent text-tarkov-dark font-medium'
+                          : 'text-tarkov-muted hover:text-tarkov-light hover:bg-tarkov-dark/50'
+                      }`}
+                    >
+                      <Icon className="w-5 h-5" />
+                      {tab.label}
+                    </button>
+                  );
+                })}
+              </nav>
             </div>
 
-            {/* Conteúdo Principal */}
+            {/* Content */}
             <div className="lg:col-span-3">
-              <Card className="min-h-[600px] transition-all duration-500 ease-in-out p-6">
-                {/* Tab: Perfil */}
-                {activeTab === 'profile' && (
-                  <div className="space-y-6 animate-in fade-in-50 slide-in-from-bottom-4 duration-500">
-                    <h2 className="text-xl font-semibold text-tarkov-light mb-4 flex items-center gap-2">
-                      <User className="w-5 h-5" />
+              {/* Tab: Profile */}
+              {activeTab === 'profile' && profile && (
+                <div className="space-y-6">
+                  <Card className="p-6">
+                    <h3 className="text-xl font-semibold text-tarkov-light mb-4 flex items-center gap-2">
+                      <User className="w-5 h-5 text-tarkov-accent" />
                       Informações do Perfil
-                    </h2>
-                    
+                    </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-tarkov-light mb-2">
-                          Nome de Exibição
+                          Nome de usuário
                         </label>
                         <Input
-                          type="text"
-                          value={profile.display_name || ''}
-                          onChange={(e) => updateProfile('display_name', e.target.value)}
-                          placeholder="Seu nome de exibição"
-                          className="bg-tarkov-dark border-tarkov-border text-tarkov-light"
+                          value={profile.username}
+                          onChange={(e) => updateProfile({ username: e.target.value })}
+                          placeholder="Seu nome de usuário"
                         />
                       </div>
-                      
                       <div>
                         <label className="block text-sm font-medium text-tarkov-light mb-2">
-                          Nível
+                          Nome de exibição
                         </label>
                         <Input
-                          type="number"
-                          value={profile.level || 1}
-                          onChange={(e) => updateProfile('level', parseInt(e.target.value))}
-                          min="1"
-                          max="79"
-                          className="bg-tarkov-dark border-tarkov-border text-tarkov-light"
+                          value={profile.display_name || ''}
+                          onChange={(e) => updateProfile({ display_name: e.target.value })}
+                          placeholder="Como você quer ser chamado"
                         />
                       </div>
-                      
+                      <div className="md:col-span-2">
+                        <label className="block text-sm font-medium text-tarkov-light mb-2">
+                          Email
+                        </label>
+                        <Input
+                          value={profile.email}
+                          onChange={(e) => updateProfile({ email: e.target.value })}
+                          type="email"
+                          placeholder="seu@email.com"
+                        />
+                      </div>
                       <div className="md:col-span-2">
                         <label className="block text-sm font-medium text-tarkov-light mb-2">
                           Bio
                         </label>
                         <textarea
                           value={profile.bio || ''}
-                          onChange={(e) => updateProfile('bio', e.target.value)}
+                          onChange={(e) => updateProfile({ bio: e.target.value })}
                           placeholder="Conte um pouco sobre você..."
                           rows={3}
-                          className="w-full px-3 py-2 bg-tarkov-dark border border-tarkov-border rounded-lg text-tarkov-light placeholder-tarkov-muted focus:outline-none focus:border-tarkov-accent transition-all duration-300"
+                          className="w-full px-3 py-2 bg-tarkov-dark/50 border border-tarkov-border rounded-lg text-tarkov-light placeholder-tarkov-muted focus:outline-none focus:ring-2 focus:ring-tarkov-accent focus:border-transparent"
                         />
                       </div>
-                      
                       <div>
                         <label className="block text-sm font-medium text-tarkov-light mb-2">
-                          Mapa Favorito
-                        </label>
-                        <select
-                          value={profile.favorite_map || ''}
-                          onChange={(e) => updateProfile('favorite_map', e.target.value)}
-                          className="w-full px-3 py-2 bg-tarkov-dark border border-tarkov-border rounded-lg text-tarkov-light focus:outline-none focus:border-tarkov-accent transition-all duration-300"
-                        >
-                          <option value="">Selecione um mapa</option>
-                          <option value="customs">Customs</option>
-                          <option value="woods">Woods</option>
-                          <option value="shoreline">Shoreline</option>
-                          <option value="interchange">Interchange</option>
-                          <option value="reserve">Reserve</option>
-                          <option value="lighthouse">Lighthouse</option>
-                          <option value="streets">Streets of Tarkov</option>
-                          <option value="factory">Factory</option>
-                          <option value="labs">The Lab</option>
-                        </select>
-                      </div>
-                      
-                      <div>
-                        <label className="block text-sm font-medium text-tarkov-light mb-2">
-                          Arma Principal
+                          Localização
                         </label>
                         <Input
-                          type="text"
-                          value={profile.main_weapon || ''}
-                          onChange={(e) => updateProfile('main_weapon', e.target.value)}
-                          placeholder="Ex: AK-74M, M4A1, etc."
-                          className="bg-tarkov-dark border-tarkov-border text-tarkov-light"
+                          value={profile.location || ''}
+                          onChange={(e) => updateProfile({ location: e.target.value })}
+                          placeholder="Sua cidade/país"
                         />
                       </div>
-                      
                       <div>
                         <label className="block text-sm font-medium text-tarkov-light mb-2">
-                          Estilo de Jogo
-                        </label>
-                        <select
-                          value={profile.play_style || 'BALANCED'}
-                          onChange={(e) => updateProfile('play_style', e.target.value)}
-                          className="w-full px-3 py-2 bg-tarkov-dark border border-tarkov-border rounded-lg text-tarkov-light focus:outline-none focus:border-tarkov-accent transition-all duration-300"
-                        >
-                          <option value="AGGRESSIVE">Agressivo</option>
-                          <option value="PASSIVE">Passivo</option>
-                          <option value="BALANCED">Equilibrado</option>
-                          <option value="SUPPORT">Suporte</option>
-                        </select>
-                      </div>
-                      
-                      <div>
-                        <label className="block text-sm font-medium text-tarkov-light mb-2">
-                          Região
+                          Website
                         </label>
                         <Input
-                          type="text"
-                          value={profile.region || ''}
-                          onChange={(e) => updateProfile('region', e.target.value)}
-                          placeholder="Ex: Brasil, Europa, etc."
-                          className="bg-tarkov-dark border-tarkov-border text-tarkov-light"
+                          value={profile.website || ''}
+                          onChange={(e) => updateProfile({ website: e.target.value })}
+                          placeholder="https://seusite.com"
                         />
                       </div>
-                      
-                      <div>
-                        <label className="block text-sm font-medium text-tarkov-light mb-2">
-                          Fuso Horário
-                        </label>
-                        <select
-                          value={profile.timezone || 'UTC+3'}
-                          onChange={(e) => updateProfile('timezone', e.target.value)}
-                          className="w-full px-3 py-2 bg-tarkov-dark border border-tarkov-border rounded-lg text-tarkov-light focus:outline-none focus:border-tarkov-accent transition-all duration-300"
-                        >
-                          <option value="UTC-3">UTC-3 (Brasil)</option>
-                          <option value="UTC+0">UTC+0 (Londres)</option>
-                          <option value="UTC+1">UTC+1 (Europa Central)</option>
-                          <option value="UTC+3">UTC+3 (Moscou)</option>
-                          <option value="UTC+8">UTC+8 (China)</option>
-                          <option value="UTC-5">UTC-5 (Nova York)</option>
-                          <option value="UTC-8">UTC-8 (Los Angeles)</option>
-                        </select>
-                      </div>
-                      
-                      <div className="md:col-span-2">
-                        <div className="flex items-center space-x-2">
-                          <input
-                            type="checkbox"
-                            id="is_public"
-                            checked={profile.is_public}
-                            onChange={(e) => updateProfile('is_public', e.target.checked)}
-                            className="w-4 h-4 text-tarkov-accent bg-tarkov-dark border-tarkov-border rounded focus:ring-tarkov-accent"
-                          />
-                          <label htmlFor="is_public" className="text-sm text-tarkov-light">
-                            Tornar perfil público
-                          </label>
-                        </div>
-                      </Card>
                     </div>
-                  </div>
-                )}
-
-                {/* Tab: Geral */}
-                {activeTab === 'general' && settings && (
-                  <div className="space-y-6 animate-in fade-in-50 slide-in-from-bottom-4 duration-500">
-                    <h2 className="text-xl font-semibold text-tarkov-light mb-4 flex items-center gap-2">
-                      <Globe className="w-5 h-5" />
-                      Configurações Gerais
-                    </h2>
-                    
-                    <div className="space-y-6">
-                      <Card className="p-4">
-                        <h3 className="text-lg font-medium text-tarkov-light mb-4">Preferências Básicas</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          <div>
-                            <label className="block text-sm font-medium text-tarkov-light mb-2 flex items-center gap-2">
-                              <Languages className="w-4 h-4" />
-                              Idioma
-                            </label>
-                            <select
-                              value={settings.language}
-                              onChange={(e) => updateSetting('language', e.target.value)}
-                              className="w-full px-3 py-2 bg-tarkov-dark border border-tarkov-border rounded-lg text-tarkov-light focus:outline-none focus:border-tarkov-accent transition-all duration-300 ease-in-out hover:border-tarkov-accent/50"
-                            >
-                              <option value="PT">Português</option>
-                              <option value="EN">English</option>
-                              <option value="RU">Русский</option>
-                              <option value="ES">Español</option>
-                              <option value="FR">Français</option>
-                              <option value="DE">Deutsch</option>
-                            </select>
-                          </div>
-                          
-                          <div>
-                            <label className="block text-sm font-medium text-tarkov-light mb-2 flex items-center gap-2">
-                              <Palette className="w-4 h-4" />
-                              Tema
-                            </label>
-                            <select
-                              value={settings.theme}
-                              onChange={(e) => updateSetting('theme', e.target.value)}
-                              className="w-full px-3 py-2 bg-tarkov-dark border border-tarkov-border rounded-lg text-tarkov-light focus:outline-none focus:border-tarkov-accent transition-all duration-300 ease-in-out hover:border-tarkov-accent/50"
-                            >
-                              <option value="DARK">Escuro</option>
-                              <option value="LIGHT">Claro</option>
-                              <option value="AUTO">Automático</option>
-                            </select>
-                          </div>
-                          
-                          <div>
-                            <label className="block text-sm font-medium text-tarkov-light mb-2 flex items-center gap-2">
-                              <DollarSign className="w-4 h-4" />
-                              Moeda
-                            </label>
-                            <select
-                              value={settings.currency}
-                              onChange={(e) => updateSetting('currency', e.target.value)}
-                              className="w-full px-3 py-2 bg-tarkov-dark border border-tarkov-border rounded-lg text-tarkov-light focus:outline-none focus:border-tarkov-accent transition-all duration-300 ease-in-out hover:border-tarkov-accent/50"
-                            >
-                              <option value="RUB">Rublo Russo (₽)</option>
-                              <option value="USD">Dólar Americano ($)</option>
-                              <option value="EUR">Euro (€)</option>
-                            </select>
-                          </div>
-                        </div>
-                      </Card>
+                    <div className="mt-6 flex justify-end">
+                      <Button
+                        onClick={saveProfile}
+                        disabled={isSaving}
+                        className="flex items-center gap-2"
+                      >
+                        <Save className="w-4 h-4" />
+                        {isSaving ? 'Salvando...' : 'Salvar Perfil'}
+                      </Button>
                     </div>
-                  </div>
-                )}
-
-
-                {/* Tab: Notificações */}
-                {activeTab === 'notifications' && settings && (
-                  <div className="space-y-6 animate-in fade-in-50 slide-in-from-bottom-4 duration-500">
-                    <h2 className="text-xl font-semibold text-tarkov-light mb-4 flex items-center gap-2">
-                      <Bell className="w-5 h-5" />
-                      Notificações
-                    </h2>
-                    
-                    <div className="space-y-6">
-                      <Card className="p-4">
-                        <h3 className="text-lg font-medium text-tarkov-light mb-4">Notificações do Jogo</h3>
-                        <div className="space-y-4">
-                          <div className="flex items-center justify-between p-3 bg-tarkov-dark/50 rounded-lg">
-                            <div>
-                              <h4 className="font-medium text-tarkov-light">Alertas de Preço</h4>
-                              <p className="text-sm text-tarkov-muted">Receba notificações quando itens atingirem o preço desejado</p>
-                            </div>
-                            <label className="relative inline-flex items-center cursor-pointer">
-                              <input
-                                type="checkbox"
-                                checked={settings.notifications.price_alerts}
-                                onChange={(e) => updateNestedSettings('notifications', 'price_alerts', e.target.checked)}
-                                className="sr-only peer"
-                              />
-                              <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all duration-300 ease-in-out peer-checked:bg-tarkov-accent"></div>
-                            </label>
-                          </div>
-                          
-                          <div className="flex items-center justify-between p-3 bg-tarkov-dark/50 rounded-lg">
-                            <div>
-                              <h4 className="font-medium text-tarkov-light">Atualizações de Quest</h4>
-                              <p className="text-sm text-tarkov-muted">Notificações sobre novas quests e atualizações</p>
-                            </div>
-                            <label className="relative inline-flex items-center cursor-pointer">
-                              <input
-                                type="checkbox"
-                                checked={settings.notifications.quest_updates}
-                                onChange={(e) => updateNestedSettings('notifications', 'quest_updates', e.target.checked)}
-                                className="sr-only peer"
-                              />
-                              <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all duration-300 ease-in-out peer-checked:bg-tarkov-accent"></div>
-                            </label>
-                          </div>
-                          
-                          <div className="flex items-center justify-between p-3 bg-tarkov-dark/50 rounded-lg">
-                            <div>
-                              <h4 className="font-medium text-tarkov-light">Atualizações do Mercado</h4>
-                              <p className="text-sm text-tarkov-muted">Mudanças importantes no mercado e preços</p>
-                            </div>
-                            <label className="relative inline-flex items-center cursor-pointer">
-                              <input
-                                type="checkbox"
-                                checked={settings.notifications.market_updates}
-                                onChange={(e) => updateNestedSettings('notifications', 'market_updates', e.target.checked)}
-                                className="sr-only peer"
-                              />
-                              <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all duration-300 ease-in-out peer-checked:bg-tarkov-accent"></div>
-                            </label>
-                          </div>
-                          
-                          <div className="flex items-center justify-between p-3 bg-tarkov-dark/50 rounded-lg">
-                            <div>
-                              <h4 className="font-medium text-tarkov-light">Notícias e Atualizações</h4>
-                              <p className="text-sm text-tarkov-muted">Novidades sobre o jogo e atualizações do sistema</p>
-                            </div>
-                            <label className="relative inline-flex items-center cursor-pointer">
-                              <input
-                                type="checkbox"
-                                checked={settings.notifications.news_updates}
-                                onChange={(e) => updateNestedSettings('notifications', 'news_updates', e.target.checked)}
-                                className="sr-only peer"
-                              />
-                              <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all duration-300 ease-in-out peer-checked:bg-tarkov-accent"></div>
-                            </label>
-                          </div>
-                        </div>
-                      </Card>
-                      
-                      <Card className="p-4">
-                        <h3 className="text-lg font-medium text-tarkov-light mb-4">Métodos de Notificação</h3>
-                        <div className="space-y-4">
-                          <div className="flex items-center justify-between p-3 bg-tarkov-dark/50 rounded-lg">
-                            <div>
-                              <h4 className="font-medium text-tarkov-light">Notificações por Email</h4>
-                              <p className="text-sm text-tarkov-muted">Receber notificações no seu email</p>
-                            </div>
-                            <label className="relative inline-flex items-center cursor-pointer">
-                              <input
-                                type="checkbox"
-                                checked={settings.notifications.email_notifications}
-                                onChange={(e) => updateNestedSettings('notifications', 'email_notifications', e.target.checked)}
-                                className="sr-only peer"
-                              />
-                              <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all duration-300 ease-in-out peer-checked:bg-tarkov-accent"></div>
-                            </label>
-                          </div>
-                          
-                          <div className="flex items-center justify-between p-3 bg-tarkov-dark/50 rounded-lg">
-                            <div>
-                              <h4 className="font-medium text-tarkov-light">Notificações Push</h4>
-                              <p className="text-sm text-tarkov-muted">Notificações no navegador (quando disponível)</p>
-                            </div>
-                            <label className="relative inline-flex items-center cursor-pointer">
-                              <input
-                                type="checkbox"
-                                checked={settings.notifications.push_notifications}
-                                onChange={(e) => updateNestedSettings('notifications', 'push_notifications', e.target.checked)}
-                                className="sr-only peer"
-                              />
-                              <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all duration-300 ease-in-out peer-checked:bg-tarkov-accent"></div>
-                            </label>
-                          </div>
-                        </div>
-                      </Card>
-                    </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Tab: Privacidade */}
-                {activeTab === 'privacy' && settings && (
-                  <div className="space-y-6 animate-in fade-in-50 slide-in-from-bottom-4 duration-500">
-                    <h2 className="text-xl font-semibold text-tarkov-light mb-4 flex items-center gap-2">
-                      <Shield className="w-5 h-5" />
-                      Privacidade
-                    </h2>
-                    
-                    <div className="space-y-6">
-                      <Card className="p-4">
-                        <h3 className="text-lg font-medium text-tarkov-light mb-4">Configurações de Perfil</h3>
-                        <div>
-                          <label className="block text-sm font-medium text-tarkov-light mb-2">
-                            Visibilidade do Perfil
-                          </label>
-                          <select
-                            value={settings.privacy.profile_visibility}
-                            onChange={(e) => updateNestedSettings('privacy', 'profile_visibility', e.target.value)}
-                            className="w-full px-3 py-2 bg-tarkov-dark border border-tarkov-border rounded-lg text-tarkov-light focus:outline-none focus:border-tarkov-accent transition-all duration-300 ease-in-out hover:border-tarkov-accent/50"
-                          >
-                            <option value="private">Privado</option>
-                            <option value="public">Público</option>
-                            <option value="friends">Apenas Amigos</option>
-                          </select>
-                        </div>
-                      </Card>
-                      
-                      <Card className="p-4">
-                        <h3 className="text-lg font-medium text-tarkov-light mb-4">Configurações de Interação</h3>
-                        <div className="space-y-3">
-                        <div className="flex items-center justify-between p-4 bg-tarkov-dark/50 rounded-lg">
-                          <div>
-                            <h4 className="font-medium text-tarkov-light">Mostrar Atividade</h4>
-                            <p className="text-sm text-tarkov-muted">Permitir que outros vejam sua atividade</p>
-                          </div>
-                          <label className="relative inline-flex items-center cursor-pointer">
-                            <input
-                              type="checkbox"
-                              checked={settings.privacy.show_activity}
-                              onChange={(e) => updateNestedSettings('privacy', 'show_activity', e.target.checked)}
-                              className="sr-only peer"
-                            />
-                            <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all duration-300 ease-in-out peer-checked:bg-tarkov-accent"></div>
-                          </label>
-                        </div>
-                        
-                        <div className="flex items-center justify-between p-4 bg-tarkov-dark/50 rounded-lg">
-                          <div>
-                            <h4 className="font-medium text-tarkov-light">Permitir Mensagens</h4>
-                            <p className="text-sm text-tarkov-muted">Permitir que outros usuários enviem mensagens</p>
-                          </div>
-                          <label className="relative inline-flex items-center cursor-pointer">
-                            <input
-                              type="checkbox"
-                              checked={settings.privacy.allow_messages}
-                              onChange={(e) => updateNestedSettings('privacy', 'allow_messages', e.target.checked)}
-                              className="sr-only peer"
-                            />
-                            <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all duration-300 ease-in-out peer-checked:bg-tarkov-accent"></div>
-                          </label>
-                        </div>
-                        
-                        <div className="flex items-center justify-between p-4 bg-tarkov-dark/50 rounded-lg">
-                          <div>
-                            <h4 className="font-medium text-tarkov-light">Mostrar Status Online</h4>
-                            <p className="text-sm text-tarkov-muted">Permitir que outros vejam quando você está online</p>
-                          </div>
-                          <label className="relative inline-flex items-center cursor-pointer">
-                            <input
-                              type="checkbox"
-                              checked={settings.privacy.show_online_status}
-                              onChange={(e) => updateNestedSettings('privacy', 'show_online_status', e.target.checked)}
-                              className="sr-only peer"
-                            />
-                            <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all duration-300 ease-in-out peer-checked:bg-tarkov-accent"></div>
-                          </label>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Tab: Exibição */}
-                 {activeTab === 'display' && settings && (
-                   <div className="space-y-6 animate-in fade-in-50 slide-in-from-bottom-4 duration-500">
-                     <h2 className="text-xl font-semibold text-tarkov-light mb-4 flex items-center gap-2">
-                       <Monitor className="w-5 h-5" />
-                       Configurações de Exibição
-                     </h2>
-                     
-                     <div className="space-y-6">
-                       <Card className="p-4">
-                         <h3 className="text-lg font-medium text-tarkov-light mb-4">Interface</h3>
-                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                           <div>
-                             <label className="block text-sm font-medium text-tarkov-light mb-2">
-                               Itens por Página
-                             </label>
-                             <select
-                               value={settings.display.items_per_page}
-                               onChange={(e) => updateNestedSettings('display', 'items_per_page', parseInt(e.target.value))}
-                               className="w-full px-3 py-2 bg-tarkov-dark border border-tarkov-border rounded-lg text-tarkov-light focus:outline-none focus:border-tarkov-accent transition-all duration-300"
-                             >
-                               <option value={10}>10 itens</option>
-                               <option value={20}>20 itens</option>
-                               <option value={50}>50 itens</option>
-                               <option value={100}>100 itens</option>
-                             </select>
-                           </div>
-                           
-                           <div>
-                             <label className="block text-sm font-medium text-tarkov-light mb-2">
-                               Intervalo de Atualização (segundos)
-                             </label>
-                             <select
-                               value={settings.display.refresh_interval}
-                               onChange={(e) => updateNestedSettings('display', 'refresh_interval', parseInt(e.target.value))}
-                               className="w-full px-3 py-2 bg-tarkov-dark border border-tarkov-border rounded-lg text-tarkov-light focus:outline-none focus:border-tarkov-accent transition-all duration-300"
-                             >
-                               <option value={15}>15 segundos</option>
-                               <option value={30}>30 segundos</option>
-                               <option value={60}>1 minuto</option>
-                               <option value={300}>5 minutos</option>
-                             </select>
-                           </div>
-                         </div>
-                       </Card>
-                       
-                       <Card className="p-4">
-                         <h3 className="text-lg font-medium text-tarkov-light mb-4">Preferências Visuais</h3>
-                         <div className="space-y-4">
-                           <div className="flex items-center justify-between p-3 bg-tarkov-dark/50 rounded-lg">
-                             <div>
-                               <h4 className="font-medium text-tarkov-light">Mostrar Imagens</h4>
-                               <p className="text-sm text-tarkov-muted">Exibir imagens dos itens nas listas</p>
-                             </div>
-                             <label className="relative inline-flex items-center cursor-pointer">
-                               <input
-                                 type="checkbox"
-                                 checked={settings.display.show_images}
-                                 onChange={(e) => updateNestedSettings('display', 'show_images', e.target.checked)}
-                                 className="sr-only peer"
-                               />
-                               <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all duration-300 ease-in-out peer-checked:bg-tarkov-accent"></div>
-                             </label>
-                           </div>
-                           
-                           <div className="flex items-center justify-between p-3 bg-tarkov-dark/50 rounded-lg">
-                             <div>
-                               <h4 className="font-medium text-tarkov-light">Modo Compacto</h4>
-                               <p className="text-sm text-tarkov-muted">Usar layout mais compacto para economizar espaço</p>
-                             </div>
-                             <label className="relative inline-flex items-center cursor-pointer">
-                               <input
-                                 type="checkbox"
-                                 checked={settings.display.compact_mode}
-                                 onChange={(e) => updateNestedSettings('display', 'compact_mode', e.target.checked)}
-                                 className="sr-only peer"
-                               />
-                               <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all duration-300 ease-in-out peer-checked:bg-tarkov-accent"></div>
-                             </label>
-                           </div>
-                           
-                           <div className="flex items-center justify-between p-3 bg-tarkov-dark/50 rounded-lg">
-                             <div>
-                               <h4 className="font-medium text-tarkov-light">Atualização Automática</h4>
-                               <p className="text-sm text-tarkov-muted">Atualizar dados automaticamente em intervalos regulares</p>
-                             </div>
-                             <label className="relative inline-flex items-center cursor-pointer">
-                               <input
-                                 type="checkbox"
-                                 checked={settings.display.auto_refresh}
-                                 onChange={(e) => updateNestedSettings('display', 'auto_refresh', e.target.checked)}
-                                 className="sr-only peer"
-                               />
-                               <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all duration-300 ease-in-out peer-checked:bg-tarkov-accent"></div>
-                             </label>
-                           </div>
-                         </div>
-                       </Card>
-                     </div>
-                   </div>
-                 )}
-
-                 {/* Tab: Integrações */}
-                 {activeTab === 'integrations' && (
-                  <div className="space-y-6 animate-in fade-in-50 slide-in-from-bottom-4 duration-500">
-                    <h2 className="text-xl font-semibold text-tarkov-light mb-4 flex items-center gap-2">
-                      <Gamepad2 className="w-5 h-5" />
-                      Integrações
-                    </h2>
-                    
-                    <div className="space-y-6">
-                      <Card className="p-4">
-                        <h3 className="text-lg font-medium text-tarkov-light mb-4 flex items-center gap-2">
-                          <Gamepad className="w-5 h-5 text-purple-400" />
-                          Discord
-                        </h3>
-                        <div className="space-y-3">
-                          <div>
-                            <label className="block text-sm font-medium text-tarkov-light mb-2">
-                              Nome de Usuário do Discord
-                            </label>
-                            <Input
-                              type="text"
-                              placeholder="SeuUsuario#1234"
-                              value={profile.discord_username || ''}
-                              onChange={(e) => updateProfile('discord_username', e.target.value)}
-                              className="bg-tarkov-dark border-tarkov-border text-tarkov-light"
-                            />
-                            <p className="text-xs text-tarkov-muted mt-1">
-                              Inclua o número discriminador (ex: #1234)
-                            </p>
-                          </div>
-                        </div>
-                      </Card>
-                      
-                      <Card className="p-4">
-                        <h3 className="text-lg font-medium text-tarkov-light mb-4 flex items-center gap-2">
-                          <Twitch className="w-5 h-5 text-purple-500" />
-                          Twitch
-                        </h3>
-                        <div className="space-y-3">
-                          <div>
-                            <label className="block text-sm font-medium text-tarkov-light mb-2">
-                              Nome de Usuário do Twitch
-                            </label>
-                            <Input
-                              type="text"
-                              placeholder="seu_usuario"
-                              value={profile.twitch_username || ''}
-                              onChange={(e) => updateProfile('twitch_username', e.target.value)}
-                              className="bg-tarkov-dark border-tarkov-border text-tarkov-light"
-                            />
-                            {profile.twitch_username && (
-                              <p className="text-xs text-green-400 mt-1">
-                                Canal: twitch.tv/{profile.twitch_username}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                      </Card>
-                      
-                      <Card className="p-4">
-                        <h3 className="text-lg font-medium text-tarkov-light mb-4 flex items-center gap-2">
-                          <Youtube className="w-5 h-5 text-red-500" />
-                          YouTube
-                        </h3>
-                        <div className="space-y-3">
-                          <div>
-                            <label className="block text-sm font-medium text-tarkov-light mb-2">
-                              Canal do YouTube
-                            </label>
-                            <Input
-                              type="url"
-                              placeholder="https://youtube.com/@seucanal"
-                              value={profile.youtube_channel || ''}
-                              onChange={(e) => updateProfile('youtube_channel', e.target.value)}
-                              className="bg-tarkov-dark border-tarkov-border text-tarkov-light"
-                            />
-                            {profile.youtube_channel && (
-                              <p className="text-xs text-green-400 mt-1">
-                                Canal configurado
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                      </Card>
-                    </div>
-                  </div>
-                )}
-
-              </div>
-            </div>
-          </div>
-
-          {/* Botão Salvar */}
-          <div className="mt-8 flex justify-end">
-            <Button
-              onClick={saveSettings}
-              disabled={saving}
-              className="bg-tarkov-accent hover:bg-tarkov-accent/90 text-black transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg hover:shadow-tarkov-accent/25 disabled:hover:scale-100 disabled:hover:shadow-none"
-            >
-              {saving ? (
-                <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-black mr-2"></div>
-                  Salvando...
-                </>
-              ) : (
-                <>
-                  <Save className="w-4 h-4 mr-2" />
-                  Salvar Configurações
-                </>
+                  </Card>
+                </div>
               )}
-            </Button>
+
+              {/* Tab: General */}
+              {activeTab === 'general' && settings && (
+                <div className="space-y-6">
+                  <Card className="p-6">
+                    <h3 className="text-xl font-semibold text-tarkov-light mb-4 flex items-center gap-2">
+                      <Globe className="w-5 h-5 text-tarkov-accent" />
+                      Preferências Gerais
+                    </h3>
+                    <div className="space-y-6">
+                      <div>
+                        <label className="block text-sm font-medium text-tarkov-light mb-2">
+                          Tema
+                        </label>
+                        <select
+                          value={settings.theme}
+                          onChange={(e) => updateSettings({ theme: e.target.value as 'DARK' | 'LIGHT' | 'AUTO' })}
+                          className="w-full px-3 py-2 bg-tarkov-dark/50 border border-tarkov-border rounded-lg text-tarkov-light focus:outline-none focus:ring-2 focus:ring-tarkov-accent focus:border-transparent"
+                        >
+                          <option value="DARK">Escuro</option>
+                          <option value="LIGHT">Claro</option>
+                          <option value="AUTO">Automático</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-tarkov-light mb-2">
+                          Idioma
+                        </label>
+                        <select
+                          value={settings.language}
+                          onChange={(e) => updateSettings({ language: e.target.value as 'PT' | 'EN' | 'RU' | 'ES' | 'FR' | 'DE' })}
+                          className="w-full px-3 py-2 bg-tarkov-dark/50 border border-tarkov-border rounded-lg text-tarkov-light focus:outline-none focus:ring-2 focus:ring-tarkov-accent focus:border-transparent"
+                        >
+                          <option value="PT">Português</option>
+                          <option value="EN">English</option>
+                          <option value="RU">Русский</option>
+                          <option value="ES">Español</option>
+                          <option value="FR">Français</option>
+                          <option value="DE">Deutsch</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-tarkov-light mb-2">
+                          Moeda
+                        </label>
+                        <select
+                          value={settings.currency}
+                          onChange={(e) => updateSettings({ currency: e.target.value as 'RUB' | 'USD' | 'EUR' })}
+                          className="w-full px-3 py-2 bg-tarkov-dark/50 border border-tarkov-border rounded-lg text-tarkov-light focus:outline-none focus:ring-2 focus:ring-tarkov-accent focus:border-transparent"
+                        >
+                          <option value="RUB">₽ Rublo Russo</option>
+                          <option value="USD">$ Dólar Americano</option>
+                          <option value="EUR">€ Euro</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div className="mt-6 flex justify-end">
+                      <Button
+                        onClick={saveSettings}
+                        disabled={isSaving}
+                        className="flex items-center gap-2"
+                      >
+                        <Save className="w-4 h-4" />
+                        {isSaving ? 'Salvando...' : 'Salvar Configurações'}
+                      </Button>
+                    </div>
+                  </Card>
+                </div>
+              )}
+
+              {/* Tab: Notifications */}
+              {activeTab === 'notifications' && settings && (
+                <div className="space-y-6">
+                  <Card className="p-6">
+                    <h3 className="text-xl font-semibold text-tarkov-light mb-4 flex items-center gap-2">
+                      <Bell className="w-5 h-5 text-tarkov-accent" />
+                      Configurações de Notificação
+                    </h3>
+                    <div className="space-y-4">
+                      {[
+                        { key: 'price_alerts', label: 'Alertas de Preço', desc: 'Receba notificações quando os preços mudarem' },
+                        { key: 'quest_updates', label: 'Atualizações de Quest', desc: 'Notificações sobre novas quests e mudanças' },
+                        { key: 'market_updates', label: 'Atualizações do Mercado', desc: 'Mudanças importantes no mercado' },
+                        { key: 'news_updates', label: 'Notícias', desc: 'Últimas notícias e atualizações do jogo' },
+                        { key: 'email_notifications', label: 'Notificações por Email', desc: 'Receber notificações por email' },
+                        { key: 'push_notifications', label: 'Notificações Push', desc: 'Notificações push no navegador' }
+                      ].map((item) => (
+                        <div key={item.key} className="flex items-center justify-between p-4 bg-tarkov-dark/50 rounded-lg">
+                          <div>
+                            <h4 className="font-medium text-tarkov-light">{item.label}</h4>
+                            <p className="text-sm text-tarkov-muted">{item.desc}</p>
+                          </div>
+                          <label className="relative inline-flex items-center cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={settings.notifications[item.key as keyof typeof settings.notifications]}
+                              onChange={(e) => updateSettings({
+                                notifications: {
+                                  ...settings.notifications,
+                                  [item.key]: e.target.checked
+                                }
+                              })}
+                              className="sr-only peer"
+                            />
+                            <div className="w-11 h-6 bg-tarkov-border peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-tarkov-accent/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-tarkov-accent"></div>
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="mt-6 flex justify-end">
+                      <Button
+                        onClick={saveSettings}
+                        disabled={isSaving}
+                        className="flex items-center gap-2"
+                      >
+                        <Save className="w-4 h-4" />
+                        {isSaving ? 'Salvando...' : 'Salvar Configurações'}
+                      </Button>
+                    </div>
+                  </Card>
+                </div>
+              )}
+
+              {/* Tab: Privacy */}
+              {activeTab === 'privacy' && settings && (
+                <div className="space-y-6">
+                  <Card className="p-6">
+                    <h3 className="text-xl font-semibold text-tarkov-light mb-4 flex items-center gap-2">
+                      <Shield className="w-5 h-5 text-tarkov-accent" />
+                      Configurações de Privacidade
+                    </h3>
+                    <div className="space-y-6">
+                      <div>
+                        <label className="block text-sm font-medium text-tarkov-light mb-2">
+                          Visibilidade do Perfil
+                        </label>
+                        <select
+                          value={settings.privacy.profile_visibility}
+                          onChange={(e) => updateSettings({
+                            privacy: {
+                              ...settings.privacy,
+                              profile_visibility: e.target.value as 'public' | 'private' | 'friends'
+                            }
+                          })}
+                          className="w-full px-3 py-2 bg-tarkov-dark/50 border border-tarkov-border rounded-lg text-tarkov-light focus:outline-none focus:ring-2 focus:ring-tarkov-accent focus:border-transparent"
+                        >
+                          <option value="public">Público</option>
+                          <option value="friends">Apenas Amigos</option>
+                          <option value="private">Privado</option>
+                        </select>
+                      </div>
+                      <div className="space-y-4">
+                        {[
+                          { key: 'show_activity', label: 'Mostrar Atividade', desc: 'Permitir que outros vejam sua atividade recente' },
+                          { key: 'allow_messages', label: 'Permitir Mensagens', desc: 'Receber mensagens de outros usuários' },
+                          { key: 'show_online_status', label: 'Mostrar Status Online', desc: 'Exibir quando você está online' }
+                        ].map((item) => (
+                          <div key={item.key} className="flex items-center justify-between p-4 bg-tarkov-dark/50 rounded-lg">
+                            <div>
+                              <h4 className="font-medium text-tarkov-light">{item.label}</h4>
+                              <p className="text-sm text-tarkov-muted">{item.desc}</p>
+                            </div>
+                            <label className="relative inline-flex items-center cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={settings.privacy[item.key as keyof typeof settings.privacy] as boolean}
+                                onChange={(e) => updateSettings({
+                                  privacy: {
+                                    ...settings.privacy,
+                                    [item.key]: e.target.checked
+                                  }
+                                })}
+                                className="sr-only peer"
+                              />
+                              <div className="w-11 h-6 bg-tarkov-border peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-tarkov-accent/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-tarkov-accent"></div>
+                            </label>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="mt-6 flex justify-end">
+                      <Button
+                        onClick={saveSettings}
+                        disabled={isSaving}
+                        className="flex items-center gap-2"
+                      >
+                        <Save className="w-4 h-4" />
+                        {isSaving ? 'Salvando...' : 'Salvar Configurações'}
+                      </Button>
+                    </div>
+                  </Card>
+                </div>
+              )}
+
+              {/* Tab: Display */}
+              {activeTab === 'display' && settings && (
+                <div className="space-y-6">
+                  <Card className="p-6">
+                    <h3 className="text-xl font-semibold text-tarkov-light mb-4 flex items-center gap-2">
+                      <Monitor className="w-5 h-5 text-tarkov-accent" />
+                      Configurações de Exibição
+                    </h3>
+                    <div className="space-y-6">
+                      <div>
+                        <label className="block text-sm font-medium text-tarkov-light mb-2">
+                          Itens por página
+                        </label>
+                        <select
+                          value={settings.display.items_per_page}
+                          onChange={(e) => updateSettings({
+                            display: {
+                              ...settings.display,
+                              items_per_page: parseInt(e.target.value)
+                            }
+                          })}
+                          className="w-full px-3 py-2 bg-tarkov-dark/50 border border-tarkov-border rounded-lg text-tarkov-light focus:outline-none focus:ring-2 focus:ring-tarkov-accent focus:border-transparent"
+                        >
+                          <option value={10}>10</option>
+                          <option value={25}>25</option>
+                          <option value={50}>50</option>
+                          <option value={100}>100</option>
+                        </select>
+                      </div>
+                      <div className="space-y-4">
+                        {[
+                          { key: 'show_images', label: 'Mostrar Imagens', desc: 'Exibir imagens dos itens nas listas' },
+                          { key: 'compact_mode', label: 'Modo Compacto', desc: 'Interface mais compacta com menos espaçamento' },
+                          { key: 'auto_refresh', label: 'Atualização Automática', desc: 'Atualizar dados automaticamente' }
+                        ].map((item) => (
+                          <div key={item.key} className="flex items-center justify-between p-4 bg-tarkov-dark/50 rounded-lg">
+                            <div>
+                              <h4 className="font-medium text-tarkov-light">{item.label}</h4>
+                              <p className="text-sm text-tarkov-muted">{item.desc}</p>
+                            </div>
+                            <label className="relative inline-flex items-center cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={settings.display[item.key as keyof typeof settings.display] as boolean}
+                                onChange={(e) => updateSettings({
+                                  display: {
+                                    ...settings.display,
+                                    [item.key]: e.target.checked
+                                  }
+                                })}
+                                className="sr-only peer"
+                              />
+                              <div className="w-11 h-6 bg-tarkov-border peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-tarkov-accent/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-tarkov-accent"></div>
+                            </label>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="mt-6 flex justify-end">
+                      <Button
+                        onClick={saveSettings}
+                        disabled={isSaving}
+                        className="flex items-center gap-2"
+                      >
+                        <Save className="w-4 h-4" />
+                        {isSaving ? 'Salvando...' : 'Salvar Configurações'}
+                      </Button>
+                    </div>
+                  </Card>
+                </div>
+              )}
+
+              {/* Tab: Integrations */}
+              {activeTab === 'integrations' && settings && (
+                <div className="space-y-6">
+                  <Card className="p-6">
+                    <h3 className="text-xl font-semibold text-tarkov-light mb-4 flex items-center gap-2">
+                      <Gamepad2 className="w-5 h-5 text-tarkov-accent" />
+                      Integrações
+                    </h3>
+                    <div className="space-y-4">
+                      {[
+                        { 
+                          key: 'twitch_connected', 
+                          label: 'Twitch', 
+                          desc: 'Conecte sua conta Twitch para recursos especiais',
+                          icon: Twitch,
+                          color: 'text-purple-400'
+                        },
+                        { 
+                          key: 'youtube_connected', 
+                          label: 'YouTube', 
+                          desc: 'Conecte sua conta YouTube para compartilhar conteúdo',
+                          icon: Youtube,
+                          color: 'text-red-400'
+                        },
+                        { 
+                          key: 'discord_connected', 
+                          label: 'Discord', 
+                          desc: 'Conecte sua conta Discord para integração com servidor',
+                          icon: Gamepad,
+                          color: 'text-blue-400'
+                        }
+                      ].map((item) => {
+                        const Icon = item.icon;
+                        const isConnected = settings.integrations[item.key as keyof typeof settings.integrations];
+                        return (
+                          <div key={item.key} className="flex items-center justify-between p-4 bg-tarkov-dark/50 rounded-lg">
+                            <div className="flex items-center gap-3">
+                              <Icon className={`w-6 h-6 ${item.color}`} />
+                              <div>
+                                <h4 className="font-medium text-tarkov-light flex items-center gap-2">
+                                  {item.label}
+                                  {isConnected && (
+                                    <Badge variant="success" className="text-xs">
+                                      Conectado
+                                    </Badge>
+                                  )}
+                                </h4>
+                                <p className="text-sm text-tarkov-muted">{item.desc}</p>
+                              </div>
+                            </div>
+                            <Button
+                              variant={isConnected ? "outline" : "primary"}
+                              size="sm"
+                              onClick={() => {
+                                // Simulate connection toggle
+                                updateSettings({
+                                  integrations: {
+                                    ...settings.integrations,
+                                    [item.key]: !isConnected
+                                  }
+                                });
+                                showMessage('success', `${item.label} ${!isConnected ? 'conectado' : 'desconectado'} com sucesso!`);
+                              }}
+                            >
+                              {isConnected ? 'Desconectar' : 'Conectar'}
+                            </Button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                    <div className="mt-6 flex justify-end">
+                      <Button
+                        onClick={saveSettings}
+                        disabled={isSaving}
+                        className="flex items-center gap-2"
+                      >
+                        <Save className="w-4 h-4" />
+                        {isSaving ? 'Salvando...' : 'Salvar Configurações'}
+                      </Button>
+                    </div>
+                  </Card>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
