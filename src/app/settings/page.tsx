@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useRouter } from 'next/navigation';
+import { Layout } from '@/components/layout/Layout';
+import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Badge } from '@/components/ui/Badge';
@@ -25,7 +27,8 @@ import {
   MapPin,
   Gamepad,
   Twitch,
-  Youtube
+  Youtube,
+  Settings
 } from 'lucide-react';
 
 interface UserSettings {
@@ -244,13 +247,18 @@ const SettingsPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-tarkov-dark">
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-6xl mx-auto">
+    <Layout>
+      <div className="min-h-screen bg-tarkov-dark py-8">
+        <div className="max-w-4xl mx-auto px-4">
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-tarkov-light mb-2">Configurações</h1>
-            <p className="text-tarkov-muted">Gerencie suas preferências e configurações da conta</p>
+            <h1 className="text-3xl md:text-4xl font-bold text-tarkov-light mb-2">
+              <Settings className="inline w-8 h-8 text-tarkov-accent mr-3" />
+              Configurações
+            </h1>
+            <p className="text-tarkov-muted">
+              Gerencie suas preferências e configurações da conta
+            </p>
           </div>
 
           {/* Message */}
@@ -295,7 +303,7 @@ const SettingsPage: React.FC = () => {
 
             {/* Conteúdo Principal */}
             <div className="lg:col-span-3">
-              <div className="bg-tarkov-secondary/50 rounded-lg p-6 min-h-[600px] transition-all duration-500 ease-in-out">
+              <Card className="min-h-[600px] transition-all duration-500 ease-in-out p-6">
                 {/* Tab: Perfil */}
                 {activeTab === 'profile' && (
                   <div className="space-y-6 animate-in fade-in-50 slide-in-from-bottom-4 duration-500">
@@ -441,7 +449,7 @@ const SettingsPage: React.FC = () => {
                             Tornar perfil público
                           </label>
                         </div>
-                      </div>
+                      </Card>
                     </div>
                   </div>
                 )}
@@ -454,57 +462,62 @@ const SettingsPage: React.FC = () => {
                       Configurações Gerais
                     </h2>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div>
-                        <label className="block text-sm font-medium text-tarkov-light mb-2 flex items-center gap-2">
-                          <Languages className="w-4 h-4" />
-                          Idioma
-                        </label>
-                        <select
-                          value={settings.language}
-                          onChange={(e) => updateSetting('language', e.target.value)}
-                          className="w-full px-3 py-2 bg-tarkov-dark border border-tarkov-border rounded-lg text-tarkov-light focus:outline-none focus:border-tarkov-accent transition-all duration-300 ease-in-out hover:border-tarkov-accent/50"
-                        >
-                          <option value="PT">Português</option>
-                          <option value="EN">English</option>
-                          <option value="RU">Русский</option>
-                          <option value="ES">Español</option>
-                          <option value="FR">Français</option>
-                          <option value="DE">Deutsch</option>
-                        </select>
-                      </div>
-                      
-                      <div>
-                        <label className="block text-sm font-medium text-tarkov-light mb-2 flex items-center gap-2">
-                          <Palette className="w-4 h-4" />
-                          Tema
-                        </label>
-                        <select
-                          value={settings.theme}
-                          onChange={(e) => updateSetting('theme', e.target.value)}
-                          className="w-full px-3 py-2 bg-tarkov-dark border border-tarkov-border rounded-lg text-tarkov-light focus:outline-none focus:border-tarkov-accent transition-all duration-300 ease-in-out hover:border-tarkov-accent/50"
-                        >
-                          <option value="DARK">Escuro</option>
-                          <option value="LIGHT">Claro</option>
-                          <option value="AUTO">Automático</option>
-                        </select>
-                      </div>
-                      
-                      <div>
-                        <label className="block text-sm font-medium text-tarkov-light mb-2 flex items-center gap-2">
-                          <DollarSign className="w-4 h-4" />
-                          Moeda
-                        </label>
-                        <select
-                          value={settings.currency}
-                          onChange={(e) => updateSetting('currency', e.target.value)}
-                          className="w-full px-3 py-2 bg-tarkov-dark border border-tarkov-border rounded-lg text-tarkov-light focus:outline-none focus:border-tarkov-accent transition-all duration-300 ease-in-out hover:border-tarkov-accent/50"
-                        >
-                          <option value="RUB">Rublo Russo (₽)</option>
-                          <option value="USD">Dólar Americano ($)</option>
-                          <option value="EUR">Euro (€)</option>
-                        </select>
-                      </div>
+                    <div className="space-y-6">
+                      <Card className="p-4">
+                        <h3 className="text-lg font-medium text-tarkov-light mb-4">Preferências Básicas</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <div>
+                            <label className="block text-sm font-medium text-tarkov-light mb-2 flex items-center gap-2">
+                              <Languages className="w-4 h-4" />
+                              Idioma
+                            </label>
+                            <select
+                              value={settings.language}
+                              onChange={(e) => updateSetting('language', e.target.value)}
+                              className="w-full px-3 py-2 bg-tarkov-dark border border-tarkov-border rounded-lg text-tarkov-light focus:outline-none focus:border-tarkov-accent transition-all duration-300 ease-in-out hover:border-tarkov-accent/50"
+                            >
+                              <option value="PT">Português</option>
+                              <option value="EN">English</option>
+                              <option value="RU">Русский</option>
+                              <option value="ES">Español</option>
+                              <option value="FR">Français</option>
+                              <option value="DE">Deutsch</option>
+                            </select>
+                          </div>
+                          
+                          <div>
+                            <label className="block text-sm font-medium text-tarkov-light mb-2 flex items-center gap-2">
+                              <Palette className="w-4 h-4" />
+                              Tema
+                            </label>
+                            <select
+                              value={settings.theme}
+                              onChange={(e) => updateSetting('theme', e.target.value)}
+                              className="w-full px-3 py-2 bg-tarkov-dark border border-tarkov-border rounded-lg text-tarkov-light focus:outline-none focus:border-tarkov-accent transition-all duration-300 ease-in-out hover:border-tarkov-accent/50"
+                            >
+                              <option value="DARK">Escuro</option>
+                              <option value="LIGHT">Claro</option>
+                              <option value="AUTO">Automático</option>
+                            </select>
+                          </div>
+                          
+                          <div>
+                            <label className="block text-sm font-medium text-tarkov-light mb-2 flex items-center gap-2">
+                              <DollarSign className="w-4 h-4" />
+                              Moeda
+                            </label>
+                            <select
+                              value={settings.currency}
+                              onChange={(e) => updateSetting('currency', e.target.value)}
+                              className="w-full px-3 py-2 bg-tarkov-dark border border-tarkov-border rounded-lg text-tarkov-light focus:outline-none focus:border-tarkov-accent transition-all duration-300 ease-in-out hover:border-tarkov-accent/50"
+                            >
+                              <option value="RUB">Rublo Russo (₽)</option>
+                              <option value="USD">Dólar Americano ($)</option>
+                              <option value="EUR">Euro (€)</option>
+                            </select>
+                          </div>
+                        </div>
+                      </Card>
                     </div>
                   </div>
                 )}
@@ -519,7 +532,7 @@ const SettingsPage: React.FC = () => {
                     </h2>
                     
                     <div className="space-y-6">
-                      <div className="bg-tarkov-dark/30 p-4 rounded-lg">
+                      <Card className="p-4">
                         <h3 className="text-lg font-medium text-tarkov-light mb-4">Notificações do Jogo</h3>
                         <div className="space-y-4">
                           <div className="flex items-center justify-between p-3 bg-tarkov-dark/50 rounded-lg">
@@ -586,9 +599,9 @@ const SettingsPage: React.FC = () => {
                             </label>
                           </div>
                         </div>
-                      </div>
+                      </Card>
                       
-                      <div className="bg-tarkov-dark/30 p-4 rounded-lg">
+                      <Card className="p-4">
                         <h3 className="text-lg font-medium text-tarkov-light mb-4">Métodos de Notificação</h3>
                         <div className="space-y-4">
                           <div className="flex items-center justify-between p-3 bg-tarkov-dark/50 rounded-lg">
@@ -623,7 +636,8 @@ const SettingsPage: React.FC = () => {
                             </label>
                           </div>
                         </div>
-                      </div>
+                      </Card>
+                    </div>
                     </div>
                   </div>
                 )}
@@ -636,26 +650,31 @@ const SettingsPage: React.FC = () => {
                       Privacidade
                     </h2>
                     
-                    <div className="space-y-4">
-                      <div>
-                        <label className="block text-sm font-medium text-tarkov-light mb-2">
-                          Visibilidade do Perfil
-                        </label>
-                        <select
-                          value={settings.privacy.profile_visibility}
-                          onChange={(e) => updateNestedSettings('privacy', 'profile_visibility', e.target.value)}
-                          className="w-full px-3 py-2 bg-tarkov-dark border border-tarkov-border rounded-lg text-tarkov-light focus:outline-none focus:border-tarkov-accent transition-all duration-300 ease-in-out hover:border-tarkov-accent/50"
-                        >
-                          <option value="private">Privado</option>
-                          <option value="public">Público</option>
-                          <option value="friends">Apenas Amigos</option>
-                        </select>
-                      </div>
+                    <div className="space-y-6">
+                      <Card className="p-4">
+                        <h3 className="text-lg font-medium text-tarkov-light mb-4">Configurações de Perfil</h3>
+                        <div>
+                          <label className="block text-sm font-medium text-tarkov-light mb-2">
+                            Visibilidade do Perfil
+                          </label>
+                          <select
+                            value={settings.privacy.profile_visibility}
+                            onChange={(e) => updateNestedSettings('privacy', 'profile_visibility', e.target.value)}
+                            className="w-full px-3 py-2 bg-tarkov-dark border border-tarkov-border rounded-lg text-tarkov-light focus:outline-none focus:border-tarkov-accent transition-all duration-300 ease-in-out hover:border-tarkov-accent/50"
+                          >
+                            <option value="private">Privado</option>
+                            <option value="public">Público</option>
+                            <option value="friends">Apenas Amigos</option>
+                          </select>
+                        </div>
+                      </Card>
                       
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between p-4 bg-tarkov-dark/30 rounded-lg">
+                      <Card className="p-4">
+                        <h3 className="text-lg font-medium text-tarkov-light mb-4">Configurações de Interação</h3>
+                        <div className="space-y-3">
+                        <div className="flex items-center justify-between p-4 bg-tarkov-dark/50 rounded-lg">
                           <div>
-                            <h3 className="font-medium text-tarkov-light">Mostrar Atividade</h3>
+                            <h4 className="font-medium text-tarkov-light">Mostrar Atividade</h4>
                             <p className="text-sm text-tarkov-muted">Permitir que outros vejam sua atividade</p>
                           </div>
                           <label className="relative inline-flex items-center cursor-pointer">
@@ -669,9 +688,9 @@ const SettingsPage: React.FC = () => {
                           </label>
                         </div>
                         
-                        <div className="flex items-center justify-between p-4 bg-tarkov-dark/30 rounded-lg">
+                        <div className="flex items-center justify-between p-4 bg-tarkov-dark/50 rounded-lg">
                           <div>
-                            <h3 className="font-medium text-tarkov-light">Permitir Mensagens</h3>
+                            <h4 className="font-medium text-tarkov-light">Permitir Mensagens</h4>
                             <p className="text-sm text-tarkov-muted">Permitir que outros usuários enviem mensagens</p>
                           </div>
                           <label className="relative inline-flex items-center cursor-pointer">
@@ -685,9 +704,9 @@ const SettingsPage: React.FC = () => {
                           </label>
                         </div>
                         
-                        <div className="flex items-center justify-between p-4 bg-tarkov-dark/30 rounded-lg">
+                        <div className="flex items-center justify-between p-4 bg-tarkov-dark/50 rounded-lg">
                           <div>
-                            <h3 className="font-medium text-tarkov-light">Mostrar Status Online</h3>
+                            <h4 className="font-medium text-tarkov-light">Mostrar Status Online</h4>
                             <p className="text-sm text-tarkov-muted">Permitir que outros vejam quando você está online</p>
                           </div>
                           <label className="relative inline-flex items-center cursor-pointer">
@@ -714,7 +733,7 @@ const SettingsPage: React.FC = () => {
                      </h2>
                      
                      <div className="space-y-6">
-                       <div className="bg-tarkov-dark/30 p-4 rounded-lg">
+                       <Card className="p-4">
                          <h3 className="text-lg font-medium text-tarkov-light mb-4">Interface</h3>
                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                            <div>
@@ -749,9 +768,9 @@ const SettingsPage: React.FC = () => {
                              </select>
                            </div>
                          </div>
-                       </div>
+                       </Card>
                        
-                       <div className="bg-tarkov-dark/30 p-4 rounded-lg">
+                       <Card className="p-4">
                          <h3 className="text-lg font-medium text-tarkov-light mb-4">Preferências Visuais</h3>
                          <div className="space-y-4">
                            <div className="flex items-center justify-between p-3 bg-tarkov-dark/50 rounded-lg">
@@ -802,7 +821,7 @@ const SettingsPage: React.FC = () => {
                              </label>
                            </div>
                          </div>
-                       </div>
+                       </Card>
                      </div>
                    </div>
                  )}
@@ -816,7 +835,7 @@ const SettingsPage: React.FC = () => {
                     </h2>
                     
                     <div className="space-y-6">
-                      <div className="bg-tarkov-dark/30 p-4 rounded-lg">
+                      <Card className="p-4">
                         <h3 className="text-lg font-medium text-tarkov-light mb-4 flex items-center gap-2">
                           <Gamepad className="w-5 h-5 text-purple-400" />
                           Discord
@@ -838,9 +857,9 @@ const SettingsPage: React.FC = () => {
                             </p>
                           </div>
                         </div>
-                      </div>
+                      </Card>
                       
-                      <div className="bg-tarkov-dark/30 p-4 rounded-lg">
+                      <Card className="p-4">
                         <h3 className="text-lg font-medium text-tarkov-light mb-4 flex items-center gap-2">
                           <Twitch className="w-5 h-5 text-purple-500" />
                           Twitch
@@ -864,9 +883,9 @@ const SettingsPage: React.FC = () => {
                             )}
                           </div>
                         </div>
-                      </div>
+                      </Card>
                       
-                      <div className="bg-tarkov-dark/30 p-4 rounded-lg">
+                      <Card className="p-4">
                         <h3 className="text-lg font-medium text-tarkov-light mb-4 flex items-center gap-2">
                           <Youtube className="w-5 h-5 text-red-500" />
                           YouTube
@@ -890,7 +909,7 @@ const SettingsPage: React.FC = () => {
                             )}
                           </div>
                         </div>
-                      </div>
+                      </Card>
                     </div>
                   </div>
                 )}
@@ -921,7 +940,7 @@ const SettingsPage: React.FC = () => {
           </div>
         </div>
       </div>
-    </div>
+    </Layout>
   );
 };
 
